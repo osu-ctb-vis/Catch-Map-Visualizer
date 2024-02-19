@@ -4,7 +4,7 @@ import { MapPackContext } from '../../contexts/MapPackContext'
 import './GlobalFileDropArea.scss'
 
 export function GlobalFileDropArea() {
-	const loadOsuFile = useContext(MapPackContext).loadOsuFile;
+	const loadOszFile = useContext(MapPackContext).loadOszFile;
 	const [dragOver, setDragOver] = useState(false);
 	const [isOtherElementDragging, setIsOtherElementDragging] = useState(false);
 
@@ -38,7 +38,7 @@ export function GlobalFileDropArea() {
 		e.preventDefault();
 		setDragOver(false);
 		if (e.dataTransfer.files.length > 0) {
-			loadOsuFile(e.dataTransfer.files[0]);
+			loadOszFile(e.dataTransfer.files[0]);
 		}
 	}
 

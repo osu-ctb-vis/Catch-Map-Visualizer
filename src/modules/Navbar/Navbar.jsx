@@ -19,14 +19,14 @@ export function NavBar() {
 				<div className="nav-difficulty-selector">
 					Insane
 				</div>
-				<LoadOsuFileButton/>
+				<LoadOszFileButton/>
 			</div>
 		</nav>
     )
 }
 
-function LoadOsuFileButton () {
-	const loadOsuFile = useContext(MapPackContext).loadOsuFile;
+function LoadOszFileButton () {
+	const loadOszFile = useContext(MapPackContext).loadOszFile;
 
 	const fileInputRef = useRef(null);
 
@@ -37,12 +37,12 @@ function LoadOsuFileButton () {
 				fileInputRef.current.click();				
 			}}
 		>
-			Load .osu file
+			Load .osz file
 			<input
 				ref={fileInputRef}
 				type="file"
-				accept=".osu,.zip"
-				onChange={(e) => loadOsuFile(e.target.files[0])}
+				accept=".osz,.zip"
+				onChange={(e) => loadOszFile(e.target.files[0])}
 				style={{display: 'none'}}
 			/>
 		</button>
