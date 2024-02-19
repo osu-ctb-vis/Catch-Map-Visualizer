@@ -1,0 +1,16 @@
+.global-file-drop-area {
+	position: fixed;
+	inset: 0;
+	z-index: 10000000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	pointer-events: none;
+	transition: opacity 0.25s ease;
+	opacity: 0;
+	font-size: 2em;
+	&.drag-over {
+		opacity: 1;
+	}
+}

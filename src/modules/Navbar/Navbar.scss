@@ -6,12 +6,11 @@
 	color: var(--navbar-text-color);
 	padding-left: 20px;
 	padding-right: 20px;
+	justify-content: space-between;
 	>.nav-wrapper {
-		width: 100%;
 		height: 100%;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		justify-content: space-between;
 	}
 }
