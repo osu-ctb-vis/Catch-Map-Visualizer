@@ -1,0 +1,22 @@
+.control-btns {
+	height: 100%;
+	display: flex;
+
+	.control-btn {
+		height: 100%;
+		width: 80px;
+		border: none;
+		outline: none;
+		font-size: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--navbar-color-light);
+		color: var(--navbar-text-color);
+		transition: background-color 0.2s;
+		cursor: pointer;
+		&:hover {
+			background-color: var(--navbar-color-light-hover);
+		}
+	}
+}
