@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.scss'
 import { NavBar } from './modules/Navbar/Navbar'
+import { ControlBar } from './modules/ControlBar/ControlBar'
 import { MapPackProvider } from './contexts/MapPackContext'
 import { BeatmapProvider } from './contexts/BeatmapContext'
 import { GlobalFileDropArea } from './modules/GlobalFileDropArea/GlobalFileDropArea'
@@ -13,7 +14,7 @@ function App() {
                 <GlobalFileDropArea />
                 <NavBar />
                 <div className="main"/>
-                <div className="control-bar"/>
+                <ControlBar />
             </BeatmapProvider>
         </MapPackProvider>
     )

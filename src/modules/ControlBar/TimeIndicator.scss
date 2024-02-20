@@ -1,0 +1,45 @@
+.time-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--navbar-color-light);
+	color: var(--navbar-text-color);
+	flex-direction: column;
+	padding-left: 20px;
+	padding-right: 20px;
+	line-height: 1.25;
+	.upper {
+		margin-top: -5px; // fix the alignment manually
+		.current-time {
+			display: block;
+			font-size: 36px;
+			font-variant-numeric: tabular-nums;
+			.min, .sec, .colon {
+				font-weight: bold;
+			}
+			.ms, .dot {
+				font-size: 0.8em;
+				opacity: 0.8;
+			}
+		}
+	}
+
+	.lower {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		opacity: 0.8;
+		.bpm-text {
+			margin-left: 1.5px;
+		}
+		.total-time {
+			display: block;
+			font-variant-numeric: tabular-nums;
+			.ms {
+				font-size: 0.8em;
+			}
+		}
+	}
+}

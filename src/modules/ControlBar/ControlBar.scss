@@ -1,0 +1,14 @@
+.control-bar {
+	width: 100%;
+	height: 80px;
+	display: flex;
+	background-color: var(--navbar-color);
+	color: var(--navbar-text-color);
+	justify-content: space-between;
+	transition: transform 0.25s ease;
+
+	&:not(.show) {
+		transform: translateY(100%);
+		pointer-events: none;
+	}
+}
