@@ -1,0 +1,35 @@
+.nav-load-file-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background-color: var(--navbar-color-light);
+	color: var(--navbar-text-color);
+	border: none;
+	outline: none;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	font-size: 1.2em;
+	flex-direction: row;
+	min-width: 60px;
+	font-family: inherit;
+	gap: 10px;
+	padding: 0 16px;
+
+	&:hover {
+		background-color: var(--navbar-color-light-hover);
+	}
+
+	&.loaded {
+		background-color: var(--navbar-color);
+		&:hover {
+			background-color: var(--navbar-color-light);
+		}
+	}
+
+	svg {
+		font-size: 24px;
+	}
+	
+
+}

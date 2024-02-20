@@ -36,7 +36,7 @@ export async function parseFile(file) {
 	if (!zipFile) return;
 	
 	const fileName = file.name;
-	const difficulties = (await Promise.all(
+	const beatmaps = (await Promise.all(
 		Object.values(zipFile).filter((file) => {
 			return file.name.endsWith('.osu');
 		}).map((file) => new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ export async function parseFile(file) {
 			});
 		}))
 	).catch((e) => {
-		console.log('error reading difficulties', e);
+		console.log('error reading beatmaps', e);
 	})).map((text) => {
 		return decoder.decodeFromString(text);
 	}).sort((a, b) => {
@@ -56,7 +56,7 @@ export async function parseFile(file) {
 	return {
 		fileName,
 		zipFile,
-		difficulties
+		beatmaps
 	};
 
 }

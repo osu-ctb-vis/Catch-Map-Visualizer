@@ -1,0 +1,94 @@
+.nav-difficulties-selector {
+	display: flex;
+	position: relative;
+	background-color: var(--navbar-color-light);
+	height: 100%;
+	flex-direction: row;
+	align-items: center;
+	padding-left: 20px;
+	padding-right: 10px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	&:hover, &.open {
+		background-color: var(--navbar-color-light-hover);
+	}
+
+	.dropdown-icon {
+		margin-left: 2px;
+		font-size: 1.2em;
+	}
+
+	.difficulties-list {
+		position: absolute;
+		right: 0;
+		top: 60px;
+		width: max-content;
+		max-width: calc(100vw - 100px);
+		max-height: calc(100vh - 80px);
+		max-height: calc(100svh - 80px);
+		overflow-y: auto;
+		background-color: var(--navbar-color-light);
+		transition: clip-path 0.2s ease-in-out;
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+		pointer-events: none;
+
+		.difficulty {
+			padding: 10px 20px;
+			cursor: pointer;
+			transition: background-color 0.2s;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 15px;
+
+			&:not(.disabled):hover {
+				background-color: var(--navbar-color-light-hover);
+			}
+			&.selected {
+				background-color: var(--navbar-color-light-hover);
+			}
+			&.disabled {
+				opacity: 0.3;
+				cursor: default;
+			}
+
+
+			.difficulty-ruleset-icon {
+				width: 24px;
+				height: 24px;
+			}
+			.difficulty-info {
+				flex: 1;
+				.difficulty-name {
+					font-weight: bold;
+				}
+				.difficulty-author {
+					font-size: 0.9em;
+					opacity: 0.85;
+				}
+			}
+			.difficulty-selected-icon {
+				font-size: 20px;
+				width: 20px;
+			}
+		}
+
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background-color: #fff3;
+		}
+	}
+
+	&.open .difficulties-list {
+		clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+		pointer-events: unset;
+	}
+
+	&.no-difficulty {
+		.current-difficulty, .dropdown-icon {
+			opacity: 0.5;
+		}
+	}
+}
