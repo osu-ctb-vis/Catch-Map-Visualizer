@@ -21,10 +21,10 @@ export function TimeIndicator() {
 	const playerRef = useContext(PlayStateContext).playerRef;
 
 	const [currentTime, setCurrentTime] = useState(0);
-	const totalTime = beatmap?.length || 0;
+	const totalTime = (beatmap?.totalLength) ?? playerRef?.current?.duration * 1000 ?? 0; // TODO: we need to make the length more accurate for VBR audios
 
 	const [curMin, curSec, curMs] = parseTime(currentTime);
-	const [totalMin, totalSec, totalMs] = useMemo(() => parseTime(totalTime), [totalTime]);
+	const [totalMin, totalSec, totalMs] = parseTime(totalTime);
 
 	const [start, stop] = useRequestAnimationFrame((time) => {
 		setCurrentTime(playerRef.current.currentTime * 1000);
@@ -35,7 +35,7 @@ export function TimeIndicator() {
 			start();
 		}
 		return () => stop();
-	}, [playerRef?.current]);
+	});
 
 
 	return (
