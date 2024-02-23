@@ -10,11 +10,13 @@ export const BeatmapsProvider = ({children}) => {
 
 	useEffect(() => {
 		if (!mapPack) return;
+		// TODO: Change the way to choose the default beatmap
 		const defaultBeatmap = [
 			...mapPack.beatmaps.filter((d) => d.originalMode == 0),
 			...mapPack.beatmaps.filter((d) => d.originalMode == 2)
 		].pop(); // Choose the hardest ctb difficulty, or the hardest difficulty if there are no ctb beatmap 
-		setBeatmaps([defaultBeatmap]);
+		if (!defaultBeatmap) setBeatmaps([]);
+		else setBeatmaps([defaultBeatmap]);
 	}, [mapPack]);
 
 	return (
