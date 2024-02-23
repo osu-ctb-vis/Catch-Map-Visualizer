@@ -12,18 +12,29 @@ export function Background() {
 	const beatmap = useContext(BeatmapsContext).beatmaps?.at(-1);
 	const zipFile = useContext(MapPackContext).mapPack?.zipFile;
 	
+	const prevImgFileName = useRef(null);
+
 	const onBeatmapChange = async () => {
+		if (!beatmap) {
+			setImg(null);
+			prevImgFileName.current = null;
+			return;
+		}
 		const imgFileName = beatmap?.events.backgroundPath;
+		if (imgFileName === prevImgFileName.current) return;
+		prevImgFileName.current = imgFileName;
 		console.log(imgFileName);
 		console.log(zipFile);
 		const imgFile = zipFile?.[imgFileName];
 		if (!imgFile) {
 			setImg(null);
+			prevImgFileName.current = null;
 			return;
 		}
 		const imgBuffer = await imgFile.async("blob").catch(() => null);
 		if (!imgBuffer) {
 			setImg(null);
+			prevImgFileName.current = null;
 			return;
 		}
 		console.log(imgBuffer);
@@ -32,10 +43,6 @@ export function Background() {
 	};
 
 	useEffect(() => {
-		if (!beatmap) {
-			setImg(null);
-			return;
-		}
 		onBeatmapChange();
 	}, [beatmap]);
 
