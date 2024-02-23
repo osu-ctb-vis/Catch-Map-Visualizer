@@ -35,6 +35,9 @@ export const PlayStateProvider = ({children}) => {
 		playerRef.current.play();
 	}
 
+	useEffect(() => {
+		oldAudioFileName.current = null;
+	}, [zipFile]);
 
 	useEffect(() => {
 		onBeatmapChange();

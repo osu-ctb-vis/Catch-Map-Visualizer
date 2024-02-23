@@ -52,6 +52,9 @@
 			}
 			&.selected {
 				background-color: var(--navbar-color-light-hover);
+				.difficulty-selected-icon {
+					opacity: 1;
+				}
 			}
 			&.disabled {
 				opacity: 0.3;
@@ -76,6 +79,8 @@
 			.difficulty-selected-icon {
 				font-size: 20px;
 				width: 20px;
+				opacity: 0;
+				transition: opacity 0.2s;
 			}
 		}
 

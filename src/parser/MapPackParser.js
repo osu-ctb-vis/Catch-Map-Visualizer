@@ -16,6 +16,8 @@ const decoder = new BeatmapDecoder();
 export async function parseFile(file) {
 	console.log('loading .osz file', file);
 
+	// Possible TODO: If the file is identical to the previous one, don't parse it
+
 	const buffer = await new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = (e) => {

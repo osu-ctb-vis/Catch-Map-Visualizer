@@ -2,11 +2,11 @@ import { useContext, useState, useLayoutEffect, useRef, useMemo } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { BeatmapsContext } from '../../contexts/BeatmapsContext'
 import { groupAndSortMaps } from '../../utils/GroupAndSortMaps'
-import './DifficultiesSelector.scss'
 import { MdArrowDropDown, MdCheck } from "react-icons/md";
 import { RulesetIcon } from '../Components/RulesetIcon/RulesetIcon';
 import clsx from 'clsx';
 import ClickAwayListener from 'react-click-away-listener';
+import './DifficultiesSelector.scss'
 
 
 export function DifficultiesSelector () {
@@ -118,7 +118,7 @@ function Difficulty ({beatmap, currentDifficulties, beatmaps, setBeatmaps}) {
 				</div>
 			</div>
 			<div className="difficulty-selected-icon">
-				{currentDifficulties.includes(beatmap.metadata.version) && <MdCheck/>}
+				<MdCheck/>
 			</div>
 		</div>
 	)

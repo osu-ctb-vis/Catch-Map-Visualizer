@@ -43,11 +43,17 @@ export function Background() {
 	};
 
 	useEffect(() => {
+		prevImgFileName.current = null;
+	}, [zipFile]);
+
+	useEffect(() => {
 		onBeatmapChange();
 	}, [beatmap]);
 
+
 	if (img) imgDefer.current = img;
 
+	// TODO: Don't use CSS background-image transition (will resize images), make our own component
 	
 	return (
 		<>
