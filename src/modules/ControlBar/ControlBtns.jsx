@@ -18,12 +18,25 @@ function PlayPauseButton() {
 		setPlaying,
 	} = useContext(PlayStateContext);
 
+
+	const onKeyDown = (e) => {
+		if (e.repeat) return;
+		if (e.key !== " ") return;
+		if (e.target?.closest('input, textarea')) return;
+		setPlaying(!playing)
+	}
+
+	useEffect(() => {
+		window.addEventListener('keydown', onKeyDown);
+		return () => {
+			window.removeEventListener('keydown', onKeyDown);
+		}
+	}, [playing]);
+
 	return (
 		<button
 			className="control-btn play-btn"
-			onClick={() => {
-				setPlaying(!playing);
-			}}
+			onClick={() => setPlaying(!playing)}
 		>
 			{playing ? <MdPause/> : <MdPlayArrow/>}
 		</button>
