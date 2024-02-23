@@ -43,7 +43,8 @@ export function DifficultiesSelector () {
 			>
 				<div className="current-difficulty">
 					{noDifficulyAvailable && "No difficulty available"}
-					{!noDifficulyAvailable && currentDifficulties.join(", ")}
+					{!noDifficulyAvailable && currentDifficulties.length === 0 && "Select a difficulty"}
+					{!noDifficulyAvailable && currentDifficulties.length > 0 && currentDifficulties.join(", ")}
 				</div>
 				<MdArrowDropDown className="dropdown-icon"/>
 				<div className="difficulties-list" onClick={(e) => e.stopPropagation()} ref={listRef}>
