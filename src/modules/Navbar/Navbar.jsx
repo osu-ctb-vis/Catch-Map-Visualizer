@@ -2,6 +2,7 @@ import { useContext, useRef } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { DifficultiesSelector } from './DifficultiesSelector'
 import { LoadOszFileButton } from './LoadOszFileButton'
+import Logo from '../../assets/home.svg';
 import './Navbar.scss'
 
 export function NavBar() {
@@ -11,7 +12,8 @@ export function NavBar() {
 		<nav className="nav">
 			<div className="nav-wrapper nav-left">
 				<div className="nav-logo">
-					ctb Preview
+					<img src={Logo} alt="Logo" className = "nav-logo-img"/>
+					<span className="nav-logo-text">Catch Map Visualizer</span>
 				</div>
 			</div>
 			<div className="nav-wrapper nav-center">

@@ -12,4 +12,14 @@
 		flex-direction: row;
 		align-items: center;
 	}
+	.nav-logo {
+		display: flex;
+		align-items: center;
+	}
+	.nav-logo-text {
+		margin-left: 10px;
+	}
+	.nav-logo-img {
+		margin-right: 10px;
+	}
 }
