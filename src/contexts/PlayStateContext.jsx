@@ -16,12 +16,17 @@ export const PlayStateProvider = ({children}) => {
 	const beatmap = useContext(BeatmapsContext).beatmaps?.at(-1);
 	const zipFile = useContext(MapPackContext).mapPack?.zipFile;
 
+	const oldAudioFileName = useRef(null);
+
 	async function onBeatmapChange() {
 		if (!beatmap) {
 			if (playerRef?.current?.src) playerRef.current.src = "";
+			oldAudioFileName.current = null;
 			return;
 		}
 		const audioFileName = beatmap.general.audioFilename;
+		if (oldAudioFileName.current === audioFileName) return;
+		oldAudioFileName.current = audioFileName;
 		const audioFile = zipFile?.[audioFileName];
 		if (!audioFile) throw new Error("No audio file found in beatmap");
 		const audioBuffer = await audioFile.async("arraybuffer");
