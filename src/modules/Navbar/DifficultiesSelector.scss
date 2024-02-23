@@ -24,14 +24,20 @@
 		top: 60px;
 		width: max-content;
 		max-width: calc(100vw - 100px);
-		max-height: calc(100vh - 80px);
-		max-height: calc(100svh - 80px);
+		max-height: calc(100vh - 150px);
+		max-height: calc(100svh - 150px);
 		overflow-y: auto;
 		background-color: var(--navbar-color-light);
 		transition: clip-path 0.2s ease-in-out;
 		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
 		pointer-events: none;
 
+		.section-title {
+			display: flex;
+			padding: 10px 20px;
+			background: #0002;
+			cursor: default;
+		}
 		.difficulty {
 			padding: 10px 20px;
 			cursor: pointer;

@@ -1,6 +1,6 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { MapPackContext } from "./MapPackContext";
-import { BeatmapContext } from "./BeatmapContext";
+import { BeatmapsContext } from "./BeatmapsContext";
 
 export const PlayStateContext = createContext(null);
 
@@ -13,7 +13,7 @@ export const PlayStateProvider = ({children}) => {
 
 	const playerRef = useRef(null);
 
-	const beatmap = useContext(BeatmapContext).beatmap;
+	const beatmap = useContext(BeatmapsContext).beatmaps?.at(-1);
 	const zipFile = useContext(MapPackContext).mapPack?.zipFile;
 
 	async function onBeatmapChange() {

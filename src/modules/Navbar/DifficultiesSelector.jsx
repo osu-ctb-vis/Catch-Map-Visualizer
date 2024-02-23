@@ -1,6 +1,7 @@
 import { useContext, useState, useLayoutEffect, useRef } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
-import { BeatmapContext } from '../../contexts/BeatmapContext'
+import { BeatmapsContext } from '../../contexts/BeatmapsContext'
+import { groupAndSortMaps } from '../../utils/GroupAndSortMaps'
 import './DifficultiesSelector.scss'
 import { MdArrowDropDown, MdCheck } from "react-icons/md";
 import { RulesetIcon } from '../Components/RulesetIcon/RulesetIcon';
@@ -9,10 +10,11 @@ import ClickAwayListener from 'react-click-away-listener';
 
 
 export function DifficultiesSelector () {
-	const mapPack = useContext(MapPackContext).mapPack;
-	const {beatmap, setBeatmap} = useContext(BeatmapContext)
+	const AllBeatmaps = useContext(MapPackContext).mapPack?.beatmaps ?? null;
+
+	const {beatmaps, setBeatmaps} = useContext(BeatmapsContext);
 	
-	const currentDifficulty = beatmap?.metadata?.version ?? null;
+	const currentDifficulties = beatmaps?.map((beatmap) => beatmap.metadata.version) ?? [];
 
 	const [open, setOpen] = useState(false);
 
@@ -20,15 +22,18 @@ export function DifficultiesSelector () {
 
 	useLayoutEffect(() => {
 		if (!open) return;
-		const selected = listRef.current.querySelector('.selected');
-		if (!selected) return;
+		const selectedEntries = listRef.current.querySelectorAll('.selected');
+		if (!selectedEntries.length) return;
+		const selected = selectedEntries[Math.floor(selectedEntries.length / 2)];
 		if (!listRef.current) return;
 		listRef.current.scrollTop = selected.offsetTop - listRef.current.offsetHeight / 2;
-	}, [open, beatmap]);
+	}, [open]);
+	
+	if (!AllBeatmaps) return null;
 
-	if (!mapPack) return null;
+	const noDifficulyAvailable = AllBeatmaps.every((beatmap) => ![0, 2].includes(beatmap.originalMode));
 
-	const noDifficulyAvailable = mapPack.beatmaps.every((beatmap) => ![0, 2].includes(beatmap.originalMode));
+	const groups = groupAndSortMaps(AllBeatmaps);
 
 	return (
 		<ClickAwayListener onClickAway={() => setOpen(false)}>
@@ -37,42 +42,83 @@ export function DifficultiesSelector () {
 				onClick={() => setOpen((prev) => !prev)}
 			>
 				<div className="current-difficulty">
-					{!noDifficulyAvailable ? currentDifficulty : "No difficulty available"}
+					{noDifficulyAvailable && "No difficulty available"}
+					{!noDifficulyAvailable && currentDifficulties.join(", ")}
 				</div>
 				<MdArrowDropDown className="dropdown-icon"/>
 				<div className="difficulties-list" onClick={(e) => e.stopPropagation()} ref={listRef}>
-					{mapPack?.beatmaps.map((beatmap, i) => (
-						<div
-							key={i}
-							className={clsx(
-								"difficulty",
-								{
-									"selected": beatmap.metadata.version === currentDifficulty,
-									"disabled": ![0, 2].includes(beatmap.originalMode)
-								}
-							)}
-							onClick={() => {
-								if (![0, 2].includes(beatmap.originalMode)) return;
-								setOpen(false);
-								beatmap.metadata.version !== currentDifficulty && setBeatmap(beatmap);
-							}}
-						>
-							<RulesetIcon ruleset={beatmap.originalMode} className="difficulty-ruleset-icon"/>
-							<div className="difficulty-info">
-								<div className="difficulty-name">
-									{beatmap.metadata.version}
-								</div>
-								<div className="difficulty-author">
-									{beatmap.metadata.creator}
-								</div>
-							</div>
-							<div className="difficulty-selected-icon">
-								{beatmap.metadata.version === currentDifficulty && <MdCheck/>}
-							</div>
-						</div>
-					))}
+					{
+						groups.map((group, i) => (
+							<Section
+								key={i}
+								group={group}
+								currentDifficulties={currentDifficulties}
+								beatmaps={beatmaps}
+								setBeatmaps={setBeatmaps}
+								showTitle={groups.length > 1}
+							/>
+						))
+					}
 				</div>
 			</div>
 		</ClickAwayListener>			
+	)
+}
+
+function Section ({group, currentDifficulties, beatmaps, setBeatmaps, showTitle}) {
+	return (
+		<div className="nav-difficulties-selector-section">
+			{
+				showTitle && <div className="section-title">{group.name}</div>
+			}
+			{
+				group.beatmaps.map((beatmap, i) => (
+					<Difficulty
+						key={i}
+						beatmap={beatmap}
+						currentDifficulties={currentDifficulties}
+						beatmaps={beatmaps}
+						setBeatmaps={setBeatmaps}
+					/>
+				))
+			}
+		</div>
+	)
+}
+
+function Difficulty ({beatmap, currentDifficulties, beatmaps, setBeatmaps}) {
+	const selected = currentDifficulties.includes(beatmap.metadata.version);
+	return (
+		<div
+			className={clsx(
+				"difficulty",
+				{
+					"selected": currentDifficulties.includes(beatmap.metadata.version),
+					"disabled": ![0, 2].includes(beatmap.originalMode)
+				}
+			)}
+			onClick={() => {
+				if (![0, 2].includes(beatmap.originalMode)) return;
+				if (selected) {
+					setBeatmaps(beatmaps.filter((d) => d.metadata.version !== beatmap.metadata.version));
+				} else {
+					const newBeatmaps = beatmaps?.at(-1)?.general?.audioFilename === beatmap.general.audioFilename ? beatmaps : [];
+					setBeatmaps([...newBeatmaps, beatmap].sort((a, b) => a.hitObjects.length - b.hitObjects.length));
+				}
+			}}
+		>
+			<RulesetIcon ruleset={beatmap.originalMode} className="difficulty-ruleset-icon"/>
+			<div className="difficulty-info">
+				<div className="difficulty-name">
+					{beatmap.metadata.version}
+				</div>
+				<div className="difficulty-author">
+					{beatmap.metadata.creator}
+				</div>
+			</div>
+			<div className="difficulty-selected-icon">
+				{currentDifficulties.includes(beatmap.metadata.version) && <MdCheck/>}
+			</div>
+		</div>
 	)
 }

@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { MapPackContext } from '../../contexts/MapPackContext';
-import { BeatmapContext } from '../../contexts/BeatmapContext';
+import { BeatmapsContext } from '../../contexts/BeatmapsContext';
 import { Grids } from './Grids';
 import clsx from 'clsx';
 import './Background.scss';
@@ -9,7 +9,7 @@ export function Background() {
 	const [img, setImg] = useState(null);
 	const imgDefer = useRef(null);
 
-	const beatmap = useContext(BeatmapContext).beatmap;
+	const beatmap = useContext(BeatmapsContext).beatmaps?.at(-1);
 	const zipFile = useContext(MapPackContext).mapPack?.zipFile;
 	
 	const onBeatmapChange = async () => {

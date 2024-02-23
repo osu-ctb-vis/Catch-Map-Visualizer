@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { MapPackContext } from "./MapPackContext";
 
-export const BeatmapContext = createContext(null);
+export const BeatmapsContext = createContext(null);
 
-export const BeatmapProvider = ({children}) => {
+export const BeatmapsProvider = ({children}) => {
 	const mapPack = useContext(MapPackContext).mapPack;
 
-	const [beatmap, setBeatmap] = useState(null);
+	const [beatmaps, setBeatmaps] = useState(null);
 
 	useEffect(() => {
 		if (!mapPack) return;
@@ -14,15 +14,15 @@ export const BeatmapProvider = ({children}) => {
 			...mapPack.beatmaps.filter((d) => d.originalMode == 0),
 			...mapPack.beatmaps.filter((d) => d.originalMode == 2)
 		].pop(); // Choose the hardest ctb difficulty, or the hardest difficulty if there are no ctb beatmap 
-		setBeatmap(defaultBeatmap);
+		setBeatmaps([defaultBeatmap]);
 	}, [mapPack]);
 
 	return (
-		<BeatmapContext.Provider value={{
-			beatmap,
-			setBeatmap,
+		<BeatmapsContext.Provider value={{
+			beatmaps,
+			setBeatmaps,
 		}}>
 			{children}
-		</BeatmapContext.Provider>
+		</BeatmapsContext.Provider>
 	)
 }

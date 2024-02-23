@@ -1,5 +1,5 @@
 import { useContext, useState, useMemo, useEffect } from 'react'
-import { BeatmapContext } from '../../contexts/BeatmapContext'
+import { BeatmapsContext } from '../../contexts/BeatmapsContext'
 import { PlayStateContext } from '../../contexts/PlayStateContext'
 import { MonospacedNumber } from '../Components/MonospacedNumber/MonospacedNumber'
 import useRequestAnimationFrame from '../../hooks/useRequestAnimationFrame'
@@ -16,7 +16,7 @@ const parseTime = (time) => { // time in ms
 }
 
 export function TimeIndicator() {
-	const beatmap = useContext(BeatmapContext).beatmap;
+	const beatmap = useContext(BeatmapsContext).beatmaps?.at(-1);
 
 	const playerRef = useContext(PlayStateContext).playerRef;
 
