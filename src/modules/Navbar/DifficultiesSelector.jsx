@@ -1,4 +1,4 @@
-import { useContext, useState, useLayoutEffect, useRef } from 'react'
+import { useContext, useState, useLayoutEffect, useRef, useMemo } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { BeatmapsContext } from '../../contexts/BeatmapsContext'
 import { groupAndSortMaps } from '../../utils/GroupAndSortMaps'
@@ -28,12 +28,12 @@ export function DifficultiesSelector () {
 		if (!listRef.current) return;
 		listRef.current.scrollTop = selected.offsetTop - listRef.current.offsetHeight / 2;
 	}, [open]);
+
+	const groups = useMemo(() => groupAndSortMaps(AllBeatmaps), [AllBeatmaps]);
 	
 	if (!AllBeatmaps) return null;
 
 	const noDifficulyAvailable = AllBeatmaps.every((beatmap) => ![0, 2].includes(beatmap.originalMode));
-
-	const groups = groupAndSortMaps(AllBeatmaps);
 
 	return (
 		<ClickAwayListener onClickAway={() => setOpen(false)}>
