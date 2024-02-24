@@ -2,6 +2,7 @@ import { useContext, useRef } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { DifficultiesSelector } from './DifficultiesSelector'
 import { LoadOszFileButton } from './LoadOszFileButton'
+import { SettingsPanel } from './SettingsPanel'
 import Logo from '../../assets/home.svg';
 import './Navbar.scss'
 
@@ -24,6 +25,7 @@ export function NavBar() {
 			<div className="nav-wrapper nav-right">
 				<DifficultiesSelector/>
 				<LoadOszFileButton/>
+				<SettingsPanel/>
 			</div>
 		</nav>
     )

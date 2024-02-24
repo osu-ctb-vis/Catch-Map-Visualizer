@@ -19,6 +19,11 @@ export const BeatmapsProvider = ({children}) => {
 		else setBeatmaps([defaultBeatmap]);
 	}, [mapPack]);
 
+	// For debugging
+	useEffect(() => {
+		window.beatmaps = beatmaps;
+	}, [beatmaps]);
+
 	return (
 		<BeatmapsContext.Provider value={{
 			beatmaps,

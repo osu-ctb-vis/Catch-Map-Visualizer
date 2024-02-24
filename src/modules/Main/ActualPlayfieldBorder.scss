@@ -1,0 +1,39 @@
+.actual-Playfield-border {
+	position: absolute;
+	display: relative;
+	left: -1px;
+	right: -1px;
+	bottom: -1px;
+	//aspect-ratio: 4 / 3;
+	pointer-events: none;
+	> div {
+		position: absolute;
+		border: 2px solid #fff;
+		width: min(5%, 25px);
+		aspect-ratio: 1 / 1;
+	}
+	> div:nth-child(1) {
+		left: 0;
+		top: 0;
+		border-right: none;
+		border-bottom: none;
+	}
+	> div:nth-child(2) {
+		right: 0;
+		top: 0;
+		border-left: none;
+		border-bottom: none;
+	}
+	> div:nth-child(3) {
+		left: 0;
+		bottom: 0;
+		border-right: none;
+		border-top: none;
+	}
+	> div:nth-child(4) {
+		right: 0;
+		bottom: 0;
+		border-left: none;
+		border-top: none;
+	}
+}

@@ -6,6 +6,7 @@ import { ControlBar } from './modules/ControlBar/ControlBar'
 import { MapPackProvider } from './contexts/MapPackContext'
 import { BeatmapsProvider } from './contexts/BeatmapsContext'
 import { PlayStateProvider } from './contexts/PlayStateContext'
+import { SettingsProvider } from './contexts/SettingsContext'
 import { GlobalFileDropArea } from './modules/GlobalFileDropArea/GlobalFileDropArea'
 
 function App() {
@@ -14,10 +15,12 @@ function App() {
         <MapPackProvider>
             <BeatmapsProvider>
                 <PlayStateProvider>
-                    <GlobalFileDropArea />
-                    <NavBar />
-                    <Main />
-                    <ControlBar />
+                    <SettingsProvider>
+                        <GlobalFileDropArea />
+                        <NavBar />
+                        <Main />
+                        <ControlBar />
+                    </SettingsProvider>
                 </PlayStateProvider>
             </BeatmapsProvider>
         </MapPackProvider>

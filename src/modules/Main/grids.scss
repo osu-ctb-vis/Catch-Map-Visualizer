@@ -2,9 +2,8 @@
 	position: absolute;
 	inset: 0;
 	background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
-	background-size: 64px 64px;
-	background-position: center;
+	background-size: var(--grid-size) var(--grid-size);
+	background-position: bottom left;
 	opacity: 0.2;
-	z-index: -1;
 	pointer-events: none;
 }

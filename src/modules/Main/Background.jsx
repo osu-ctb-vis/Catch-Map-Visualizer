@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { MapPackContext } from '../../contexts/MapPackContext';
 import { BeatmapsContext } from '../../contexts/BeatmapsContext';
-import { Grids } from './Grids';
 import clsx from 'clsx';
 import './Background.scss';
 
@@ -63,9 +62,6 @@ export function Background() {
 					backgroundImage: imgDefer.current ? `url(${imgDefer.current})` : 'none'
 				}}
 			/>
-			{
-				img && <Grids/>
-			}
 		</>
 	)
 }

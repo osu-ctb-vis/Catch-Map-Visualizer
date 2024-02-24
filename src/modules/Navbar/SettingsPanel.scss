@@ -1,0 +1,60 @@
+.settings-panel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background-color: var(--navbar-color-light);
+	color: var(--navbar-text-color);
+	border: none;
+	outline: none;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	font-size: 1.2em;
+	flex-direction: row;
+	min-width: 60px;
+	font-family: inherit;
+	gap: 10px;
+	padding: 0 16px;
+
+	&:hover, &.open {
+		background-color: var(--navbar-color-light-hover);
+	}
+
+	&.loaded {
+		background-color: var(--navbar-color);
+		&:hover, &.open {
+			background-color: var(--navbar-color-light);
+		}
+	}
+
+	svg {
+		font-size: 24px;
+	}
+
+	.settings-panel-menu {
+		position: absolute;
+		right: 0;
+		top: 60px;
+		width: max-content;
+		max-width: calc(100vw - 100px);
+		max-height: calc(100vh - 150px);
+		max-height: calc(100svh - 150px);
+		overflow-y: auto;
+		background-color: var(--navbar-color-light);
+		transition: clip-path 0.2s ease-in-out;
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+		pointer-events: none;
+		padding: 20px;
+		cursor: default;
+	}
+
+	&.open {
+		.settings-panel-menu {
+			clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+			pointer-events: all;
+		}
+	}
+	
+	
+
+}
