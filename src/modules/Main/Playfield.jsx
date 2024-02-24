@@ -1,8 +1,9 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext } from "react";
 import { SettingsContext } from "../../contexts/SettingsContext";
-import "./Playfield.css";
+import "./Playfield.scss";
 import { Grids } from './Grids';
 import { ActualPlayfieldBorder } from './ActualPlayfieldBorder';
+import { ObjectsCanvas } from './ObjectsCanvas';
 
 export function Playfield({ beatmap }) {
 	const ref = useRef(null);
@@ -35,6 +36,7 @@ export function Playfield({ beatmap }) {
 				...((height === 0) ? {} : { maxWidth: maxWidth + "px" })
 			}}
 		>
+			<ObjectsCanvas beatmap={beatmap} />
 			<Grids />
 			<ActualPlayfieldBorder />
 		</div>

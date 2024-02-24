@@ -1,0 +1,20 @@
+.objects-canvas {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	z-index: 2;
+
+	.object {
+		position: absolute;
+		will-change: transform;
+		left: 0;
+		top: 0;
+		background-color: #fffa;
+		border-radius: 50%;
+
+		&.object-fruit {
+			width: 10px;
+			height: 10px;
+		}
+	}
+}
