@@ -41,11 +41,20 @@ export function ObjectsCanvas({ beatmap }) {
 
 	if (!beatmap.ctbObjects) beatmap.ctbObjects = parseHitObjects(beatmap);
 	const objects = beatmap.ctbObjects;
+	const objectRef = useRef(objects);
+	objectRef.current = objects;
 	const objectOnScreen = useRef({}); // Dictionary of the objects div that are currently on screen
 	const L = useRef(0), R = useRef(0); // Left and Right pointers of the all objects array, for better performance
 	const lastTime = useRef(-1000000); // Last time of the song
 
+	useEffect(() => {
+		L.current = 0; R.current = 0; lastTime.current = -1000000;
+		objectOnScreen.current = {};
+		ref.current.innerHTML = "";
+	}, [beatmap]);
+
 	const update = () => {
+		const objects = objectRef.current;
 		const currentTime = playerRef.current.currentTime * 1000;
 		const width = widthRef.current;
 		const height = heightRef.current;
@@ -60,8 +69,8 @@ export function ObjectsCanvas({ beatmap }) {
 				//console.log(objects[R.current]);
 				let i = R.current - 1;
 				if (objects[i].time > endTime) break;
-				//console.log("obj", i, objects[i].x / 720 * width, currentTime, objects[i].time, preempt, height, (currentTime - objects[i].time) / preempt * height);
-				updateObject(i, objects[i].x / 720 * width, (currentTime - objects[i].time) / preempt * height);
+				//console.log("obj", i, objects[i].x / 512 * width, currentTime, objects[i].time, preempt, height, (currentTime - objects[i].time) / preempt * height);
+				updateObject(i, objects[i].x / 512 * width, (currentTime - objects[i].time) / preempt * height);
 			}
 			removeObjects();
 			//console.log("range", L.current, R.current);
@@ -73,7 +82,7 @@ export function ObjectsCanvas({ beatmap }) {
 			removeObject(L.current);
 			L.current++;
 		}
-		console.log(R.current, objects[R.current - 1]);
+		console.log(R.current, objects[R.current - 1], objects);
 		while (R.current > 0 && objects[R.current - 1].time > endTime) {
 			removeObject(R.current - 1);
 			R.current--;
@@ -86,7 +95,7 @@ export function ObjectsCanvas({ beatmap }) {
 				R.current = i;
 				break;
 			}
-			updateObject(i, objects[i].x / 720 * width, (currentTime - objects[i].time) / preempt * height);
+			updateObject(i, objects[i].x / 512 * width, (currentTime - objects[i].time) / preempt * height);
 		}
 
 	}
