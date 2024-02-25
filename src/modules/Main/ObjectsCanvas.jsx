@@ -44,7 +44,7 @@ export function ObjectsCanvas({ beatmap }) {
 	const objectRef = useRef(objects);
 	objectRef.current = objects;
 	const objectOnScreen = useRef({}); // Dictionary of the objects div that are currently on screen
-	const L = useRef(0), R = useRef(0); // Left and Right pointers of the all objects array, for better performance
+	const L = useRef(0), R = useRef(0); // Left and Right pointers of the all objects array, for better performance [L, R)
 	const lastTime = useRef(-1000000); // Last time of the song
 
 	useEffect(() => {
@@ -65,10 +65,9 @@ export function ObjectsCanvas({ beatmap }) {
 		if (Math.abs(currentTime - lastTime.current) > 20000) {
 			//console.log("Jumped");
 			L.current = binarySearch(objects, startTime);
-			for (R.current = L.current + 1; R.current < objects.length + 1; R.current++) {
+			for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
+				const i = R.current;
 				//console.log(objects[R.current]);
-				let i = R.current - 1;
-				if (objects[i].time > endTime) break;
 				//console.log("obj", i, objects[i].x / 512 * width, currentTime, objects[i].time, preempt, height, (currentTime - objects[i].time) / preempt * height);
 				updateObject(i, objects[i].x / 512 * width, (currentTime - objects[i].time) / preempt * height);
 			}
@@ -82,22 +81,17 @@ export function ObjectsCanvas({ beatmap }) {
 			removeObject(L.current);
 			L.current++;
 		}
-		console.log(R.current, objects[R.current - 1], objects);
-		while (R.current > 0 && objects[R.current - 1].time > endTime) {
-			removeObject(R.current - 1);
-			R.current--;
-		}
 		while (L.current - 1 > 0 && objects[L.current - 1].time >= startTime) {
 			L.current--;
 		}
-		for (let i = L.current; i < objects.length; i++) {
-			if (objects[i].time > endTime) {
-				R.current = i;
-				break;
-			}
+		const oldR = R.current;
+		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
+			const i = R.current;
 			updateObject(i, objects[i].x / 512 * width, (currentTime - objects[i].time) / preempt * height);
 		}
-
+		for (let i = R.current; i < oldR; i++) {
+			removeObject(i);
+		}
 	}
 
 	const removeObjects = () => {
