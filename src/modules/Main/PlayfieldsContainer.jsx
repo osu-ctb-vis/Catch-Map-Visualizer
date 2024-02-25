@@ -9,7 +9,10 @@ export function PlayfieldsContainer() {
 		<div className="Playfields-container">
 			{
 				beatmaps?.map((beatmap, i) => (
-					<Playfield key={i} beatmap={beatmap}/>
+					<Playfield
+						key={beatmap.metadata.beatmapId + beatmap.metadata.version + beatmap.metadata.title}
+						beatmap={beatmap}
+					/>
 				))
 			}
 		</div>
