@@ -81,7 +81,7 @@ export function ObjectsCanvas({ beatmap }) {
 			removeObject(L.current);
 			L.current++;
 		}
-		while (L.current - 1 > 0 && objects[L.current - 1].time >= startTime) {
+		while (L.current - 1 >= 0 && objects[L.current - 1].time >= startTime) {
 			L.current--;
 		}
 		const oldR = R.current;
