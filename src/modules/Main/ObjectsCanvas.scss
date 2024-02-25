@@ -9,12 +9,20 @@
 		will-change: transform;
 		left: 0;
 		top: 0;
-		background-color: #fffa;
+		background-color: #fffc;
 		border-radius: 50%;
 
 		&.object-fruit {
-			width: 40px;
-			height: 40px;
+			width: 50px;
+			height: 50px;
+		}
+		&.object-drop {
+			width: 30px;
+			height: 30px;
+		}
+		&.object-droplet {
+			width: 15px;
+			height: 15px;
 		}
 	}
 }

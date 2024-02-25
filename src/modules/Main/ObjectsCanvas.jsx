@@ -117,7 +117,7 @@ export function ObjectsCanvas({ beatmap }) {
 		if (objectOnScreen.current[index]) {
 			objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
 		} else {
-			const div = Fruit(index);
+			const div = Object(index, objectRef.current[index].type);
 			div.style.transform = `translate(${x}px, ${y}px)`;
 			objectOnScreen.current[index] = div;
 			ref.current.appendChild(div);
@@ -151,10 +151,10 @@ const updatePosition = (div) => (x, y) => {
 	div.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-const Fruit = (index) => {
+const Object = (index, type = "fruit") => {
 	const div = document.createElement("div");
 	div.classList.add("object");
-	div.classList.add("object-fruit");
+	div.classList.add(`object-${type}`);
 	div.index = index;
 	div.setAttribute("index", index);
 	return div;
@@ -167,7 +167,6 @@ const binarySearch = (arr, t) => { // Find the first index of the object which t
 		if (arr[m].time < t) l = m + 1;
 		else r = m;
 	}
-	console.log(l, arr[l]);
 	if (arr[l].time < t) return l + 1;
 	return l;
 }
