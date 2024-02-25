@@ -23,6 +23,7 @@ function PlayPauseButton() {
 		if (e.repeat) return;
 		if (e.key !== " ") return;
 		if (e.target?.closest('input, textarea')) return;
+		e.preventDefault();
 		setPlaying(!playing)
 	}
 
