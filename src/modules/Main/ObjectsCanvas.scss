@@ -13,16 +13,22 @@
 		border-radius: 50%;
 
 		&.object-fruit {
-			width: 50px;
-			height: 50px;
+			width: 60px;
+			height: 60px;
+			left: -30px;
+			top: -30px;
 		}
 		&.object-drop {
-			width: 30px;
-			height: 30px;
+			width: 40px;
+			height: 40px;
+			left: -20px;
+			top: -20px;
 		}
 		&.object-droplet {
 			width: 15px;
 			height: 15px;
+			left: -7.5px;
+			top: -7.5px;
 		}
 	}
 }

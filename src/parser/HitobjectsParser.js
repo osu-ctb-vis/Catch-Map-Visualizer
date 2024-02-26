@@ -17,7 +17,7 @@ const parseTimingLines = (beatmap) => {
 		const cycle = lineLevels[sig].length;
 		const bpm = timingPoints[timingSeg].bpm;
 		const beatLength = 60000 / bpm;
-		const levelGap = beatLength / sig / 4;
+		const levelGap = beatLength / sig / 2;
 		//console.log(timingSeg);
 		for (let i = 0; ; i++) {
 			const time = startTime + i * levelGap;
@@ -32,7 +32,7 @@ const parseTimingLines = (beatmap) => {
 
 
 export const parseHitObjects = (beatmap) => {	
-	const timingLines = parseTimingLines(beatmap);
+	//const timingLines = parseTimingLines(beatmap);
 
 	const hitObjects = beatmap.hitObjects;
 
@@ -40,7 +40,8 @@ export const parseHitObjects = (beatmap) => {
 
 	const fruits = [];
 	// fruit types: fruit, drop, droplet
-	let timingLineIndex = 0;
+	const difficultyPoints = beatmap.controlPoints.difficultyPoints;
+	let difficultyPointIndex = 0;
 
 	
 	hitObjects.forEach((hitObject) => {
@@ -53,8 +54,49 @@ export const parseHitObjects = (beatmap) => {
 				isNewCombo: hitObject.isNewCombo
 			});
 		} else if (type === "_SlidableObject") {
-			const sliderFruits = [];
-			sliderFruits.push({
+			while (difficultyPointIndex < difficultyPoints.length && difficultyPoints[difficultyPointIndex].startTime < hitObject.startTime) {
+				difficultyPointIndex++;
+			}
+			const TickDistanceMultiplier = difficultyPoints[difficultyPointIndex].sliderVelocity;
+
+			const base_scoring_distance = 100;
+			const tickDistanceFactor = base_scoring_distance * beatmap.difficulty.sliderMultiplier / beatmap.difficulty.sliderTickRate;
+			const tickDistance = tickDistanceFactor * TickDistanceMultiplier;
+			const types = {
+				'sliderHead': 'fruit',
+				'sliderTick': 'drop',
+				'sliderRepeat': 'fruit',
+				'sliderLegacyLastTick': 'drop',
+				'sliderTail': 'fruit'
+			}
+			let lastEvent = null;
+			for (let event of sliderEventGenerator(hitObject.startTime, hitObject.duration, hitObject.velocity, tickDistance, hitObject.path.distance, hitObject.repeats + 1)) {
+				if (lastEvent !== null) {
+					const sinceLastTick = parseInt(event.time) - parseInt(lastEvent.time);
+					if (sinceLastTick > 80) {
+						let timeBetweenTiny = sinceLastTick;
+						while (timeBetweenTiny > 100) timeBetweenTiny /= 2;
+						for (let t = timeBetweenTiny; t < sinceLastTick; t += timeBetweenTiny) {
+							fruits.push({
+								type: "droplet",
+								x: getSliderPointByPercent(
+									hitObject,
+									lastEvent.pathProgress + (t / sinceLastTick) * (event.pathProgress - lastEvent.pathProgress)
+								).x,
+								time: t + lastEvent.time
+							});
+						}
+					}
+				}
+				lastEvent = event;
+				if (event.type === "sliderLegacyLastTick") continue;
+				fruits.push({
+					type: types[event.type],
+					x: getSliderPointByPercent(hitObject, event.pathProgress).x,
+					time: event.time
+				});
+			}
+			/*sliderFruits.push({
 				type: "fruit",
 				x: hitObject.startPosition.x,
 				time: hitObject.startTime,
@@ -62,9 +104,8 @@ export const parseHitObjects = (beatmap) => {
 			});
 			sliderFruits.push({
 				type: "fruit",
-				x: hitObject.path.calculatedPath[hitObject.path.calculatedPath.length - 1].x,
-				time: hitObject.endTime,
-				isNewCombo: hitObject.isNewCombo
+				x: getSliderPointByTime(hitObject, hitObject.endTime).x,
+				time: hitObject.endTime
 			});
 			// Drops
 			while (timingLines[timingLineIndex].time < hitObject.startTime) {
@@ -73,6 +114,7 @@ export const parseHitObjects = (beatmap) => {
 			const dropLevel = beatmap.difficulty.sliderTickRate;
 			for (; timingLineIndex < timingLines.length && timingLines[timingLineIndex].time < hitObject.endTime; timingLineIndex++) {
 				const { time, level } = timingLines[timingLineIndex];
+				console.log("time, level", time, level, dropLevel, level > dropLevel);
 				if (level > dropLevel) continue;
 				sliderFruits.push({
 					type: "drop",
@@ -103,11 +145,10 @@ export const parseHitObjects = (beatmap) => {
 			});
 			const sliderFruitsDedup = [];
 			for (let i = 0; i < sliderFruits.length; i++) {
-				if (i > 0 && sliderFruits[i].time === sliderFruits[i - 1].time) continue;
+				//if (i > 0 && sliderFruits[i].time === sliderFruits[i - 1].time) continue;
 				sliderFruitsDedup.push(sliderFruits[i]);
 			}
-			fruits.push(...sliderFruitsDedup);
-			console.log(sliderFruitsDedup);
+			fruits.push(...sliderFruitsDedup);*/
 		} else if (type === "todo") {
 			
 		}
@@ -134,6 +175,8 @@ const getSliderPointByTime = (slider, time) => {
 }
 
 const getSliderPointByPercent = (slider, percent) => {
+	const baseX = slider.startPosition.x;
+	const baseY = slider.startPosition.y;
 	if (!slider.segsPrefixSum) {
 		slider.segsPrefixSum = [];
 		for (let i = 0; i < slider.path.calculatedPath.length - 1; i++) {
@@ -156,13 +199,90 @@ const getSliderPointByPercent = (slider, percent) => {
 	}
 	if (l < segsPrefixSum.length - 1 && segsPrefixSum[l + 1] <= targetLength) l++;
 	if (l > 0 && segsPrefixSum[l] > targetLength) l--;
+	if (l === segsPrefixSum.length - 1 && l > 0) l--;
 	const index = l;
 	const lengthInSeg = targetLength - segsPrefixSum[index];
-	const percentInSeg = lengthInSeg / (segsPrefixSum[index + 1] - segsPrefixSum[index]);
+	const segLength = Math.sqrt(
+		(slider.path.calculatedPath[index + 1].x - slider.path.calculatedPath[index].x) ** 2 +
+		(slider.path.calculatedPath[index + 1].y - slider.path.calculatedPath[index].y) ** 2
+	);
+	const percentInSeg = lengthInSeg / segLength;
 	const dx = slider.path.calculatedPath[index + 1].x - slider.path.calculatedPath[index].x;
 	const dy = slider.path.calculatedPath[index + 1].y - slider.path.calculatedPath[index].y;
-	const x = slider.path.calculatedPath[index].x + dx * percentInSeg;
-	const y = slider.path.calculatedPath[index].y + dy * percentInSeg;
+	const x = slider.path.calculatedPath[index].x + dx * percentInSeg + baseX;
+	const y = slider.path.calculatedPath[index].y + dy * percentInSeg + baseY;
 	//console.log(index, segsPrefixSum[index], lengthInSeg, percentInSeg, dx, dy, x, y);
+	if (isNaN(x) || isNaN(y)) throw new Error("NaN");
 	return { x, y };
+}
+
+
+function* sliderEventGenerator(startTime, spanDuration, velocity, tickDistance, totalDistance, spanCount) {
+	// From https://github.com/ppy/osu/blob/osu.Game.Rulesets.Catch/Objects/JuiceStream.cs
+
+	tickDistance = Math.max(Math.min(tickDistance, totalDistance), 0);
+
+	const minDistanceFromEnd = velocity * 10;
+	yield {
+		type: "sliderHead",
+		time: startTime,
+		pathProgress: 0
+	}
+	const length = totalDistance;
+
+	if (tickDistance != 0) {
+		for (let span = 0; span < spanCount; span++) {
+			const spanStartTime = startTime + span * spanDuration;
+			const reversed = span % 2 == 1;
+			const ticks = [...generateTicks(span, spanStartTime, spanDuration, reversed, length, tickDistance, minDistanceFromEnd)];
+			if (reversed) ticks.reverse();
+			yield* ticks;
+
+			if (span < spanCount - 1) {
+				yield {
+					type: "sliderRepeat",
+					time: spanStartTime + spanDuration,
+					pathProgress: (span + 1) % 2
+				}
+			}
+		}
+	}
+
+	const totalDuration = spanCount * spanDuration;
+
+	const finalSpanIndex = spanCount - 1;
+	const finalSpanStartTime = startTime + finalSpanIndex * spanDuration;
+
+	const TAIL_LENIENCY = -36;
+
+	const legacyLastTickTime = Math.max(startTime + totalDuration / 2, (finalSpanStartTime + spanDuration) + TAIL_LENIENCY);
+	let legacyLastTickProgress = (legacyLastTickTime - finalSpanStartTime) / spanDuration;
+	if (spanCount % 2 == 0) legacyLastTickProgress = 1 - legacyLastTickProgress;
+
+	yield {
+		type: "sliderLegacyLastTick",
+		time: legacyLastTickTime,
+		pathProgress: legacyLastTickProgress
+	}
+
+	yield {
+		type: "sliderTail",
+		time: startTime + totalDuration,
+		pathProgress: spanCount % 2
+	}
+}
+
+function* generateTicks(spanIndex, spanStartTime, spanDuration, reversed, length, tickDistance, minDistanceFromEnd) {
+	for (let d = tickDistance; d <= length; d += tickDistance) {
+		if (d >= length - minDistanceFromEnd) break;
+
+		const pathProgress = d / length;
+		const timeProgress = reversed ? 1 - pathProgress : pathProgress;
+
+		yield {
+			type: "sliderTick",
+			time: spanStartTime + timeProgress * spanDuration,
+			pathProgress
+		}
+	}
 }
