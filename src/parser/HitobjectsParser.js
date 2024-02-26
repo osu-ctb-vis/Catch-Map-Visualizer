@@ -96,83 +96,15 @@ export const parseHitObjects = (beatmap) => {
 					time: event.time
 				});
 			}
-			/*sliderFruits.push({
-				type: "fruit",
-				x: hitObject.startPosition.x,
-				time: hitObject.startTime,
-				isNewCombo: hitObject.isNewCombo
-			});
-			sliderFruits.push({
-				type: "fruit",
-				x: getSliderPointByTime(hitObject, hitObject.endTime).x,
-				time: hitObject.endTime
-			});
-			// Drops
-			while (timingLines[timingLineIndex].time < hitObject.startTime) {
-				timingLineIndex++;
-			}
-			const dropLevel = beatmap.difficulty.sliderTickRate;
-			for (; timingLineIndex < timingLines.length && timingLines[timingLineIndex].time < hitObject.endTime; timingLineIndex++) {
-				const { time, level } = timingLines[timingLineIndex];
-				console.log("time, level", time, level, dropLevel, level > dropLevel);
-				if (level > dropLevel) continue;
-				sliderFruits.push({
-					type: "drop",
-					x: getSliderPointByTime(hitObject, time).x,
-					time
-				});
-			}
-			// Droplets
-			let dropletSpan = hitObject.duration / (hitObject.repeats + 1);
-			if (dropletSpan > 80) {
-				while (dropletSpan > 100) dropletSpan /= 2;
-				for (let time = hitObject.startTime + dropletSpan; time < hitObject.endTime; time += dropletSpan) {
-					sliderFruits.push({
-						type: "droplet",
-						x: getSliderPointByTime(hitObject, time).x,
-						time
-					});
-				}
-			}
-			// sort and clean the duplicates
-			sliderFruits.sort((a, b) => {
-				if (a.time === b.time) {
-					const lvla = a.type === "fruit" ? 3 : (a.type === "drop" ? 2 : 1);
-					const lvlb = b.type === "fruit" ? 3 : (b.type === "drop" ? 2 : 1);
-					return lvlb - lvla;
-				}
-				return a.time - b.time;
-			});
-			const sliderFruitsDedup = [];
-			for (let i = 0; i < sliderFruits.length; i++) {
-				//if (i > 0 && sliderFruits[i].time === sliderFruits[i - 1].time) continue;
-				sliderFruitsDedup.push(sliderFruits[i]);
-			}
-			fruits.push(...sliderFruitsDedup);*/
+			
 		} else if (type === "todo") {
 			
 		}
 
 	});
-	//console.log(getSliderPointByTime(hitObjects[0], hitObjects[0].startTime + 100));
 	return fruits;
 }
 
-const getSliderPointByTime = (slider, time) => {
-	if (time < slider.startTime || time > slider.endTime) throw new Error("Time out of range");
-	const duration = slider.endTime - slider.startTime;
-	const repeats = slider.repeats + 1;
-	const segDuration = duration / repeats;
-	const segIndex = Math.floor((time - slider.startTime) / segDuration);
-	const segStartTime = slider.startTime + segIndex * segDuration;
-	const percent = segIndex % 2 === 0 ?
-		(time - segStartTime) / segDuration :
-		1 - (time - segStartTime) / segDuration;
-	
-	//console.log(time, slider.startTime, segDuration, segIndex, segStartTime, percent);
-	
-	return getSliderPointByPercent(slider, percent);
-}
 
 const getSliderPointByPercent = (slider, percent) => {
 	const baseX = slider.startPosition.x;
