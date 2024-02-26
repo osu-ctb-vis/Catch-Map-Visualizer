@@ -61,15 +61,15 @@ export function ObjectsCanvas({ beatmap }) {
 		const preempt = preemptRef.current;
 		if (currentTime == lastTime.current) { lastTime.current = currentTime; return; }
 		//console.log(currentTime, lastTime.current);
-		const startTime = currentTime - preempt - 200, endTime = currentTime + 200;
+		const startTime = currentTime - 200, endTime = currentTime + preempt + 200;
 		if (Math.abs(currentTime - lastTime.current) > 20000) {
 			//console.log("Jumped");
 			L.current = binarySearch(objects, startTime);
 			for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 				const i = R.current;
 				//console.log(objects[R.current]);
-				//console.log("obj", i, objects[i].x / 512 * width, currentTime, objects[i].time, preempt, height, (currentTime - objects[i].time) / preempt * height);
-				updateObject(i, objects[i].x / 512 * width, (currentTime - objects[i].time) / preempt * height);
+				//console.log("obj", i, objects[i].x / 512 * width, currentTime, objects[i].time, preempt, height, (1 - (objects[i].time - currentTime) / preempt) * height);
+				updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
 			}
 			removeObjects();
 			//console.log("range", L.current, R.current);
@@ -87,7 +87,7 @@ export function ObjectsCanvas({ beatmap }) {
 		const oldR = R.current;
 		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 			const i = R.current;
-			updateObject(i, objects[i].x / 512 * width, (currentTime - objects[i].time) / preempt * height);
+			updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
 		}
 		for (let i = R.current; i < oldR; i++) {
 			removeObject(i);
