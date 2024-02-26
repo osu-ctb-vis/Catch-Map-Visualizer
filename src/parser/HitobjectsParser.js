@@ -43,6 +43,10 @@ export const parseHitObjects = (beatmap) => {
 	const difficultyPoints = beatmap.controlPoints.difficultyPoints;
 	let difficultyPointIndex = 0;
 
+	let sliderVelocity = 1;
+	if (difficultyPoints[0].sliderVelocity) {
+		sliderVelocity = difficultyPoints[0].sliderVelocity;
+	}
 	
 	hitObjects.forEach((hitObject) => {
 		const type = hitObject.constructor.name;
@@ -54,10 +58,11 @@ export const parseHitObjects = (beatmap) => {
 				isNewCombo: hitObject.isNewCombo
 			});
 		} else if (type === "_SlidableObject") {
-			while (difficultyPointIndex < difficultyPoints.length && difficultyPoints[difficultyPointIndex].startTime < hitObject.startTime) {
+			while (difficultyPointIndex < difficultyPoints.length - 1 && difficultyPoints[difficultyPointIndex].startTime < hitObject.startTime) {
 				difficultyPointIndex++;
+				if (difficultyPoints[difficultyPointIndex].sliderVelocity) sliderVelocity = difficultyPoints[difficultyPointIndex].sliderVelocity;
 			}
-			const TickDistanceMultiplier = difficultyPoints[difficultyPointIndex].sliderVelocity;
+			const TickDistanceMultiplier = sliderVelocity;
 
 			const base_scoring_distance = 100;
 			const tickDistanceFactor = base_scoring_distance * beatmap.difficulty.sliderMultiplier / beatmap.difficulty.sliderTickRate;
