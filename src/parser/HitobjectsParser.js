@@ -217,8 +217,8 @@ const applyPositionOffsets = (nestedFruits) => {
 
 			for (let subFruit of fruit.fruits) {
 				if (subFruit.type === "droplet") {
-					subFruit.xOffset = clamp(rng.next(-20, 20), -fruit.x, 512 - fruit.x);
-					subFruit.xOffsetHR = clamp(rngHR.next(-20, 20), -fruit.x, 512 - fruit.x);
+					subFruit.xOffset = clamp(rng.next(-20, 20), -subFruit.x, 512 - subFruit.x);
+					subFruit.xOffsetHR = clamp(rngHR.next(-20, 20), -subFruit.x, 512 - subFruit.x);
 				} else if (subFruit.type === "drop") {
 					rng.next(); rngHR.next();
 				}
