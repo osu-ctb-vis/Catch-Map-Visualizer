@@ -68,8 +68,8 @@ export function ObjectsCanvas({ beatmap }) {
 			for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 				const i = R.current;
 				//console.log(objects[R.current]);
-				//console.log("obj", i, objects[i].x / 512 * width, currentTime, objects[i].time, preempt, height, (1 - (objects[i].time - currentTime) / preempt) * height);
-				updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
+				//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
+				updateObject(i, (objects[i].x + (objects[i]?.xOffset ?? 0)) / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
 			}
 			removeObjects();
 			//console.log("range", L.current, R.current);
@@ -87,7 +87,8 @@ export function ObjectsCanvas({ beatmap }) {
 		const oldR = R.current;
 		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 			const i = R.current;
-			updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
+			//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
+			updateObject(i, (objects[i].x + (objects[i]?.xOffset ?? 0)) / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
 		}
 		for (let i = R.current; i < oldR; i++) {
 			removeObject(i);

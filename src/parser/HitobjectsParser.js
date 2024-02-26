@@ -1,3 +1,5 @@
+import { LegacyRandom } from '../utils/LegacyRandom.js';
+
 const lineLevels = {
 	4: [1, 4, 3, 4, 2, 4, 3, 4],
 	3: [1, 4, 3, 4, 2, 4, 3, 4, 1, 4, 3, 4, 2, 4, 3, 4]
@@ -38,7 +40,7 @@ export const parseHitObjects = (beatmap) => {
 
 	//console.log(timingLines);
 
-	const fruits = [];
+	const nestedFruits = [];
 	// fruit types: fruit, drop, droplet
 	const difficultyPoints = beatmap.controlPoints.difficultyPoints;
 	let difficultyPointIndex = 0;
@@ -53,11 +55,14 @@ export const parseHitObjects = (beatmap) => {
 	hitObjects.forEach((hitObject) => {
 		const type = hitObject.constructor.name;
 		if (type === "HittableObject") {
-			fruits.push({
+			nestedFruits.push({
 				type: "fruit",
-				x: hitObject.startPosition.x,
-				time: hitObject.startTime,
-				isNewCombo: hitObject.isNewCombo
+				fruits: [{
+					type: "fruit",
+					x: hitObject.startPosition.x,
+					time: hitObject.startTime,
+					isNewCombo: hitObject.isNewCombo
+				}]
 			});
 		} else if (type === "_SlidableObject") {
 			while (timingPointIndex < timingPoints.length - 1 && timingPoints[timingPointIndex + 1].startTime < hitObject.startTime) {
@@ -89,6 +94,7 @@ export const parseHitObjects = (beatmap) => {
 				'sliderLegacyLastTick': 'drop',
 				'sliderTail': 'fruit'
 			}
+			const objs = [];
 			let lastEvent = null;
 			for (let event of sliderEventGenerator(
 				hitObject.startTime,
@@ -104,7 +110,7 @@ export const parseHitObjects = (beatmap) => {
 						let timeBetweenTiny = sinceLastTick;
 						while (timeBetweenTiny > 100) timeBetweenTiny /= 2;
 						for (let t = timeBetweenTiny; t < sinceLastTick; t += timeBetweenTiny) {
-							fruits.push({
+							objs.push({
 								type: "droplet",
 								x: getSliderPointByPercent(
 									hitObject,
@@ -117,15 +123,16 @@ export const parseHitObjects = (beatmap) => {
 				}
 				lastEvent = event;
 				if (event.type === "sliderLegacyLastTick") continue;
-				fruits.push({
+				objs.push({
 					type: types[event.type],
 					x: getSliderPointByPercent(hitObject, event.pathProgress).x,
 					time: event.time
 				});
 			}
-			if (fruits[fruits.length - 1].time > hitObject.endTime) {
-			//	throw new Error("Slider end time is less than last fruit time");
+			if (objs[objs.length - 1].time > hitObject.endTime) {
+				//throw new Error("Slider end time is less than last fruit time");
 			}
+			nestedFruits.push({ type: "juiceStream", fruits: objs });
 		} else if (type === "SpinnableObject") {
 			let startTime = parseInt(hitObject.startTime);
 			let endTime = parseInt(hitObject.endTime);
@@ -133,22 +140,125 @@ export const parseHitObjects = (beatmap) => {
 			while (spacing > 100) spacing /= 2;
 			if (spacing < 0) return;
 
+			const objs = [];
+
 			let count = 0;
 			for (let t = startTime; t <= endTime; t += spacing) {
-				fruits.push({
+				objs.push({
 					type: "banana",
 					x: 512 * Math.random(),	 // TODO: use legacy constant RNG
 					time: t,
 					bananaIndex: count
 				});
 				count++;
-			}			
+			}
+			nestedFruits.push({ type: "bananaShower", fruits: objs });
 		}
 
 	});
+	const fruits = nestedFruits.flatMap((nested) => nested.fruits);
 	fruits.sort((a, b) => a.time - b.time); // sort again because some maps have simultaneous hitobjects
 	return fruits;
 }
+
+const applyPositionOffsets = (nestedFruits) => {
+	let rng = new LegacyRandom(RNG_SEED), rngHR = new LegacyRandom(RNG_SEED);
+
+	let lastPosition = null, lastStartTime = 0;
+
+	for (fruit of nestedFruits) {
+		if (fruit.type === "fruit") { // HR Offset
+			const hitObject = fruit.fruits[0];
+
+			const offsetPosition = hitObject.OriginalX;
+			const startTime = hitObject.StartTime;
+
+			if (lastPosition == null) {
+				lastPosition = offsetPosition;
+				lastStartTime = startTime;
+				continue;
+			}
+
+			const positionDiff = offsetPosition - lastPosition;
+			// Original comment: Todo: BUG!! Stable calculated time deltas as ints, which affects randomisation. This should be changed to a double.
+			const timeDiff = startTime - lastStartTime; 
+
+			if (timeDiff > 1000) {
+				lastPosition = offsetPosition;
+				lastStartTime = startTime;
+				continue;
+			}
+
+			if (positionDiff == 0) {
+				hitObject.xOffset = getRandomOffset(position, timeDiff / 4, rngHR);
+				continue;
+			}
+
+			if (Math.abs(positionDiff) < timeDiff / 3) {
+				hitObject.xOffset += getOffset(offsetPosition + (hitObject.xOffset ?? 0), positionDiff);
+			}
+
+			lastPosition = offsetPosition;
+			lastStartTime = startTime;
+		} else if (fruit.type === "bananaShower") {
+			for (let banana of fruit.fruits) {
+				banana.x = rng.nextDouble() * 512;
+				rng.next(); rng.next(); rng.next();
+				banana.xOffsetHR = rngHR.nextDouble() * 512 - banana.x;
+				rngHR.next(); rngHR.next(); rngHR.next();
+			}
+		} else if (fruit.type === "juiceStream") {
+			// Original comment: Todo: BUG!! Stable used the last control point as the final position of the path, but it should use the computed path instead.
+			lastPosition = fruit.fruits.at(-1).x;
+			// Original comment: Todo: BUG!! Stable attempted to use the end time of the stream, but referenced it too early in execution and used the start time instead.
+			lastStartTime = fruit.fruits[0].time;
+
+			for (let fruit of fruit.fruits) {
+				if (fruit.type === "droplet") {
+					fruit.xOffset = clamp(rng.next(-20, 20), -fruit.x, 512 - fruit.x);
+					fruit.xOffsetHR = clamp(rngHR.next(-20, 20), -fruit.x, 512 - fruit.x);
+				} else if (fruit.type === "drop") {
+					rng.next(); rngHR.next();
+				}
+			}
+		}
+            
+
+			
+	}
+}
+
+const clamp = (value, min, max) => {
+	if (min > max) {
+		const temp = min;
+		min = max;
+		max = temp;
+	}
+	return Math.min(Math.max(value, min), max);
+}
+
+const getRandomOffset = (position, maxOffset, rng) => {
+	const right = rng.nextBool();
+	const rand = Math.Min(20, rng.next(0, Math.Max(0, maxOffset)));
+
+	if (right) {
+		if (position + rand <= 512) return rand
+		else return -rand;
+	} else {
+		if (position - rand >= 0) return -rand;
+		else return rand;
+	}
+}
+const getOffset = (position, amount) => {
+	if (amount > 0) {
+		if (position + amount < 512) return amount;
+		return 0;
+	} else {
+		if (position - amount > 0) return amount;
+		return 0;
+	}
+}
+
 
 
 const getSliderPointByPercent = (slider, percent) => {
@@ -192,7 +302,7 @@ const getSliderPointByPercent = (slider, percent) => {
 
 
 function* sliderEventGenerator(startTime, spanDuration, velocity, tickDistance, totalDistance, spanCount) {
-	console.log(startTime, spanDuration, velocity, tickDistance, totalDistance, spanCount);
+	//console.log(startTime, spanDuration, velocity, tickDistance, totalDistance, spanCount);
 	// From https://github.com/ppy/osu/blob/osu.Game.Rulesets.Catch/Objects/JuiceStream.cs
 
 	tickDistance = Math.max(Math.min(tickDistance, totalDistance), 0);

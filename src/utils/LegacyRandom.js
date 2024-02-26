@@ -2,7 +2,7 @@
 // https://github.com/ppy/osu/blob/715236765a2c532972e8b7f106c31fe254a6c6af/osu.Game/Utils/LegacyRandom.cs
 // TODO: verify this code
 
-class LegacyRandom {
+export class LegacyRandom {
     static INT_TO_REAL = 1.0 / (Number.MAX_SAFE_INTEGER + 1.0);
     static Y = 842502087;
     static Z = 3579807591;
