@@ -157,6 +157,7 @@ export const parseHitObjects = (beatmap) => {
 
 	});
 	applyPositionOffsets(nestedFruits);
+	applyHyperFruits(nestedFruits, beatmap);
 	const fruits = nestedFruits.flatMap((nested) => nested.fruits);
 	fruits.sort((a, b) => a.time - b.time); // sort again because some maps have simultaneous hitobjects
 	return fruits;
@@ -255,6 +256,37 @@ const getOffset = (position, amount) => {
 	} else {
 		if (position - amount > 0) return amount;
 		return 0;
+	}
+}
+const applyHyperFruits = (nestedFruits, beatmap) => {
+	const palpableObjects = nestedFruits.flatMap((nested) => nested.fruits).filter(h => h.type === "fruit" || h.type === "droplet");
+	let halfCatcherWidth = CalculateCatchWidth(beatmap.difficulty) / 2;
+	halfCatcherWidth /= ALLOWED_CATCH_RANGE;
+	let lastDirection = 0;
+	let lastExcess = halfCatcherWidth;
+	
+	const BASE_DASH_SPEED = 1.0;
+
+	for (let i = 0; i < palpableObjects.length - 1; i++) {
+		const currentObject = palpableObjects[i];
+		const nextObject = palpableObjects[i + 1];
+		currentObject.HyperDashTarget = null;
+		currentObject.DistanceToHyperDash = 0;
+
+		const thisDirection = nextObject.x > currentObject.x ? 1 : -1;
+		const timeToNext = nextObject.time - currentObject.time - 1000 / 60 / 4;
+		const distanceToNext = Math.abs(nextObject.x - currentObject.x) - (lastDirection === thisDirection ? lastExcess : halfCatcherWidth);
+		const distanceToHyper = timeToNext * BASE_DASH_SPEED - distanceToNext;
+
+		if (distanceToHyper < 0) {
+			currentObject.hyperDashTarget = nextObject;
+			lastExcess = halfCatcherWidth;
+		} else {
+			currentObject.distanceToHyperDash = distanceToHyper;
+			lastExcess = clamp(distanceToHyper, 0, halfCatcherWidth);
+		}
+
+		lastDirection = thisDirection;
 	}
 }
 
@@ -369,4 +401,27 @@ function* generateTicks(spanIndex, spanStartTime, spanDuration, reversed, length
 			pathProgress
 		}
 	}
+}
+
+function CalculateScaleFromCircleSize(circleSize, applyFudge = false){
+	const broken_gamefield_rounding_allowance = 1.00041;
+
+	const DifficultyRange = (difficulty) => (difficulty - 5) / 5;
+
+	return (1 - 0.7 * DifficultyRange(circleSize)) / 2 * (applyFudge ? broken_gamefield_rounding_allowance : 1);
+}
+
+function calculateScale(difficulty) {
+	return CalculateScaleFromCircleSize(difficulty.circleSize) * 2
+}
+
+const BASE_SIZE = 106.75;
+const ALLOWED_CATCH_RANGE = 0.8;
+
+function CalculateCatchWidthByScale(scale) {
+	return BASE_SIZE * Math.abs(scale) * ALLOWED_CATCH_RANGE;
+}
+
+function CalculateCatchWidth(difficulty) {
+	return CalculateCatchWidthByScale(calculateScale(difficulty));
 }

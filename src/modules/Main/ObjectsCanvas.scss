@@ -37,5 +37,8 @@
 			top: -30px;
 			background-color: #ff0c;		
 		}
+		&.hyper {
+			filter: drop-shadow(0 0 10px #f00);
+		}
 	}
 }
