@@ -97,8 +97,23 @@ export const parseHitObjects = (beatmap) => {
 				});
 			}
 			
-		} else if (type === "todo") {
-			
+		} else if (type === "SpinnableObject") {
+			let startTime = parseInt(hitObject.startTime);
+			let endTime = parseInt(hitObject.endTime);
+			let spacing = endTime - startTime;
+			while (spacing > 100) spacing /= 2;
+			if (spacing < 0) return;
+
+			let count = 0;
+			for (let t = startTime; t <= endTime; t += spacing) {
+				fruits.push({
+					type: "banana",
+					x: 512 * Math.random(),	 // TODO: use legacy constant RNG
+					time: t,
+					bananaIndex: count
+				});
+				count++;
+			}			
 		}
 
 	});
