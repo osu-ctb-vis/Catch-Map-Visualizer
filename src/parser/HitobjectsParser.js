@@ -280,6 +280,10 @@ const applyHyperFruits = (nestedFruits, beatmap) => {
 
 		if (distanceToHyper < 0) {
 			currentObject.hyperDashTarget = nextObject;
+			const timeDiff = nextObject.time - currentObject.time;
+			const xDiff = Math.abs(nextObject.x - currentObject.x);
+			const velocity = xDiff / Math.max(1, timeDiff - 1000.0 / 60.0);
+			currentObject.hyperMultiplier = velocity / BASE_DASH_SPEED;
 			lastExcess = halfCatcherWidth;
 		} else {
 			currentObject.distanceToHyperDash = distanceToHyper;
