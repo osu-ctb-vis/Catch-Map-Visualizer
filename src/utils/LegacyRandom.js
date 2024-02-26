@@ -3,7 +3,7 @@
 // TODO: verify this code
 
 export class LegacyRandom {
-    static INT_TO_REAL = 1.0 / (Number.MAX_SAFE_INTEGER + 1.0);
+    static INT_TO_REAL = 1.0 / 2147483648;
     static Y = 842502087;
     static Z = 3579807591;
     static W = 273326509;

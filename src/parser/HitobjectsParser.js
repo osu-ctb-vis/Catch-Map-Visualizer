@@ -48,7 +48,7 @@ export const parseHitObjects = (beatmap) => {
 	let timingPointIndex = 0;
 
 	let sliderMultiplier = 1;
-	if (difficultyPoints[0].sliderVelocity) {
+	if (difficultyPoints[0]?.sliderVelocity) {
 		sliderMultiplier = difficultyPoints[0].sliderVelocity;
 	}
 	
@@ -156,17 +156,19 @@ export const parseHitObjects = (beatmap) => {
 		}
 
 	});
+	applyPositionOffsets(nestedFruits);
 	const fruits = nestedFruits.flatMap((nested) => nested.fruits);
 	fruits.sort((a, b) => a.time - b.time); // sort again because some maps have simultaneous hitobjects
 	return fruits;
 }
 
 const applyPositionOffsets = (nestedFruits) => {
+	const RNG_SEED = 1337;
 	let rng = new LegacyRandom(RNG_SEED), rngHR = new LegacyRandom(RNG_SEED);
 
 	let lastPosition = null, lastStartTime = 0;
 
-	for (fruit of nestedFruits) {
+	for (let fruit of nestedFruits) {
 		if (fruit.type === "fruit") { // HR Offset
 			const hitObject = fruit.fruits[0];
 
@@ -213,18 +215,15 @@ const applyPositionOffsets = (nestedFruits) => {
 			// Original comment: Todo: BUG!! Stable attempted to use the end time of the stream, but referenced it too early in execution and used the start time instead.
 			lastStartTime = fruit.fruits[0].time;
 
-			for (let fruit of fruit.fruits) {
-				if (fruit.type === "droplet") {
-					fruit.xOffset = clamp(rng.next(-20, 20), -fruit.x, 512 - fruit.x);
-					fruit.xOffsetHR = clamp(rngHR.next(-20, 20), -fruit.x, 512 - fruit.x);
-				} else if (fruit.type === "drop") {
+			for (let subFruit of fruit.fruits) {
+				if (subFruit.type === "droplet") {
+					subFruit.xOffset = clamp(rng.next(-20, 20), -fruit.x, 512 - fruit.x);
+					subFruit.xOffsetHR = clamp(rngHR.next(-20, 20), -fruit.x, 512 - fruit.x);
+				} else if (subFruit.type === "drop") {
 					rng.next(); rngHR.next();
 				}
 			}
 		}
-            
-
-			
 	}
 }
 
