@@ -1,21 +1,22 @@
 import { useContext, useRef, useState, useEffect, useCallback } from 'react'
 import { PlayStateContext } from '../../contexts/PlayStateContext'
+import useTween from '../../hooks/useTween'
 import { TimeIndicator } from './TimeIndicator'
 import { ControlBtns } from './ControlBtns'
 import clsx from 'clsx';
 import './ProgressBar.scss'
 
-export function ProgressBar() {
+export function ProgressBar(props) {
 	// TODO: add density map
 	// TODO: smooth transition on seek
 	return (
 		<div className="progress-bar">
-			<ProgressBarSlider/>
+			<ProgressBarSlider {...props}/>
 		</div>
 	)
 }
 
-function ProgressBarSlider() {
+function ProgressBarSlider({startTween, stopTween}) {
 	const {
 		playing,
 		duration,
@@ -29,19 +30,40 @@ function ProgressBarSlider() {
 
 	const persent = playerRef.current?.currentTime / duration * 100;
 
-	const updatePersent = useCallback((e) => {
+	const getDurationByEvent = useCallback((e) => {
 		const rect = sliderRef.current.getBoundingClientRect();
 		const x = e.clientX - rect.left;
 		const persent = x / rect.width;
-		playerRef.current.currentTime = persent * duration;
+		return persent * duration;
 	}, [duration]);
 
+	const seek = (time) => {
+		playerRef.current.currentTime = time;
+	};
+
 	const onMouseDown = (e) => {
+		stopTween();
 		setDragging(true);
-		updatePersent(e);
+		if (playing) {
+			seek(getDurationByEvent(e));
+		} else {
+			const from = playerRef.current.currentTime;
+			const to = getDurationByEvent(e);
+			if (Math.abs(from - to) >= Math.max(duration / 5, 30)) {
+				seek(to);
+				return;
+			}
+			startTween((percent) => {
+				seek(from + (to - from) * percent);
+			}, 300);
+		}
 	}
 	const onMouseUp = () => {
 		setDragging(false);
+	}
+	const onMouseMove = (e) => {
+		stopTween();
+		seek(getDurationByEvent(e));
 	}
 
 	useEffect(() => {
@@ -55,12 +77,40 @@ function ProgressBarSlider() {
 
 	useEffect(() => {
 		if (dragging) {
-			window.addEventListener('mousemove', updatePersent);
+			window.addEventListener('mousemove', onMouseMove);
 			return () => {
-				window.removeEventListener('mousemove', updatePersent);
+				window.removeEventListener('mousemove', onMouseMove);
 			}
 		}
 	}, [dragging]);
+
+	const onKeyDown = useCallback((e) => {
+		let dir = 0;
+		if (e.key === "ArrowRight") {
+			dir = 1;
+		} else if (e.key === "ArrowLeft") {
+			dir = -1;
+		} else {
+			return;
+		}
+		let time = playerRef.current.currentTime + dir * 250 / 1000;
+		if (time < 0) time = 0;
+		if (time > duration) time = duration;
+		if (playing) seek(time);
+		else {
+			const start = playerRef.current.currentTime;
+			const stop = time;
+			stopTween();
+			startTween((t) => seek(start + (stop - start) * t), 250);
+		}
+	}, [duration, playing]);
+
+	useEffect(() => {
+		window.addEventListener('keydown', onKeyDown);
+		return () => {
+			window.removeEventListener('keydown', onKeyDown);
+		}
+	}, [duration, playing, playerRef.current]);
 
 	return (
 		<div className="progress-bar-slider" ref={sliderRef}>

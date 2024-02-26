@@ -4,15 +4,15 @@ import { MdPlayArrow, MdPause } from 'react-icons/md'
 
 import './ControlBtns.scss'
 
-export function ControlBtns() {
+export function ControlBtns(props) {
 	return (
 		<div className="control-btns">
-			<PlayPauseButton/>
+			<PlayPauseButton {...props}/>
 		</div>
 	)
 }
 
-function PlayPauseButton() {
+function PlayPauseButton({stopTween}) {
 	const {
 		playing,
 		setPlaying,
@@ -24,6 +24,7 @@ function PlayPauseButton() {
 		if (e.key !== " ") return;
 		if (e.target?.closest('input, textarea')) return;
 		e.preventDefault();
+		if (!playing) stopTween();
 		setPlaying(!playing)
 	}
 
