@@ -4,6 +4,13 @@
 	overflow: hidden;
 	z-index: 2;
 
+	--drop-size: calc(var(--fruit-size) * 1);
+	--droplet-size: calc(var(--fruit-size) * 0.5);
+
+	--fruit-size-offset: calc(0px - var(--fruit-size) / 2);
+	--drop-size-offset: calc(0px -var(--drop-size) / 2);
+	--droplet-size-offset: calc(0px -var(--droplet-size) / 2);
+
 	.object {
 		position: absolute;
 		will-change: transform;
@@ -13,28 +20,28 @@
 		border-radius: 50%;
 
 		&.object-fruit {
-			width: 60px;
-			height: 60px;
-			left: -30px;
-			top: -30px;
+			width: var(--fruit-size);
+			height: var(--fruit-size);
+			left: var(--fruit-size-offset);
+			top: var(--fruit-size-offset);
 		}
 		&.object-drop {
-			width: 40px;
-			height: 40px;
-			left: -20px;
-			top: -20px;
+			width: var(--drop-size);
+			height: var(--drop-size);
+			left: var(--drop-size-offset);
+			top: var(--drop-size-offset);
 		}
 		&.object-droplet {
-			width: 15px;
-			height: 15px;
-			left: -7.5px;
-			top: -7.5px;
+			width: var(--droplet-size);
+			height: var(--droplet-size);
+			left: var(--droplet-size-offset);
+			top: var(--droplet-size-offset);
 		}
 		&.object-banana {
-			width: 60px;
-			height: 60px;
-			left: -30px;
-			top: -30px;
+			width: var(--fruit-size);
+			height: var(--fruit-size);
+			left: var(--fruit-size-offset);
+			top: var(--fruit-size-offset);
 			background-color: #ff0c;		
 		}
 		&.hyper {

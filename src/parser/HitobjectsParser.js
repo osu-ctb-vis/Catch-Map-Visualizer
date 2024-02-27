@@ -1,4 +1,5 @@
 import { LegacyRandom } from '../utils/LegacyRandom.js';
+import { CalculateScaleFromCircleSize, calculateScale, CalculateCatchWidthByScale, CalculateCatchWidth, ALLOWED_CATCH_RANGE } from '../utils/CalculateCSScale.js';
 
 const lineLevels = {
 	4: [1, 4, 3, 4, 2, 4, 3, 4],
@@ -405,27 +406,4 @@ function* generateTicks(spanIndex, spanStartTime, spanDuration, reversed, length
 			pathProgress
 		}
 	}
-}
-
-function CalculateScaleFromCircleSize(circleSize, applyFudge = false){
-	const broken_gamefield_rounding_allowance = 1.00041;
-
-	const DifficultyRange = (difficulty) => (difficulty - 5) / 5;
-
-	return (1 - 0.7 * DifficultyRange(circleSize)) / 2 * (applyFudge ? broken_gamefield_rounding_allowance : 1);
-}
-
-function calculateScale(difficulty) {
-	return CalculateScaleFromCircleSize(difficulty.circleSize) * 2
-}
-
-const BASE_SIZE = 106.75;
-const ALLOWED_CATCH_RANGE = 0.8;
-
-function CalculateCatchWidthByScale(scale) {
-	return BASE_SIZE * Math.abs(scale) * ALLOWED_CATCH_RANGE;
-}
-
-function CalculateCatchWidth(difficulty) {
-	return CalculateCatchWidthByScale(calculateScale(difficulty));
 }

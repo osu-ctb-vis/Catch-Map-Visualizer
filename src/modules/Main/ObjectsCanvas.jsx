@@ -4,6 +4,7 @@ import "./ObjectsCanvas.scss";
 import { calculatePreempt } from "../../utils/ApproachRate";
 import { parseHitObjects } from "../../parser/HitobjectsParser";
 import { PlayStateContext } from "../../contexts/PlayStateContext";
+import { CalculateScaleFromCircleSize } from "../../utils/CalculateCSScale";
 import useRefState from "../../hooks/useRefState";
 
 export function ObjectsCanvas({ beatmap }) {
@@ -11,15 +12,31 @@ export function ObjectsCanvas({ beatmap }) {
 
 	const [width, widthRef, setWidth] = useRefState(0);
 	const [height, heightRef, setHeight] = useRefState(0);
+	
+	const [fruitSize, setFruitSize] = useState(0);
+
+	const recalculateFruitSize = useCallback(() => {
+		const baseSize = 97; // TODO: Verify this value
+		const scale = CalculateScaleFromCircleSize(beatmap.difficulty.circleSize);
+		const size = baseSize * scale / 512 * ref.current.offsetWidth;
+		setFruitSize(size);		
+	}, [beatmap.difficulty.circleSize]);
+
+	useEffect(() => {
+		recalculateFruitSize();
+	}, [beatmap]);
+		
 
 	const onResize = () => {
 		setWidth(ref.current.offsetWidth);
 		setHeight(ref.current.offsetHeight);
+		recalculateFruitSize();
 	}
 
 	useLayoutEffect(() => {
 		onResize();
 	}, []);
+	
 
 	useEffect(() => {
 		const resizeObserver = new ResizeObserver(onResize);
@@ -142,6 +159,7 @@ export function ObjectsCanvas({ beatmap }) {
 	return (
 		<div
 			className="objects-canvas"
+			style={{"--fruit-size": `${fruitSize}px`}}
 			ref={ref}
 		>
 		</div>
