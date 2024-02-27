@@ -85,7 +85,11 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 	}, [dragging]);
 
 
-	const targetTime = useRef(0); // For fast scrolling
+	const targetTime = useRef(null); // For fast scrolling
+
+	useEffect(() => {
+		targetTime.current = null;
+	}, [duration]);
 
 	const onKeyDownOrScroll = useCallback((e) => {
 		let dir = 0, step = 250;

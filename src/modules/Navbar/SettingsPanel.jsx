@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { SettingsContext } from '../../contexts/SettingsContext'
-import { MdSettings } from "react-icons/md";
+import { MdRefresh, MdSettings } from "react-icons/md";
 import ClickAwayListener from 'react-click-away-listener';
 import clsx from 'clsx';
 import './SettingsPanel.scss'
@@ -61,6 +61,15 @@ export function SettingsPanel () {
 							if (value) setHardRock(false);
 						}}
 					/>
+					<Slider
+						label="Vertical Scale"
+						value={verticalScale}
+						min={0.5}
+						max={5}
+						step={0.1}
+						defaultValue={1}
+						onChange={(value) => setVerticalScale(value)}
+					/>
 				</div>
 			</button>
 		</ClickAwayListener>
@@ -75,6 +84,37 @@ function Checkbox({label, description, value, onChange}) {
 				<div className="checkbox-label">{label}</div>
 				{description && <div className="checkbox-description">{description}</div>}
 			</div>
+		</div>
+	)
+}
+
+function Slider({ label, value, min, max, step, onChange, defaultValue }) {
+	return (
+		<div className="slider">
+			<div className="slider-content">
+				<div className="slider-label">{label}</div>
+				{
+					defaultValue !== undefined && value !== defaultValue && (
+						<MdRefresh
+							className="slider-reset"
+							onClick={() => onChange(defaultValue)}
+						/>
+					)
+				}
+				<div className="slider-value">{value.toFixed(1)}</div>
+			</div>
+			<div className="slider-bar">
+				<input
+					type="range"
+					min={min}
+					max={max}
+					step={step}
+					value={value}
+					onChange={(e) => onChange(parseFloat(e.target.value))}
+				/>
+
+			</div>
+			
 		</div>
 	)
 }

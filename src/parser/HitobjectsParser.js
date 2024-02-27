@@ -339,7 +339,7 @@ const getSliderPointByPercent = (slider, percent) => {
 
 function* sliderEventGenerator(startTime, spanDuration, velocity, tickDistance, totalDistance, spanCount) {
 	//console.log(startTime, spanDuration, velocity, tickDistance, totalDistance, spanCount);
-	// From https://github.com/ppy/osu/blob/osu.Game.Rulesets.Catch/Objects/JuiceStream.cs
+	// From https://github.com/ppy/osu/blob/2889cf39d72b1c00d0b03ba5bcf094732da7f5b4/osu.Game.Rulesets.Catch/Objects/JuiceStream.cs
 
 	tickDistance = Math.max(Math.min(tickDistance, totalDistance), 0);
 
