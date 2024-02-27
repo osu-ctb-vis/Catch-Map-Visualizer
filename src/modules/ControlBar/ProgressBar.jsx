@@ -95,11 +95,13 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 				dir = 1;
 				if (e.shiftKey) step = 1000;
 				if (e.ctrlKey) step = 100;
+				if (e.altKey) step = 5;
 			}
 			else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
 				dir = -1; step = 250;
 				if (e.shiftKey) step = 1000;
 				if (e.ctrlKey) step = 100;
+				if (e.altKey) step = 5;
 			}
 			else if (e.key === "PageUp") { dir = -1; step = 1500; }
 			else if (e.key === "PageDown") { dir = 1; step = 1500; }

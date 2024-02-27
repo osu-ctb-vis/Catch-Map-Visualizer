@@ -12,11 +12,16 @@ export default function useTween(easing = (x) => x) {
 	const percentCut = useRef(0);
 
 	const start = (fn, duration, onEnd = () => {}) => {
+		if (animation.current !== null) {
+			onEndRef.current();
+			cancelAnimationFrame(animation.current);
+		}
 		fnRef.current = fn;
 		onEndRef.current = onEnd;
 		time.current = null;
 		startTime.current = null;
 		durationRef.current = duration;
+		percentCut.current = 0;
 		fn(easingRef.current(0), 0);
 		animation.current = requestAnimationFrame(update);
 	}
