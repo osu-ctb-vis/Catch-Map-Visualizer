@@ -10,6 +10,8 @@ export const SettingsProvider = ({children}) => {
 
 	const [hardRock, hardRockRef, setHardRock] = useSetting("hardRock", false);
 	const [easy, easyRef, setEasy] = useSetting("easy", false);
+	
+	const [showFPS, showFPSRef, setShowFPS] = useSetting("showFPS", false, true);
 
 	window.setVerticalScale = setVerticalScale;
 
@@ -20,6 +22,7 @@ export const SettingsProvider = ({children}) => {
 			derandomize, setDerandomize, derandomizeRef,
 			hardRock, setHardRock, hardRockRef,
 			easy, setEasy, easyRef,
+			showFPS, setShowFPS, showFPSRef
 		}}>
 			{children}
 		</SettingsContext.Provider>

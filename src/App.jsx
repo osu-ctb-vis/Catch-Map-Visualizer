@@ -3,6 +3,7 @@ import './App.scss'
 import { NavBar } from './modules/Navbar/Navbar'
 import { Main } from './modules/Main/Main'
 import { ControlBar } from './modules/ControlBar/ControlBar'
+import { FPSMonitor } from './modules/FPSMonitor/FPSMonitor'
 import { MapPackProvider } from './contexts/MapPackContext'
 import { BeatmapsProvider } from './contexts/BeatmapsContext'
 import { PlayStateProvider } from './contexts/PlayStateContext'
@@ -20,6 +21,7 @@ function App() {
                         <NavBar />
                         <Main />
                         <ControlBar />
+                        <FPSMonitor />
                     </SettingsProvider>
                 </PlayStateProvider>
             </BeatmapsProvider>

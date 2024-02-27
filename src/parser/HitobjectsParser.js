@@ -151,6 +151,7 @@ export const parseHitObjects = (beatmap) => {
 					time: t,
 					bananaIndex: count
 				});
+				if (spacing === 0) break;
 				count++;
 			}
 			nestedFruits.push({ type: "bananaShower", fruits: objs });
@@ -322,10 +323,10 @@ const getSliderPointByPercent = (slider, percent) => {
 	}
 	if (segsPrefixSum[l] > targetLength) l--;
 	
-	const index = Math.min(l, segsPrefixSum.length - 2);
+	const index = Math.max(Math.min(l, segsPrefixSum.length - 2), 0);
 	const lengthInSeg = targetLength - segsPrefixSum[index];
 	const segLength = (segsPrefixSum[index + 1] ?? totalLength) - segsPrefixSum[index];
-	if (segLength === 0) throw new Error('segLength is 0');
+	if (segLength === 0) return { x: baseX + slider.path.calculatedPath[index].x, y: baseY + slider.path.calculatedPath[index].y };
 	const percentInSeg = lengthInSeg / segLength;
 	const dx = slider.path.calculatedPath[index + 1].x - slider.path.calculatedPath[index].x;
 	const dy = slider.path.calculatedPath[index + 1].y - slider.path.calculatedPath[index].y;

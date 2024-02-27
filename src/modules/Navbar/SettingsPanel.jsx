@@ -14,6 +14,7 @@ export function SettingsPanel () {
 		derandomize, setDerandomize,
 		hardRock, setHardRock,
 		easy, setEasy,
+		showFPS, setShowFPS
 	} = useContext(SettingsContext);
 
 	const [open, setOpen] = useState(false);
@@ -69,6 +70,14 @@ export function SettingsPanel () {
 						step={0.1}
 						defaultValue={1}
 						onChange={(value) => setVerticalScale(value)}
+					/>
+					<Checkbox
+						label="Show FPS"
+						description="Show performance monitor"
+						value={showFPS}
+						onChange={(value) => {
+							setShowFPS(value);
+						}}
 					/>
 				</div>
 			</button>
