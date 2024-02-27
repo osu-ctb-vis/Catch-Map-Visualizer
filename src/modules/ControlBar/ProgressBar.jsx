@@ -16,7 +16,7 @@ export function ProgressBar(props) {
 	)
 }
 
-function ProgressBarSlider({startTween, stopTween}) {
+function ProgressBarSlider({startTween, stopTween, extendTween}) {
 	const {
 		playing,
 		duration,
@@ -84,31 +84,52 @@ function ProgressBarSlider({startTween, stopTween}) {
 		}
 	}, [dragging]);
 
-	const onKeyDown = useCallback((e) => {
-		let dir = 0;
-		if (e.key === "ArrowRight") {
-			dir = 1;
-		} else if (e.key === "ArrowLeft") {
-			dir = -1;
-		} else {
-			return;
+
+	const targetTime = useRef(0); // For fast scrolling
+
+	const onKeyDownOrScroll = useCallback((e) => {
+		let dir = 0, step = 250;
+		let curTime = playerRef.current.currentTime;
+		if (e.type === "keydown") {
+			if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+				dir = 1;
+				if (e.shiftKey) step = 1000;
+				if (e.ctrlKey) step = 100;
+			}
+			else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+				dir = -1; step = 250;
+				if (e.shiftKey) step = 1000;
+				if (e.ctrlKey) step = 100;
+			}
+			else if (e.key === "PageUp") { dir = -1; step = 1500; }
+			else if (e.key === "PageDown") { dir = 1; step = 1500; }
+			else return;
+		} else if (e.type === "wheel") {
+			dir = e.deltaY < 0 ? -1 : 1;
+			if (e.shiftKey) dir = -dir;
+			step = 250;
+			curTime = targetTime.current ?? curTime;
 		}
-		let time = playerRef.current.currentTime + dir * 250 / 1000;
+		let time = curTime + dir * step / 1000;
+		targetTime.current = time;
 		if (time < 0) time = 0;
 		if (time > duration) time = duration;
 		if (playing) seek(time);
 		else {
 			const start = playerRef.current.currentTime;
 			const stop = time;
-			stopTween();
-			startTween((t) => seek(start + (stop - start) * t), 250);
+			/*stopTween();
+			startTween((t) => seek(start + (stop - start) * t), 250);*/
+			extendTween((t) => seek(start + (stop - start) * t), 250, () => targetTime.current = null);
 		}
 	}, [duration, playing]);
 
 	useEffect(() => {
-		window.addEventListener('keydown', onKeyDown);
+		window.addEventListener('keydown', onKeyDownOrScroll);
+		window.addEventListener('wheel', onKeyDownOrScroll);
 		return () => {
-			window.removeEventListener('keydown', onKeyDown);
+			window.removeEventListener('keydown', onKeyDownOrScroll);
+			window.removeEventListener('wheel', onKeyDownOrScroll);
 		}
 	}, [duration, playing, playerRef.current]);
 
