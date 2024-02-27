@@ -194,12 +194,12 @@ const applyPositionOffsets = (nestedFruits) => {
 			}
 
 			if (positionDiff == 0) {
-				hitObject.xOffset = getRandomOffset(position, timeDiff / 4, rngHR);
+				hitObject.xOffsetHR = getRandomOffset(position, timeDiff / 4, rngHR);
 				continue;
 			}
 
 			if (Math.abs(positionDiff) < timeDiff / 3) {
-				hitObject.xOffset += getOffset(offsetPosition + (hitObject.xOffset ?? 0), positionDiff);
+				hitObject.xOffsetHR += getOffset(offsetPosition + (hitObject.xOffset ?? 0), positionDiff);
 			}
 
 			lastPosition = offsetPosition;

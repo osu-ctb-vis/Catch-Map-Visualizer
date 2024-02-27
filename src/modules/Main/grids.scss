@@ -6,4 +6,7 @@
 	background-position: bottom left;
 	opacity: 0.2;
 	pointer-events: none;
+	&.hidden {
+		display: none;
+	}
 }

@@ -12,19 +12,29 @@ export function ObjectsCanvas({ beatmap }) {
 
 	const [width, widthRef, setWidth] = useRefState(0);
 	const [height, heightRef, setHeight] = useRefState(0);
+
+	const { verticalScale,
+		derandomize, derandomizeRef,
+		hardRock, hardRockRef,
+		easy, easyRef,
+	} = useContext(SettingsContext);
 	
 	const [fruitSize, setFruitSize] = useState(0);
 
 	const recalculateFruitSize = useCallback(() => {
+		let CS = beatmap.difficulty.circleSize;
+		if (hardRock) CS = Math.min(10, CS * 1.3);
+		if (easy) CS = CS * 0.5;
 		const baseSize = 97; // TODO: Verify this value
-		const scale = CalculateScaleFromCircleSize(beatmap.difficulty.circleSize);
+		const scale = CalculateScaleFromCircleSize(CS);
 		const size = baseSize * scale / 512 * ref.current.offsetWidth;
-		setFruitSize(size);		
-	}, [beatmap.difficulty.circleSize]);
+		setFruitSize(size);
+		console.log("Fruit size", size);
+	}, [beatmap.difficulty.circleSize, hardRock, easy, verticalScale]);
 
 	useEffect(() => {
 		recalculateFruitSize();
-	}, [beatmap]);
+	}, [beatmap, hardRock, easy, verticalScale]);
 		
 
 	const onResize = () => {
@@ -44,9 +54,10 @@ export function ObjectsCanvas({ beatmap }) {
 		return () => resizeObserver.disconnect();
 	}, []);
 
-	const verticalScale = useContext(SettingsContext).verticalScale;
-
-	const approachRate = beatmap.difficulty.approachRate;
+	let approachRate = beatmap.difficulty.approachRate;
+	if (hardRock) approachRate = Math.min(10, approachRate * 1.4);
+	if (easy) approachRate = approachRate * 0.5;
+	
 	const ARPreempt = useMemo(() => calculatePreempt(approachRate), [approachRate]);
 	const preempt = useMemo(() => ARPreempt * height / (width * (3 / verticalScale) / 4), [ARPreempt, height, width, verticalScale]); // TODO: add a slight value to preempt
 	const preemptRef = useRef(preempt);
@@ -70,6 +81,17 @@ export function ObjectsCanvas({ beatmap }) {
 		ref.current.innerHTML = "";
 	}, [beatmap]);
 
+	const getObjectX = (i) => {
+		const obj = objectRef.current[i];
+		const HardRockRef = false;
+		let x = obj.x + (HardRockRef ? (obj?.xOffsetHR ?? 0) : (obj?.xOffset ?? 0));
+		if (derandomizeRef.current) x = obj.x;
+		return x / 512 * widthRef.current;
+	}
+	const getObjectY = (i) => {
+		return (1 - (objectRef.current[i].time - playerRef.current.currentTime * 1000) / preempt) * heightRef.current;
+	}
+
 	const update = () => {
 		const objects = objectRef.current;
 		const currentTime = playerRef.current.currentTime * 1000;
@@ -79,6 +101,7 @@ export function ObjectsCanvas({ beatmap }) {
 		if (currentTime == lastTime.current) { lastTime.current = currentTime; return; }
 		//console.log(currentTime, lastTime.current);
 		const startTime = currentTime - 200, endTime = currentTime + preempt + 200;
+		
 		if (Math.abs(currentTime - lastTime.current) > 20000) {
 			//console.log("Jumped");
 			L.current = binarySearch(objects, startTime);
@@ -86,7 +109,7 @@ export function ObjectsCanvas({ beatmap }) {
 				const i = R.current;
 				//console.log(objects[R.current]);
 				//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-				updateObject(i, (objects[i].x + (objects[i]?.xOffset ?? 0)) / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
+				updateObject(i, getObjectX(i), getObjectY(i));
 			}
 			removeObjects();
 			//console.log("range", L.current, R.current);
@@ -105,7 +128,7 @@ export function ObjectsCanvas({ beatmap }) {
 		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 			const i = R.current;
 			//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-			updateObject(i, (objects[i].x + (objects[i]?.xOffset ?? 0)) / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
+			updateObject(i, getObjectX(i), getObjectY(i));
 		}
 		for (let i = R.current; i < oldR; i++) {
 			removeObject(i);
@@ -142,17 +165,27 @@ export function ObjectsCanvas({ beatmap }) {
 		}
 		return;
 	}
+	const refreshOnScreenObjects = () => {
+		for (let i = L.current; i < R.current; i++) {
+			updateObject(i, getObjectX(i), getObjectY(i));
+		}
+	}
+
+	useEffect(() => {
+		refreshOnScreenObjects();
+	}, [derandomize, verticalScale, hardRock, easy]);
 
 	const animationRef = useRef();
 	useEffect(() => {
 		if (!beatmap || !preempt || !width || !height) return;
+		console.log("Start animation");
 		const aniUpdate = () => {
 			update();
 			animationRef.current = requestAnimationFrame(aniUpdate);
 		}
 		animationRef.current = requestAnimationFrame(aniUpdate);
 		return () => cancelAnimationFrame(animationRef.current);
-	}, [width, height, verticalScale, preempt, beatmap]);
+	}, [width, height, verticalScale, preempt, beatmap, derandomize]);
 
 
 

@@ -1,4 +1,6 @@
-import { useRef, useState, useEffect, useLayoutEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, useContext } from "react";
+import { SettingsContext } from "../../contexts/SettingsContext";
+import clsx from "clsx";
 import "./Grids.scss";
 
 export function Grids() {
@@ -23,12 +25,14 @@ export function Grids() {
 
 
 	const gridSize = width / horizontalGrids;
+
+	const showGrid = useContext(SettingsContext).showGrid;
 	
 
 
 	return (
 		<div
-			className="grids"
+			className={clsx("grids", { hidden: !showGrid })}
 			ref={ref}
 			style={{
 				...((gridSize === 0) ? {} : { "--grid-size": gridSize + "px" })

@@ -110,10 +110,12 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 			dir = e.deltaY < 0 ? -1 : 1;
 			if (e.shiftKey) dir = -dir;
 			step = 250;
-			curTime = targetTime.current ?? curTime;
+			if (targetTime.current !== null && Math.sign(targetTime.current - curTime) === dir) {
+				curTime = targetTime.current;
+			}
 		}
 		let time = curTime + dir * step / 1000;
-		targetTime.current = time;
+		if (e.type === "wheel") targetTime.current = time;
 		if (time < 0) time = 0;
 		if (time > duration) time = duration;
 		if (playing) seek(time);

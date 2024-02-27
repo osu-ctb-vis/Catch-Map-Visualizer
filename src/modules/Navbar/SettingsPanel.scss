@@ -15,6 +15,7 @@
 	font-family: inherit;
 	gap: 10px;
 	padding: 0 16px;
+	text-align: left;
 
 	&:hover, &.open {
 		background-color: var(--navbar-color-light-hover);
@@ -44,8 +45,64 @@
 		transition: clip-path 0.2s ease-in-out;
 		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
 		pointer-events: none;
-		padding: 20px;
+		//padding: 20px;
 		cursor: default;
+
+		.checkbox {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			transition: background-color 0.2s;
+			height: 54px;
+			cursor: pointer;
+
+			.checkbox-box {
+				display: block;
+				height: 100%;
+				aspect-ratio: 1;
+				position: relative;
+				&:before {
+					content: '';
+					display: block;
+					position: absolute;
+					left: 50%;
+					top: 50%;
+					transform: translate(-50%, -50%);
+					width: 15px;
+					height: 15px;
+					border-radius: 100px;
+					border: 2px solid var(--accent-color);
+					filter: brightness(1.05);
+					transition: background-color 0.2s, filter 0.2s;
+				}
+			}
+
+			&.checked {
+				.checkbox-box:before {
+					background-color: var(--accent-color);
+					filter: drop-shadow(0 0 4px var(--accent-color));
+				}
+			}
+
+			.checkbox-content {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				color: var(--navbar-text-color);
+				padding-right: 20px;
+				.checkbox-label {
+					font-weight: 500;
+				}
+				.checkbox-description {
+					font-size: 0.8em;
+					opacity: 0.7;
+				}
+			}
+
+			&:hover {
+				background-color: var(--navbar-color-light-hover);
+			}
+		}
 	}
 
 	&.open {
