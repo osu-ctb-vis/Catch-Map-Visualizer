@@ -8,6 +8,7 @@ import { MapPackProvider } from './contexts/MapPackContext'
 import { BeatmapsProvider } from './contexts/BeatmapsContext'
 import { PlayStateProvider } from './contexts/PlayStateContext'
 import { SettingsProvider } from './contexts/SettingsContext'
+import { SKinProvider } from './contexts/SkinContext'
 import { GlobalFileDropArea } from './modules/GlobalFileDropArea/GlobalFileDropArea'
 
 function App() {
@@ -16,13 +17,15 @@ function App() {
         <MapPackProvider>
             <BeatmapsProvider>
                 <PlayStateProvider>
-                    <SettingsProvider>
-                        <GlobalFileDropArea />
-                        <NavBar />
-                        <Main />
-                        <ControlBar />
-                        <FPSMonitor />
-                    </SettingsProvider>
+                    <SKinProvider>
+                        <SettingsProvider>
+                            <GlobalFileDropArea />
+                            <NavBar />
+                            <Main />
+                            <ControlBar />
+                            <FPSMonitor />
+                        </SettingsProvider>
+                    </SKinProvider>
                 </PlayStateProvider>
             </BeatmapsProvider>
         </MapPackProvider>

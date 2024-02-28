@@ -131,7 +131,7 @@ export const parseHitObjects = (beatmap) => {
 				});
 			}
 			if (objs[objs.length - 1].time > hitObject.endTime) {
-				//throw new Error("Slider end time is less than last fruit time");
+				throw new Error("Slider end time greater than hitObject end time");
 			}
 			nestedFruits.push({ type: "juiceStream", fruits: objs });
 		} else if (type === "SpinnableObject") {

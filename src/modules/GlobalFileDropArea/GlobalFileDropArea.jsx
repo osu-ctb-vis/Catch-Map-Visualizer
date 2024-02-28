@@ -1,10 +1,10 @@
 import { useState, useContext, useRef, useEffect } from 'react'
 import clsx from 'clsx';
-import { MapPackContext } from '../../contexts/MapPackContext'
+import useZipLoader from '../../hooks/useZipLoader'
 import './GlobalFileDropArea.scss'
 
 export function GlobalFileDropArea() {
-	const loadOszFile = useContext(MapPackContext).loadOszFile;
+	const loadZip = useZipLoader();
 	const [dragOver, setDragOver] = useState(false);
 	const [isOtherElementDragging, setIsOtherElementDragging] = useState(false);
 
@@ -38,7 +38,7 @@ export function GlobalFileDropArea() {
 		e.preventDefault();
 		setDragOver(false);
 		if (e.dataTransfer.files.length > 0) {
-			loadOszFile(e.dataTransfer.files[0]);
+			loadZip(e.dataTransfer.files[0]);
 		}
 	}
 

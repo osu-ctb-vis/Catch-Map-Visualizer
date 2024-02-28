@@ -185,7 +185,7 @@ export function ObjectsCanvas({ beatmap }) {
 		}
 		animationRef.current = requestAnimationFrame(aniUpdate);
 		return () => cancelAnimationFrame(animationRef.current);
-	}, [width, height, verticalScale, preempt, beatmap, derandomize]);
+	}, [width, height, verticalScale, preempt, beatmap, derandomize, hardRock, easy]);
 
 
 

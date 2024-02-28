@@ -1,12 +1,16 @@
 import { useContext, useRef } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { MdFolderOpen } from 'react-icons/md';
+import useZipLoader from '../../hooks/useZipLoader'
 import clsx from 'clsx';
-import './LoadOszFileButton.scss'
+import './LoadFileButton.scss'
 
 
-export function LoadOszFileButton () {
-	const {mapPack, loadOszFile} = useContext(MapPackContext);
+export function LoadFileButton () {
+	const loadZip = useZipLoader();
+
+	const { mapPack } = useContext(MapPackContext);
+
 
 	const fileInputRef = useRef(null);
 
@@ -26,7 +30,10 @@ export function LoadOszFileButton () {
 				ref={fileInputRef}
 				type="file"
 				accept=".osz,.olz,.zip"
-				onChange={(e) => loadOszFile(e.target.files[0])}
+				onChange={(e) => {
+					e.target.files[0] && loadZip(e.target.files[0])
+					fileInputRef.current.value = null;
+				}}
 				style={{display: 'none'}}
 			/>
 		</button>
