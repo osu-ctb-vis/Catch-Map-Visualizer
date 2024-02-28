@@ -158,11 +158,23 @@ export const parseHitObjects = (beatmap) => {
 		}
 
 	});
+	applyVisualPresentation(nestedFruits);
 	applyPositionOffsets(nestedFruits);
 	applyHyperFruits(nestedFruits, beatmap);
 	const fruits = nestedFruits.flatMap((nested) => nested.fruits);
 	fruits.sort((a, b) => a.time - b.time); // sort again because some maps have simultaneous hitobjects
 	return fruits;
+}
+
+const applyVisualPresentation = (nestedFruits) => {
+	const fruits = nestedFruits.filter((nested) => nested.type !== "bananaShower");
+	const types = ["pear", "grape", "pineapple", "raspberry"];
+	for (let i = 0; i < fruits.length; i++) {
+		const curTyoe = types[i % types.length];
+		for (let fruit of fruits[i].fruits) {
+			fruit.visualType = curTyoe;
+		}
+	}
 }
 
 const applyPositionOffsets = (nestedFruits) => {

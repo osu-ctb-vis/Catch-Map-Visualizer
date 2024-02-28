@@ -158,7 +158,12 @@ export function ObjectsCanvas({ beatmap }) {
 		if (objectOnScreen.current[index]) {
 			objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
 		} else {
-			const div = Object(index, objectRef.current[index].type, objectRef.current[index].hyperDashTarget);
+			const div = Object(
+				index,
+				objectRef.current[index].type,
+				objectRef.current[index].visualType,
+				objectRef.current[index].hyperDashTarget
+			);
 			div.style.transform = `translate(${x}px, ${y}px)`;
 			objectOnScreen.current[index] = div;
 			ref.current.appendChild(div);
@@ -203,12 +208,13 @@ const updatePosition = (div) => (x, y) => {
 	div.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-const Object = (index, type = "fruit", hyper = false) => {
+const Object = (index, type = "fruit", visualType = null, hyper = false) => {
 	const div = document.createElement("div");
 	div.classList.add("object");
 	div.classList.add(`object-${type}`);
 	div.index = index;
 	div.setAttribute("index", index);
+	if (visualType) div.classList.add(`object-visual-${visualType}`);
 	if (hyper) div.classList.add("hyper");
 	return div;
 }

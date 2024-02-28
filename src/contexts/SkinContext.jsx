@@ -42,7 +42,10 @@ function SkinCSSLayer(skin) {
 			addSkinElement(selector, skin[name]);
 		}
 	};
-	lookupElement('fruit-apple', '.object-fruit');
+	lookupElement('fruit-apple', '.object-fruit.object-visual-pineapple');
+	lookupElement('fruit-grapes', '.object-fruit.object-visual-grape');
+	lookupElement('fruit-pear', '.object-fruit.object-visual-pear');
+	lookupElement('fruit-orange', '.object-fruit.object-visual-raspberry');
 	lookupElement('fruit-orange', '.object-drop');
 	lookupElement('fruit-drop', '.object-droplet');
 	lookupElement('fruit-bananas', '.object-banana');
