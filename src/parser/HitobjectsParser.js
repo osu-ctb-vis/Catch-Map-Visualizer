@@ -232,8 +232,8 @@ const applyPositionOffsets = (nestedFruits) => {
 
 			for (let subFruit of fruit.fruits) {
 				if (subFruit.type === "droplet") {
-					subFruit.xOffset = clamp(rng.next(-20, 20), -subFruit.x, 512 - subFruit.x);
-					subFruit.xOffsetHR = clamp(rngHR.next(-20, 20), -subFruit.x, 512 - subFruit.x);
+					subFruit.xOffset = clamp(rng.nextRange(-20, 20), -subFruit.x, 512 - subFruit.x);
+					subFruit.xOffsetHR = clamp(rngHR.nextRange(-20, 20), -subFruit.x, 512 - subFruit.x);
 				} else if (subFruit.type === "drop") {
 					rng.next(); rngHR.next();
 				}
@@ -284,8 +284,8 @@ const applyHyperFruits = (nestedFruits, beatmap) => {
 	for (let i = 0; i < palpableObjects.length - 1; i++) {
 		const currentObject = palpableObjects[i];
 		const nextObject = palpableObjects[i + 1];
-		currentObject.HyperDashTarget = null;
-		currentObject.DistanceToHyperDash = 0;
+		currentObject.hyperDashTarget = null;
+		currentObject.distanceToHyperDash = 0;
 
 		const thisDirection = nextObject.x > currentObject.x ? 1 : -1;
 		const timeToNext = nextObject.time - currentObject.time - 1000 / 60 / 4;

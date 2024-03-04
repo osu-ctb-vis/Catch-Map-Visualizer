@@ -4,6 +4,7 @@ import "./Playfield.scss";
 import { Grids } from './Grids';
 import { ActualPlayfieldBorder } from './ActualPlayfieldBorder';
 import { ObjectsCanvas } from './ObjectsCanvas';
+import { AutoCatcher } from './AutoCatcher';
 
 export function Playfield({ beatmap }) {
 	const ref = useRef(null);
@@ -37,6 +38,7 @@ export function Playfield({ beatmap }) {
 			}}
 		>
 			<ObjectsCanvas beatmap={beatmap} />
+			<AutoCatcher beatmap={beatmap} />
 			<Grids />
 			<ActualPlayfieldBorder />
 		</div>

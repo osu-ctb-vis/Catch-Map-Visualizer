@@ -20,3 +20,7 @@ export function CalculateCatchWidthByScale(scale) {
 export function CalculateCatchWidth(difficulty) {
 	return CalculateCatchWidthByScale(calculateScale(difficulty));
 }
+
+export function CalculateCatchWidthByCircleSize(circleSize) {
+	return CalculateCatchWidthByScale(CalculateScaleFromCircleSize(circleSize));
+}

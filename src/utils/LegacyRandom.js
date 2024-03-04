@@ -2,6 +2,9 @@
 // https://github.com/ppy/osu/blob/715236765a2c532972e8b7f106c31fe254a6c6af/osu.Game/Utils/LegacyRandom.cs
 // TODO: verify this code
 
+const CSharpToInt = (x) => {
+    return x < 0 ? Math.ceil(x) : Math.floor(x);
+}
 export class LegacyRandom {
     static INT_TO_REAL = 1.0 / 2147483648;
     static Y = 842502087;
@@ -38,12 +41,12 @@ export class LegacyRandom {
         if (typeof max === 'undefined') {
             return this.nextInt();
         } else {
-            return Math.floor(this.nextDouble() * max);
+            return CSharpToInt(this.nextDouble() * max);
         }
     }
 
     nextRange(min, max) {
-        return Math.floor(min + this.nextDouble() * (max - min));
+        return CSharpToInt(min + this.nextDouble() * (max - min));
     }
 
     nextDouble() {
