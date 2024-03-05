@@ -1,5 +1,5 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext } from "react";
-import { SettingsContext } from "../../contexts/SettingsContext";
+import { SettingsContext } from "../../../contexts/SettingsContext";
 import "./Playfield.scss";
 import { Grids } from './Grids';
 import { ActualPlayfieldBorder } from './ActualPlayfieldBorder';

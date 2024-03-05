@@ -1,13 +1,13 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext, useMemo, useCallback } from "react";
-import { SettingsContext } from "../../contexts/SettingsContext";
+import { SettingsContext } from "../../../contexts/SettingsContext";
 import "./AutoCatcher.scss";
-import { calculatePreempt } from "../../utils/ApproachRate";
-import { parseHitObjects } from "../../parser/HitobjectsParser";
-import { PlayStateContext } from "../../contexts/PlayStateContext";
-import { CalculateScaleFromCircleSize, CalculateCatchWidthByCircleSize } from "../../utils/CalculateCSScale";
-import useRefState from "../../hooks/useRefState";
+import { calculatePreempt } from "../../../utils/ApproachRate";
+import { parseHitObjects } from "../../../parser/HitobjectsParser";
+import { PlayStateContext } from "../../../contexts/PlayStateContext";
+import { CalculateScaleFromCircleSize, CalculateCatchWidthByCircleSize } from "../../../utils/CalculateCSScale";
+import useRefState from "../../../hooks/useRefState";
 
-import { calculateAutoPath } from "../../parser/AutoPathCalculator";
+import { calculateAutoPath } from "../../../parser/AutoPathCalculator";
 
 export function AutoCatcher({ beatmap }) {
 	const ref = useRef(null);

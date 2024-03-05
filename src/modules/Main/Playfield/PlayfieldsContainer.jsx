@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { BeatmapsContext } from '../../contexts/BeatmapsContext';
+import { BeatmapsContext } from '../../../contexts/BeatmapsContext';
 import { Playfield } from './Playfield';
 import "./PlayfieldsContainer.scss";
 
