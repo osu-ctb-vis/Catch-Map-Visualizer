@@ -1,0 +1,59 @@
+.wip-model-mask {
+	position: fixed;
+	inset: 0;
+	z-index: 2147483647;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: background-color 0.3s;
+
+	.wip-model {
+		background-color: var(--navbar-color);
+		border-radius: 16px;
+		padding: 20px;
+		box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+		position: relative;
+		width: 100%;
+		max-width: 650px;
+		transition: transform 0.3s, opacity 0.3s;
+		.wip-model-title {
+			font-size: 28px;
+			font-weight: 600;
+			margin-bottom: 20px;
+		}
+		.wip-model-content {
+			font-size: 20px;
+			line-height: 1.8;
+			margin-bottom: 20px;
+		}
+		.wip-model-buttons {
+			display: flex;
+			justify-content: flex-end;
+			button {
+				background-color: var(--navbar-color-light);
+				border: none;
+				outline: none;
+				padding: 10px 20px;
+				border-radius: 8px;
+				font-size: 24px;
+				cursor: pointer;
+				font-family: inherit;
+				font-weight: 600;
+				transition: background-color 0.3s;
+				&:hover {
+					background-color: var(--navbar-color-light-hover);
+				}
+			}
+		}
+	}
+
+	&.closed {
+		background-color: transparent;
+		pointer-events: none;
+		.wip-model {
+			transform: scale(0.8);
+			opacity: 0;
+		}
+	}
+}

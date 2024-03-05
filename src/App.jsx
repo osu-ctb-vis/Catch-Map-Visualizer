@@ -10,6 +10,7 @@ import { PlayStateProvider } from './contexts/PlayStateContext'
 import { SettingsProvider } from './contexts/SettingsContext'
 import { SKinProvider } from './contexts/SkinContext'
 import { GlobalFileDropArea } from './modules/GlobalFileDropArea/GlobalFileDropArea'
+import { WIPModel } from './modules/Components/WIPModel/WIPModel'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
                             <Main />
                             <ControlBar />
                             <FPSMonitor />
+                            <WIPModel />
                         </SettingsProvider>
                     </SKinProvider>
                 </PlayStateProvider>
