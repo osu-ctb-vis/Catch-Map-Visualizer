@@ -21,8 +21,8 @@ export function WIPModel({ ...props }) {
 			<div className="wip-model">
 				<div className="wip-model-title">🥺 Warning!</div>
 				<div className="wip-model-content">
-					This project is still under development and at its <i>very</i> early stages. <br />
-					Most of the features are not yet implemented. Some functions may not work as expected. <br />
+					This project is still under development and in its <i>very</i> early stages. <br />
+					Most of the features are not  mplemented yet. Some functionalities may not work as expected. <br />
 					Any kind of error or bug may occur.
 				</div>
 				<div className="wip-model-buttons">

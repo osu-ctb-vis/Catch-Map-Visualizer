@@ -50,7 +50,7 @@ export function AutoCatcher({ beatmap }) {
 
 	useEffect(() => {
 		const resizeObserver = new ResizeObserver(onResize);
-		resizeObserver.observe(ref.current);
+		resizeObserver.observe(ref.current.parentElement);
 		return () => resizeObserver.disconnect();
 	}, []);
 
