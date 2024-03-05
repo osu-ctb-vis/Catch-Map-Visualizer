@@ -33,6 +33,12 @@ const parseTimingLines = (beatmap) => {
 	return timingLines;
 }
 
+const getHitObjectType = (hitObject) => {
+	const hitType = hitObject.hitType;
+	if (hitType & 1) return "HittableObject"; 
+	if (hitType & 1 << 1) return "_SlidableObject";
+	if (hitType & 1 << 2) return "SpinnableObject";
+}
 
 export const parseHitObjects = (beatmap) => {	
 	//const timingLines = parseTimingLines(beatmap);
@@ -54,7 +60,7 @@ export const parseHitObjects = (beatmap) => {
 	}
 	
 	hitObjects.forEach((hitObject) => {
-		const type = hitObject.constructor.name;
+		const type = getHitObjectType(hitObject);
 		if (type === "HittableObject") {
 			nestedFruits.push({
 				type: "fruit",
