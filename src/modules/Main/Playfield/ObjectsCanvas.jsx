@@ -6,7 +6,7 @@ import { CalculateScaleFromCircleSize } from "../../../utils/CalculateCSScale";
 import useRefState from "../../../hooks/useRefState";
 import "./ObjectsCanvas.scss";
 
-export function ObjectsCanvas({ beatmap, ctbObjects }) {
+export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 	const ref = useRef(null);
 
 	const [width, widthRef, setWidth] = useRefState(0);
@@ -90,13 +90,13 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 		return (1 - (objectRef.current[i].time - playerRef.current.currentTime * 1000) / preempt) * heightRef.current;
 	}
 
-	const update = () => {
+	const update = (force = false) => {
 		const objects = objectRef.current;
 		const currentTime = playerRef.current.currentTime * 1000;
 		const width = widthRef.current;
 		const height = heightRef.current;
 		const preempt = preemptRef.current;
-		if (currentTime == lastTime.current) { lastTime.current = currentTime; return; }
+		if (currentTime == lastTime.current && !force) { lastTime.current = currentTime; return; }
 		//console.log(currentTime, lastTime.current);
 		const startTime = currentTime - 200, endTime = currentTime + preempt + 200;
 		
@@ -155,6 +155,8 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 		if (!show) return removeObject(index);
 		if (objectOnScreen.current[index]) {
 			objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
+			if (objectRef.current[index]?.bananaMissed) objectOnScreen.current[index].classList.add("banana-missed");
+			else objectOnScreen.current[index].classList.remove("banana-missed");
 		} else {
 			const div = Object(
 				index,
@@ -177,7 +179,12 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 
 	useEffect(() => {
 		refreshOnScreenObjects();
-	}, [derandomize, verticalScale, hardRock, easy]);
+	}, [width, height, derandomize, verticalScale, hardRock, easy, catcherPath]);
+
+	useEffect(() => {
+		refreshOnScreenObjects();
+		update(true);
+	}, [width, height]);
 
 	const animationRef = useRef();
 	useEffect(() => {

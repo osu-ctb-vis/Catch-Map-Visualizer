@@ -47,30 +47,42 @@ export function Playfield({ beatmap }) {
 		return calculateAutoPath(beatmap.ctbObjects, beatmap, hardRock, easy, derandomize);
 	}, [hardRock, easy, derandomize]);*/
 
+	const hasBanana = beatmap.ctbObjects.some(obj => obj.type === "banana");
+
 	const [catcherPath, setPath] = useState(null);
 	const [bestCatcherPath, setBestPath] = useState(null);
-	const [calculatingPath, setCalculatingPath] = useState(true);
+	const [calculatingPath, setCalculatingPath] = useState(hasBanana);
 
 	const [pathCalcProgress, setPathCalcProgress] = useState(0);
 
 
 	const calcPath = async () => {
-		const normalPath = await (calculateAutoPath(
+		const normalPath = (await calculateAutoPath(
 			beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize
 		)).path;
-		console.log(normalPath);
 		setPath(normalPath);
 	}
 
 	useEffect(() => {
-		setCalculatingPath(true);
-		setPathCalcProgress(0);
+		if (hasBanana) {
+			setCalculatingPath(true);
+			setPathCalcProgress(0);
+		}
 		calcPath();
+		if (!hasBanana) {
+			setCalculatingPath(false);
+			return;
+		}
 		const worker = new Worker(new URL('./../../../parser/AutoPathCalculatorWorker.js', import.meta.url), { type: 'module' });
 		worker.postMessage({
 			params: [beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize],
 		});
 		worker.onmessage = (event) => {
+			if (event.data.error) {
+				setCalculatingPath(false);
+				console.error(event.data.error);
+				return;
+			}
 			if (event.data.progress) {
 				setPathCalcProgress(event.data.progress.current / event.data.progress.total);
 				return;
@@ -83,7 +95,6 @@ export function Playfield({ beatmap }) {
 			setCalculatingPath(false);
 		}
 		return () => worker.terminate();
-		// TODO: refresh bananas when calculated
 		// TODO: Cache calculated paths
 	}, [beatmap, hardRock, easy, derandomize]);
 
@@ -98,7 +109,7 @@ export function Playfield({ beatmap }) {
 		>
 			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
 			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
-			<ObjectsCanvas beatmap={beatmap} ctbObjects={beatmap.ctbObjects} />
+			<ObjectsCanvas beatmap={beatmap} ctbObjects={beatmap.ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
 			<Grids />
 			<ActualPlayfieldBorder />
 		</div>
