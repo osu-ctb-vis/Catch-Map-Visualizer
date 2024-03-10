@@ -89,6 +89,12 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 	const getObjectY = (i) => {
 		return (1 - (objectRef.current[i].time - playerRef.current.currentTime * 1000) / preempt) * heightRef.current;
 	}
+	const getObjectScale = (i) => {
+		if (objectRef.current[i].type !== "banana") return 1;
+		const obj = objectRef.current[i];
+		if (obj.time - playerRef.current.currentTime * 1000 > ARPreempt) return 1;
+		return 0.3 + (obj.time - playerRef.current.currentTime * 1000) / ARPreempt * 0.7;
+	}
 
 	const update = (force = false) => {
 		const objects = objectRef.current;
@@ -107,7 +113,7 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 				const i = R.current;
 				//console.log(objects[R.current]);
 				//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-				updateObject(i, getObjectX(i), getObjectY(i));
+				updateObject(i, getObjectX(i), getObjectY(i), getObjectScale(i));
 			}
 			removeObjects();
 			//console.log("range", L.current, R.current);
@@ -126,7 +132,8 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 			const i = R.current;
 			//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-			updateObject(i, getObjectX(i), getObjectY(i));
+			console.log(getObjectScale(i));
+			updateObject(i, getObjectX(i), getObjectY(i), getObjectScale(i));
 		}
 		for (let i = R.current; i < oldR; i++) {
 			removeObject(i);
@@ -150,11 +157,12 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 		ref.current.removeChild(objectOnScreen.current[index]);
 		objectOnScreen.current[index] = null;
 	}
-	const updateObject = (index, x, y, show = true) => {
+	const updateObject = (index, x, y, scale, show = true) => {
 		//console.log("update", index, x, y);
 		if (!show) return removeObject(index);
 		if (objectOnScreen.current[index]) {
-			objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
+			if (scale !== 1) objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+			else objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
 			if (objectRef.current[index]?.bananaMissed) objectOnScreen.current[index].classList.add("banana-missed");
 			else objectOnScreen.current[index].classList.remove("banana-missed");
 		} else {
@@ -165,7 +173,8 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 				objectRef.current[index].hyperDashTarget,
 				objectRef.current[index]
 			);
-			div.style.transform = `translate(${x}px, ${y}px)`;
+			if (scale !== 1) div.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+			else div.style.transform = `translate(${x}px, ${y}px)`;
 			objectOnScreen.current[index] = div;
 			ref.current.appendChild(div);
 		}
