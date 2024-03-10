@@ -1,13 +1,12 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext, useMemo, useCallback } from "react";
 import { SettingsContext } from "../../../contexts/SettingsContext";
-import "./ObjectsCanvas.scss";
 import { calculatePreempt } from "../../../utils/ApproachRate";
-import { parseHitObjects } from "../../../parser/HitobjectsParser";
 import { PlayStateContext } from "../../../contexts/PlayStateContext";
 import { CalculateScaleFromCircleSize } from "../../../utils/CalculateCSScale";
 import useRefState from "../../../hooks/useRefState";
+import "./ObjectsCanvas.scss";
 
-export function ObjectsCanvas({ beatmap }) {
+export function ObjectsCanvas({ beatmap, ctbObjects }) {
 	const ref = useRef(null);
 
 	const [width, widthRef, setWidth] = useRefState(0);
@@ -67,8 +66,7 @@ export function ObjectsCanvas({ beatmap }) {
 
 	// TODO: use svg or canvas for better performance
 
-	if (!beatmap.ctbObjects) beatmap.ctbObjects = parseHitObjects(beatmap);
-	const objects = beatmap.ctbObjects;
+	const objects = ctbObjects;
 	const objectRef = useRef(objects);
 	objectRef.current = objects;
 	const objectOnScreen = useRef({}); // Dictionary of the objects div that are currently on screen
@@ -162,7 +160,8 @@ export function ObjectsCanvas({ beatmap }) {
 				index,
 				objectRef.current[index].type,
 				objectRef.current[index].visualType,
-				objectRef.current[index].hyperDashTarget
+				objectRef.current[index].hyperDashTarget,
+				objectRef.current[index]
 			);
 			div.style.transform = `translate(${x}px, ${y}px)`;
 			objectOnScreen.current[index] = div;
@@ -208,7 +207,7 @@ const updatePosition = (div) => (x, y) => {
 	div.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-const Object = (index, type = "fruit", visualType = null, hyper = false) => {
+const Object = (index, type = "fruit", visualType = null, hyper = false, obj) => {
 	const div = document.createElement("div");
 	div.classList.add("object");
 	div.classList.add(`object-${type}`);
@@ -216,6 +215,7 @@ const Object = (index, type = "fruit", visualType = null, hyper = false) => {
 	div.setAttribute("index", index);
 	if (visualType) div.classList.add(`object-visual-${visualType}`);
 	if (hyper) div.classList.add("hyper");
+	if (obj?.bananaMissed) div.classList.add("banana-missed");
 	return div;
 }
 

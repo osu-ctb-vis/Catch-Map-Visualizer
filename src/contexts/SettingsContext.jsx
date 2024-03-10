@@ -13,7 +13,7 @@ export const SettingsProvider = ({children}) => {
 	
 	const [showFPS, showFPSRef, setShowFPS] = useSetting("showFPS", false, true);
 
-	window.setVerticalScale = setVerticalScale;
+	const [backgroundDim, backgroundDimRef, setBackgroundDim] = useSetting("backgroundDim", 0.8);
 
 	return (
 		<SettingsContext.Provider value={{
@@ -22,7 +22,8 @@ export const SettingsProvider = ({children}) => {
 			derandomize, setDerandomize, derandomizeRef,
 			hardRock, setHardRock, hardRockRef,
 			easy, setEasy, easyRef,
-			showFPS, setShowFPS, showFPSRef
+			showFPS, setShowFPS, showFPSRef,
+			backgroundDim, setBackgroundDim, backgroundDimRef,
 		}}>
 			{children}
 		</SettingsContext.Provider>

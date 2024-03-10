@@ -1,3 +1,0 @@
-[submodule "src/parser/banana-path-calculation"]
-	path = src/parser/banana-path-calculation
-	url = https://github.com/osu-ctb-vis/banana-path-calculation

@@ -14,7 +14,8 @@ export function SettingsPanel () {
 		derandomize, setDerandomize,
 		hardRock, setHardRock,
 		easy, setEasy,
-		showFPS, setShowFPS
+		showFPS, setShowFPS,
+		backgroundDim, setBackgroundDim,
 	} = useContext(SettingsContext);
 
 	const [open, setOpen] = useState(false);

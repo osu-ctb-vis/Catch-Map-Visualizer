@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { MapPackContext } from '../../contexts/MapPackContext';
 import { BeatmapsContext } from '../../contexts/BeatmapsContext';
+import { SettingsContext } from '../../contexts/SettingsContext';
 import clsx from 'clsx';
 import './Background.scss';
 
@@ -12,6 +13,8 @@ export function Background() {
 	const zipFile = useContext(MapPackContext).mapPack?.zipFile;
 	
 	const prevImgFileName = useRef(null);
+
+	//const backgroundDim = useContext(SettingsContext).backgroundDim;
 
 	const onBeatmapChange = async () => {
 		if (!beatmap) {

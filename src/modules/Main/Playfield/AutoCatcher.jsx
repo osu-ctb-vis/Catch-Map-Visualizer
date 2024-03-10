@@ -7,9 +7,7 @@ import { PlayStateContext } from "../../../contexts/PlayStateContext";
 import { CalculateScaleFromCircleSize, CalculateCatchWidthByCircleSize } from "../../../utils/CalculateCSScale";
 import useRefState from "../../../hooks/useRefState";
 
-import { calculateAutoPath } from "../../../parser/AutoPathCalculator";
-
-export function AutoCatcher({ beatmap }) {
+export function AutoCatcher({ beatmap, catcherPath }) {
 	const ref = useRef(null);
 
 	const [width, widthRef, setWidth] = useRefState(0);
@@ -70,14 +68,12 @@ export function AutoCatcher({ beatmap }) {
 
 	useEffect(() => {
 		lastTime.current = -1000000;
-	}, [beatmap]);
+	}, [beatmap, catcherPath]);
 
-	const catcherPath = useMemo(() => {
-		if (!beatmap) return [];
-		return calculateAutoPath(parseHitObjects(beatmap), beatmap, hardRock, easy, derandomize); // TODO: Extract the parsing to upper level
-	}, [beatmap]);
+
 
 	const update = () => {
+		if (!catcherPath?.length) return;
 		const currentTime = playerRef.current.currentTime * 1000;
 		if (currentTime === lastTime.current) return;
 		let newIndex = index.current;
@@ -115,7 +111,7 @@ export function AutoCatcher({ beatmap }) {
 		}
 		animationRef.current = requestAnimationFrame(aniUpdate);
 		return () => cancelAnimationFrame(animationRef.current);
-	}, [width, beatmap, derandomize, hardRock, easy]);
+	}, [width, beatmap, derandomize, hardRock, easy, catcherPath]);
 
 
 
