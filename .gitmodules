@@ -1,0 +1,6 @@
+[submodule "server3"]
+	path = server3
+	url = https://github.com/solstice23/server
+[submodule "server"]
+	path = server
+	url = https://github.com/solstice23/server
