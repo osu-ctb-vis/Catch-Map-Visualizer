@@ -3,6 +3,7 @@ import { MapPackContext } from '../../contexts/MapPackContext'
 import { DifficultiesSelector } from './DifficultiesSelector'
 import { LoadFileButton } from './LoadFileButton'
 import { SettingsPanel } from './SettingsPanel'
+import { LoginPanel } from './LoginPanel'
 import Logo from '../../assets/home.svg';
 import './Navbar.scss'
 
@@ -26,6 +27,7 @@ export function NavBar() {
 				<DifficultiesSelector/>
 				<LoadFileButton/>
 				<SettingsPanel/>
+				<LoginPanel/>
 			</div>
 		</nav>
     )

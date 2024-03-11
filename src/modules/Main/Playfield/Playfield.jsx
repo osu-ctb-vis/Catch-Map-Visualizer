@@ -1,6 +1,7 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext, useMemo } from "react";
 import useCachedMemo from "../../../hooks/useCachedMemo";
 import { SettingsContext } from "../../../contexts/SettingsContext";
+import { AccountContext } from "../../../contexts/AccountContext";
 import { parseHitObjects } from "../../../parser/HitobjectsParser";
 import { calculateAutoPath } from "../../../parser/AutoPathCalculator";
 import { BananaPathCalculatingOverlay } from "./BananaPathCalculatingOverlay";
@@ -46,12 +47,14 @@ export function Playfield({ beatmap }) {
 		//if (!beatmap) return [];
 		return calculateAutoPath(beatmap.ctbObjects, beatmap, hardRock, easy, derandomize);
 	}, [hardRock, easy, derandomize]);*/
+	
+	const { userInfo } = useContext(AccountContext);
 
 	const hasBanana = beatmap.ctbObjects.some(obj => obj.type === "banana");
 
 	const [catcherPath, setPath] = useState(null);
 	const [bestCatcherPath, setBestPath] = useState(null);
-	const [calculatingPath, setCalculatingPath] = useState(hasBanana);
+	const [calculatingPath, setCalculatingPath] = useState(hasBanana && userInfo?.eligible);
 
 	const [pathCalcProgress, setPathCalcProgress] = useState(0);
 
@@ -73,6 +76,10 @@ export function Playfield({ beatmap }) {
 			setCalculatingPath(false);
 			return;
 		}
+		if (!userInfo?.eligible) {
+			setCalculatingPath(false);
+			return;
+		}
 		const worker = new Worker(new URL('./../../../parser/AutoPathCalculatorWorker.js', import.meta.url), { type: 'module' });
 		worker.postMessage({
 			params: [beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize],
@@ -88,7 +95,6 @@ export function Playfield({ beatmap }) {
 				return;
 			}
 			const { path, missedBananas } = event.data.result;
-			console.log(missedBananas);
 			for (const obj of beatmap.ctbObjects) delete obj.bananaMissed;
 			for (const index of missedBananas) beatmap.ctbObjects[index].bananaMissed = true;
 			setBestPath(path);
@@ -96,7 +102,7 @@ export function Playfield({ beatmap }) {
 		}
 		return () => worker.terminate();
 		// TODO: Cache calculated paths
-	}, [beatmap, hardRock, easy, derandomize]);
+	}, [beatmap, hardRock, easy, derandomize, userInfo?.eligible]);
 
 
 	return (

@@ -132,7 +132,6 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 			const i = R.current;
 			//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-			console.log(getObjectScale(i));
 			updateObject(i, getObjectX(i), getObjectY(i), getObjectScale(i));
 		}
 		for (let i = R.current; i < oldR; i++) {
