@@ -4,6 +4,7 @@ import { NavBar } from './modules/Navbar/Navbar'
 import { Main } from './modules/Main/Main'
 import { ControlBar } from './modules/ControlBar/ControlBar'
 import { FPSMonitor } from './modules/FPSMonitor/FPSMonitor'
+import { AccountProvider } from './contexts/AccountContext'
 import { MapPackProvider } from './contexts/MapPackContext'
 import { BeatmapsProvider } from './contexts/BeatmapsContext'
 import { PlayStateProvider } from './contexts/PlayStateContext'
@@ -15,22 +16,24 @@ import { WIPModel } from './modules/Components/WIPModel/WIPModel'
 function App() {
 
     return (
-        <MapPackProvider>
-            <BeatmapsProvider>
-                <PlayStateProvider>
-                    <SKinProvider>
-                        <SettingsProvider>
-                            <GlobalFileDropArea />
-                            <NavBar />
-                            <Main />
-                            <ControlBar />
-                            <FPSMonitor />
-                            <WIPModel />
-                        </SettingsProvider>
-                    </SKinProvider>
-                </PlayStateProvider>
-            </BeatmapsProvider>
-        </MapPackProvider>
+        <AccountProvider>
+            <MapPackProvider>
+                <BeatmapsProvider>
+                    <PlayStateProvider>
+                        <SKinProvider>
+                            <SettingsProvider>
+                                <GlobalFileDropArea />
+                                <NavBar />
+                                <Main />
+                                <ControlBar />
+                                <FPSMonitor />
+                                <WIPModel />
+                            </SettingsProvider>
+                        </SKinProvider>
+                    </PlayStateProvider>
+                </BeatmapsProvider>
+            </MapPackProvider>
+        </AccountProvider>
     )
 }
 

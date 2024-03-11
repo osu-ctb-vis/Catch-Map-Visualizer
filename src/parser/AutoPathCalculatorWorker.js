@@ -13,9 +13,14 @@ self.addEventListener('message', async (event) => {
 			self.postMessage({ progress: { current, total } });
 		};
 
+		if (!event.data.params) {
+			self.postMessage({ error: 'No parameters provided' }); // TODO: Check this
+		}
+
 		
 		const result = await calculateAutoPath(...event.data.params, wasmInstance);
 		console.log(result);
+
 		console.log('Worker sending message');
 		self.postMessage({ result });
 	} catch (e) {

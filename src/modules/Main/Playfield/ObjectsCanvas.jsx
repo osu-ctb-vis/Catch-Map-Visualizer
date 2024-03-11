@@ -6,7 +6,7 @@ import { CalculateScaleFromCircleSize } from "../../../utils/CalculateCSScale";
 import useRefState from "../../../hooks/useRefState";
 import "./ObjectsCanvas.scss";
 
-export function ObjectsCanvas({ beatmap, ctbObjects }) {
+export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 	const ref = useRef(null);
 
 	const [width, widthRef, setWidth] = useRefState(0);
@@ -89,14 +89,20 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 	const getObjectY = (i) => {
 		return (1 - (objectRef.current[i].time - playerRef.current.currentTime * 1000) / preempt) * heightRef.current;
 	}
+	const getObjectScale = (i) => {
+		if (objectRef.current[i].type !== "banana") return 1;
+		const obj = objectRef.current[i];
+		if (obj.time - playerRef.current.currentTime * 1000 > ARPreempt) return 1;
+		return 0.3 + (obj.time - playerRef.current.currentTime * 1000) / ARPreempt * 0.7;
+	}
 
-	const update = () => {
+	const update = (force = false) => {
 		const objects = objectRef.current;
 		const currentTime = playerRef.current.currentTime * 1000;
 		const width = widthRef.current;
 		const height = heightRef.current;
 		const preempt = preemptRef.current;
-		if (currentTime == lastTime.current) { lastTime.current = currentTime; return; }
+		if (currentTime == lastTime.current && !force) { lastTime.current = currentTime; return; }
 		//console.log(currentTime, lastTime.current);
 		const startTime = currentTime - 200, endTime = currentTime + preempt + 200;
 		
@@ -107,7 +113,7 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 				const i = R.current;
 				//console.log(objects[R.current]);
 				//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-				updateObject(i, getObjectX(i), getObjectY(i));
+				updateObject(i, getObjectX(i), getObjectY(i), getObjectScale(i));
 			}
 			removeObjects();
 			//console.log("range", L.current, R.current);
@@ -126,7 +132,7 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 		for (R.current = L.current; R.current < objects.length && objects[R.current].time <= endTime; R.current++) {
 			const i = R.current;
 			//updateObject(i, objects[i].x / 512 * width, (1 - (objects[i].time - currentTime) / preempt) * height);
-			updateObject(i, getObjectX(i), getObjectY(i));
+			updateObject(i, getObjectX(i), getObjectY(i), getObjectScale(i));
 		}
 		for (let i = R.current; i < oldR; i++) {
 			removeObject(i);
@@ -150,11 +156,14 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 		ref.current.removeChild(objectOnScreen.current[index]);
 		objectOnScreen.current[index] = null;
 	}
-	const updateObject = (index, x, y, show = true) => {
+	const updateObject = (index, x, y, scale, show = true) => {
 		//console.log("update", index, x, y);
 		if (!show) return removeObject(index);
 		if (objectOnScreen.current[index]) {
-			objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
+			if (scale !== 1) objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+			else objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
+			if (objectRef.current[index]?.bananaMissed) objectOnScreen.current[index].classList.add("banana-missed");
+			else objectOnScreen.current[index].classList.remove("banana-missed");
 		} else {
 			const div = Object(
 				index,
@@ -163,7 +172,8 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 				objectRef.current[index].hyperDashTarget,
 				objectRef.current[index]
 			);
-			div.style.transform = `translate(${x}px, ${y}px)`;
+			if (scale !== 1) div.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+			else div.style.transform = `translate(${x}px, ${y}px)`;
 			objectOnScreen.current[index] = div;
 			ref.current.appendChild(div);
 		}
@@ -177,7 +187,12 @@ export function ObjectsCanvas({ beatmap, ctbObjects }) {
 
 	useEffect(() => {
 		refreshOnScreenObjects();
-	}, [derandomize, verticalScale, hardRock, easy]);
+	}, [width, height, derandomize, verticalScale, hardRock, easy, catcherPath]);
+
+	useEffect(() => {
+		refreshOnScreenObjects();
+		update(true);
+	}, [width, height]);
 
 	const animationRef = useRef();
 	useEffect(() => {

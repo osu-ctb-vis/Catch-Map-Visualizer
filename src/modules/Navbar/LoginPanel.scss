@@ -1,0 +1,150 @@
+.login-panel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background-color: var(--navbar-color-light);
+	color: var(--navbar-text-color);
+	border: none;
+	outline: none;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	font-size: 1.2em;
+	flex-direction: row;
+	min-width: 60px;
+	font-family: inherit;
+	gap: 10px;
+	padding: 0 16px;
+	text-align: left;
+
+	&:hover, &.open {
+		background-color: var(--navbar-color-light-hover);
+	}
+
+	&.loaded {
+		background-color: var(--navbar-color);
+		&:hover, &.open {
+			background-color: var(--navbar-color-light);
+		}
+	}
+
+	svg {
+		font-size: 24px;
+	}
+
+	.login-panel-menu {
+		position: absolute;
+		right: 0;
+		top: 60px;
+		width: max-content;
+		max-width: calc(100vw - 100px);
+		max-height: calc(100vh - 150px);
+		max-height: calc(100svh - 150px);
+		overflow-y: auto;
+		background-color: var(--navbar-color-light);
+		transition: clip-path 0.2s ease-in-out;
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+		pointer-events: none;
+		//padding: 20px;
+		cursor: default;
+
+		.login-panel-user {
+			display: flex;
+			align-items: center;
+			flex-direction: row;
+			transition: background-color 0.2s;
+			
+
+			.login-panel-user-avatar {
+				display: block;
+				width: 60px;
+				height: 60px;
+				img {
+					width: 100%;
+					height: 100%;
+				}
+			}
+
+			.login-panel-user-userinfo {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: flex-start;
+				margin-left: 20px;
+				margin-right: 20px;
+
+				.login-panel-user-name {
+					font-size: 22px;
+					font-weight: 600;
+				}
+				.login-panel-user-id {
+					font-size: 16px;
+					opacity: 0.7;
+				}
+			}
+
+			&:hover {
+				background-color: var(--navbar-color-light-hover);
+			}
+		}
+
+		
+		.login-panel-eligibility-status {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			transition: background-color 0.2s, opacity 0.2s;
+			min-height: 48px;
+			cursor: pointer;
+			padding-left: 20px;
+			gap: 36px;
+			user-select: none;
+			padding-top: 8px;
+			padding-bottom: 8px;
+			padding-right: 10px;
+
+			&:hover {
+				background-color: var(--navbar-color-light-hover);
+			}
+
+			.login-panel-eligibility-status-text {
+				flex: 1;
+				font-size: 16px;
+				max-width: 240px;
+			}
+		}
+
+
+		.login-panel-logout {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			transition: background-color 0.2s, opacity 0.2s;
+			height: 48px;
+			cursor: pointer;
+			padding-left: 20px;
+			gap: 36px;
+			user-select: none;
+
+			&:hover {
+				background-color: var(--navbar-color-light-hover);
+			}
+
+			&.disabled {
+				pointer-events: none;
+				opacity: 0.5;
+			}
+		}
+
+	}
+
+	&.open {
+		.login-panel-menu {
+			clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+			pointer-events: all;
+		}
+	}
+	
+	
+
+}

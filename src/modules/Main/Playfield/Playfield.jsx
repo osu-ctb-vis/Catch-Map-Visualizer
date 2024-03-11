@@ -1,6 +1,7 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext, useMemo } from "react";
 import useCachedMemo from "../../../hooks/useCachedMemo";
 import { SettingsContext } from "../../../contexts/SettingsContext";
+import { AccountContext } from "../../../contexts/AccountContext";
 import { parseHitObjects } from "../../../parser/HitobjectsParser";
 import { calculateAutoPath } from "../../../parser/AutoPathCalculator";
 import { BananaPathCalculatingOverlay } from "./BananaPathCalculatingOverlay";
@@ -46,46 +47,62 @@ export function Playfield({ beatmap }) {
 		//if (!beatmap) return [];
 		return calculateAutoPath(beatmap.ctbObjects, beatmap, hardRock, easy, derandomize);
 	}, [hardRock, easy, derandomize]);*/
+	
+	const { userInfo } = useContext(AccountContext);
+
+	const hasBanana = beatmap.ctbObjects.some(obj => obj.type === "banana");
 
 	const [catcherPath, setPath] = useState(null);
 	const [bestCatcherPath, setBestPath] = useState(null);
-	const [calculatingPath, setCalculatingPath] = useState(true);
+	const [calculatingPath, setCalculatingPath] = useState(hasBanana && userInfo?.eligible);
 
 	const [pathCalcProgress, setPathCalcProgress] = useState(0);
 
 
 	const calcPath = async () => {
-		const normalPath = await (calculateAutoPath(
+		const normalPath = (await calculateAutoPath(
 			beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize
 		)).path;
-		console.log(normalPath);
 		setPath(normalPath);
 	}
 
 	useEffect(() => {
-		setCalculatingPath(true);
-		setPathCalcProgress(0);
+		if (hasBanana) {
+			setCalculatingPath(true);
+			setPathCalcProgress(0);
+		}
 		calcPath();
+		if (!hasBanana) {
+			setCalculatingPath(false);
+			return;
+		}
+		if (!userInfo?.eligible) {
+			setCalculatingPath(false);
+			return;
+		}
 		const worker = new Worker(new URL('./../../../parser/AutoPathCalculatorWorker.js', import.meta.url), { type: 'module' });
 		worker.postMessage({
 			params: [beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize],
 		});
 		worker.onmessage = (event) => {
+			if (event.data.error) {
+				setCalculatingPath(false);
+				console.error(event.data.error);
+				return;
+			}
 			if (event.data.progress) {
 				setPathCalcProgress(event.data.progress.current / event.data.progress.total);
 				return;
 			}
 			const { path, missedBananas } = event.data.result;
-			console.log(missedBananas);
 			for (const obj of beatmap.ctbObjects) delete obj.bananaMissed;
 			for (const index of missedBananas) beatmap.ctbObjects[index].bananaMissed = true;
 			setBestPath(path);
 			setCalculatingPath(false);
 		}
 		return () => worker.terminate();
-		// TODO: refresh bananas when calculated
 		// TODO: Cache calculated paths
-	}, [beatmap, hardRock, easy, derandomize]);
+	}, [beatmap, hardRock, easy, derandomize, userInfo?.eligible]);
 
 
 	return (
@@ -98,7 +115,7 @@ export function Playfield({ beatmap }) {
 		>
 			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
 			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
-			<ObjectsCanvas beatmap={beatmap} ctbObjects={beatmap.ctbObjects} />
+			<ObjectsCanvas beatmap={beatmap} ctbObjects={beatmap.ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
 			<Grids />
 			<ActualPlayfieldBorder />
 		</div>
