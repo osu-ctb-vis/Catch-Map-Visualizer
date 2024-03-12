@@ -10,6 +10,8 @@ export const SettingsProvider = ({children}) => {
 
 	const [hardRock, hardRockRef, setHardRock] = useSetting("hardRock", false);
 	const [easy, easyRef, setEasy] = useSetting("easy", false);
+
+	const [gameSpeed, gameSpeedRef, setGameSpeed] = useSetting("gameSpeed", 1, false);
 	
 	const [showFPS, showFPSRef, setShowFPS] = useSetting("showFPS", false, true);
 
@@ -22,6 +24,7 @@ export const SettingsProvider = ({children}) => {
 			derandomize, setDerandomize, derandomizeRef,
 			hardRock, setHardRock, hardRockRef,
 			easy, setEasy, easyRef,
+			gameSpeed, setGameSpeed, gameSpeedRef,
 			showFPS, setShowFPS, showFPSRef,
 			backgroundDim, setBackgroundDim, backgroundDimRef,
 		}}>

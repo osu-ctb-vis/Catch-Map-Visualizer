@@ -14,6 +14,7 @@ export function SettingsPanel () {
 		derandomize, setDerandomize,
 		hardRock, setHardRock,
 		easy, setEasy,
+		gameSpeed, setGameSpeed,
 		showFPS, setShowFPS,
 		backgroundDim, setBackgroundDim,
 	} = useContext(SettingsContext);
@@ -55,6 +56,55 @@ export function SettingsPanel () {
 						value={derandomize}
 						onChange={(value) => setDerandomize(value)}
 					/>
+					<div className="mods-selection">
+						<Mod
+							label="Hard Rock"
+							acronym="HR"
+							description="Increase the difficulty of the map"
+							value={hardRock}
+							onChange={(value) => {
+								setHardRock(value);
+								if (value) setEasy(false);
+							}}
+						/>
+						<Mod
+							label="Easy"
+							acronym="EZ"
+							description="Decrease the difficulty of the map"
+							value={easy}
+							onChange={(value) => {
+								setEasy(value);
+								if (value) setHardRock(false);
+							}}
+						/>
+						<Mod
+							label="Double Time"
+							acronym="DT"
+							description="Increase the speed of the map"
+							value={gameSpeed === 1.5}
+							semiSelected={gameSpeed > 1}
+							onChange={(value) => setGameSpeed(value ? 1.5 : 1)}
+						/>
+						<Mod
+							label="Half Time"
+							acronym="HT"
+							description="Decrease the speed of the map"
+							value={gameSpeed === 0.75}
+							semiSelected={gameSpeed < 1}
+							onChange={(value) => setGameSpeed(value ? 0.75 : 1)}
+						/>
+					</div>
+					<Slider
+						label="Game Speed"
+						value={gameSpeed}
+						min={0.1}
+						max={2}
+						step={0.01}
+						defaultValue={1}
+						suffix="x"
+						onChange={(value) => setGameSpeed(value)}
+					/>
+
 					<Checkbox
 						label="Hard Rock"
 						description="Increase the difficulty of the map"
@@ -108,7 +158,7 @@ function Checkbox({label, description, value, onChange}) {
 	)
 }
 
-function Slider({ label, value, min, max, step, onChange, defaultValue, percentage }) {
+function Slider({ label, value, min, max, step, onChange, defaultValue, percentage, suffix }) {
 	const toFixedPrecision = Math.max(0, -Math.floor(Math.log10(step) + (percentage ? 2 : 0)));
 	return (
 		<div className="slider">
@@ -122,7 +172,7 @@ function Slider({ label, value, min, max, step, onChange, defaultValue, percenta
 						/>
 					)
 				}
-				<div className="slider-value">{ percentage ? `${(value * 100).toFixed(toFixedPrecision)}%` : value.toFixed(toFixedPrecision)}</div>
+				<div className="slider-value">{ percentage ? `${(value * 100).toFixed(toFixedPrecision)}%` : value.toFixed(toFixedPrecision)}{suffix ?? ""}</div>
 			</div>
 			<div className="slider-bar">
 				<input
@@ -136,6 +186,15 @@ function Slider({ label, value, min, max, step, onChange, defaultValue, percenta
 
 			</div>
 			
+		</div>
+	)
+}
+
+function Mod({ label, acronym, description, semiSelected, value, onChange }) {
+	return (
+		<div className={clsx("mod", {selected: value, 'semi-selected': semiSelected})} onClick={() => onChange(!value)}>
+			<div className="mod-acronym">{acronym}</div>
+			<div className="mod-label">{label}</div>
 		</div>
 	)
 }

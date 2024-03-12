@@ -1,7 +1,7 @@
 import { CalculateCatchWidthByCircleSize, ALLOWED_CATCH_RANGE } from '../utils/CalculateCSScale.js';
 
-const walkSpeed = 0.5;
-const dashSpeed = 1.0;
+const WALK_SPEED = 0.5;
+const DASH_SPEED = 1.0;
 
 export const calculateAutoPath = async (
 	fruits,
@@ -9,8 +9,12 @@ export const calculateAutoPath = async (
 	hardRock,
 	easy,
 	derandomize,
+	gameSpeed,
 	wasmInstance = null,
 ) => {
+	const walkSpeed = WALK_SPEED / gameSpeed;
+	const dashSpeed = DASH_SPEED / gameSpeed;
+
 	const originalXs = fruits.map(fruit => fruit.x);
 	fruits = fruits.map(fruit => {
 		if (derandomize && fruit.type != "banana") return fruit;
@@ -117,7 +121,7 @@ export const calculateAutoPath = async (
 			}
 			i--;
 			const bestPath = wasmInstance ?
-				await calculateBananaPathWasm(bananas, halfCatcherWidth, wasmInstance) :
+				await calculateBananaPathWasm(bananas, halfCatcherWidth, gameSpeed, wasmInstance) :
 				calculateFallbackBananaPath(bananas);
 			//console.log(bestPath[0], path[path.length - 1]);
 			path.push(...bestPath);
@@ -152,9 +156,13 @@ export const initWasm = async () => {
 	return wasmInstance;
 }
 
-const calculateBananaPathWasm = async (bananas, halfCatcherWidth, wasmInstance) => {
+const calculateBananaPathWasm = async (bananas, halfCatcherWidth, gameSpeed, wasmInstance) => {
 	console.log("Calculating banana path with WASM");
 	const timeBefore = performance.now();
+
+	const walkSpeed = WALK_SPEED / gameSpeed;
+	const dashSpeed = DASH_SPEED / gameSpeed;
+	
 	halfCatcherWidth *= 0.8; // leniency
 	const headSnap = bananas[0].type === "snap";
 	const tailSnap = bananas[bananas.length - 1].type === "snap";
@@ -165,7 +173,7 @@ const calculateBananaPathWasm = async (bananas, halfCatcherWidth, wasmInstance) 
 	const vec = new wasmInstance.vector$Banana$();
 	bananas.forEach(banana => vec.push_back(banana));
 
-	let outputObj = await wasmInstance.calculatePath(vec, headSnap, tailSnap, halfCatcherWidth);
+	let outputObj = await wasmInstance.calculatePath(vec, headSnap, tailSnap, halfCatcherWidth, gameSpeed);
 	let size = outputObj.size();
 
 	console.log(outputObj);

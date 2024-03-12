@@ -41,9 +41,13 @@ export function Playfield({ beatmap }) {
 		derandomize,
 		hardRock,
 		easy,
+		gameSpeed,
 	} = useContext(SettingsContext);
 
-	if (!beatmap.ctbObjects) beatmap.ctbObjects = parseHitObjects(beatmap);
+	const ctbObjectsKey = JSON.stringify([beatmap.difficulty.circleSize, hardRock, easy, gameSpeed]);
+	if (!beatmap.ctbObjects) beatmap.ctbObjects = {};
+	if (!beatmap.ctbObjects[ctbObjectsKey]) beatmap.ctbObjects[ctbObjectsKey] = parseHitObjects(beatmap, hardRock, easy, gameSpeed);
+	const ctbObjects = beatmap.ctbObjects[ctbObjectsKey];
 
 	/*const catcherPath = useCachedMemo(() => {
 		//if (!beatmap) return [];
@@ -52,7 +56,7 @@ export function Playfield({ beatmap }) {
 	
 	const { userInfo } = useContext(AccountContext);
 
-	const hasBanana = beatmap.ctbObjects.some(obj => obj.type === "banana");
+	const hasBanana = ctbObjects.some(obj => obj.type === "banana");
 
 	const [catcherPath, setPath] = useState(null);
 	const [bestCatcherPath, setBestPath] = useState(null);
@@ -63,7 +67,7 @@ export function Playfield({ beatmap }) {
 
 	const calcPath = async () => {
 		const normalPath = (await calculateAutoPath(
-			beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize
+			ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize, gameSpeed
 		)).path;
 		setPath(normalPath);
 	}
@@ -82,7 +86,7 @@ export function Playfield({ beatmap }) {
 			setCalculatingPath(false);
 			return;
 		}
-		const bananaPathKey = JSON.stringify([beatmap.difficulty.circleSize, hardRock, easy, derandomize]);
+		const bananaPathKey = JSON.stringify([beatmap.difficulty.circleSize, hardRock, easy, derandomize, gameSpeed]);
 		const cachedPath = beatmap.cachedBananaPaths?.[bananaPathKey];
 		if (cachedPath) {
 			setBestPath(cachedPath);
@@ -91,7 +95,7 @@ export function Playfield({ beatmap }) {
 		}
 		const worker = new Worker(new URL('./../../../parser/AutoPathCalculatorWorker.js', import.meta.url), { type: 'module' });
 		worker.postMessage({
-			params: [beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize],
+			params: [ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize, gameSpeed],
 		});
 		worker.onmessage = (event) => {
 			if (event.data.error) {
@@ -104,15 +108,15 @@ export function Playfield({ beatmap }) {
 				return;
 			}
 			const { path, missedBananas } = event.data.result;
-			for (const obj of beatmap.ctbObjects) delete obj.bananaMissed;
-			for (const index of missedBananas) beatmap.ctbObjects[index].bananaMissed = true;
+			for (const obj of ctbObjects) delete obj.bananaMissed;
+			for (const index of missedBananas) ctbObjects[index].bananaMissed = true;
 			setBestPath(path);
 			setCalculatingPath(false);
 			beatmap.cachedBananaPaths = beatmap.cachedBananaPaths || {};
 			beatmap.cachedBananaPaths[bananaPathKey] = path;
 		}
 		return () => worker.terminate();
-	}, [beatmap, hardRock, easy, derandomize, userInfo?.eligible]);
+	}, [beatmap, hardRock, easy, derandomize, gameSpeed, userInfo?.eligible]);
 
 
 	return (
@@ -125,7 +129,7 @@ export function Playfield({ beatmap }) {
 		>
 			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
 			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
-			<ObjectsCanvas beatmap={beatmap} ctbObjects={beatmap.ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
+			<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
 			<Grids />
 			<ActualPlayfieldBorder />
 		</div>

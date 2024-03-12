@@ -40,7 +40,7 @@ const getHitObjectType = (hitObject) => {
 	if (hitType & 1 << 2) return "SpinnableObject";
 }
 
-export const parseHitObjects = (beatmap) => {	
+export const parseHitObjects = (beatmap, hardRock, easy, gameSpeed) => {
 	//const timingLines = parseTimingLines(beatmap);
 
 	const hitObjects = beatmap.hitObjects;
@@ -166,7 +166,7 @@ export const parseHitObjects = (beatmap) => {
 	});
 	applyVisualPresentation(nestedFruits);
 	applyPositionOffsets(nestedFruits);
-	applyHyperFruits(nestedFruits, beatmap);
+	applyHyperFruits(nestedFruits, beatmap, hardRock, easy, gameSpeed);
 	const fruits = nestedFruits.flatMap((nested) => nested.fruits);
 	fruits.sort((a, b) => a.time - b.time); // sort again because some maps have simultaneous hitobjects
 	return fruits;
@@ -278,14 +278,14 @@ const getOffset = (position, amount) => {
 		return 0;
 	}
 }
-const applyHyperFruits = (nestedFruits, beatmap) => {
+const applyHyperFruits = (nestedFruits, beatmap, hardRock, easy, gameSpeed) => {
 	const palpableObjects = nestedFruits.flatMap((nested) => nested.fruits).filter(h => h.type === "fruit" || h.type === "droplet");
-	let halfCatcherWidth = CalculateCatchWidth(beatmap.difficulty) / 2;
+	let halfCatcherWidth = CalculateCatchWidth(beatmap.difficulty, hardRock, easy) / 2;
 	halfCatcherWidth /= ALLOWED_CATCH_RANGE;
 	let lastDirection = 0;
 	let lastExcess = halfCatcherWidth;
 	
-	const BASE_DASH_SPEED = 1.0;
+	const BASE_DASH_SPEED = 1.0 / gameSpeed;
 
 	for (let i = 0; i < palpableObjects.length - 1; i++) {
 		const currentObject = palpableObjects[i];

@@ -162,8 +162,8 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 		if (objectOnScreen.current[index]) {
 			if (scale !== 1) objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
 			else objectOnScreen.current[index].style.transform = `translate(${x}px, ${y}px)`;
-			if (objectRef.current[index]?.bananaMissed) objectOnScreen.current[index].classList.add("banana-missed");
-			else objectOnScreen.current[index].classList.remove("banana-missed");
+			objectOnScreen.current[index].classList.toggle("banana-missed", objectRef.current[index]?.bananaMissed ?? false);
+			objectOnScreen.current[index].classList.toggle("hyper", objectRef.current[index]?.hyperDashTarget ?? false);
 		} else {
 			const div = Object(
 				index,
@@ -187,12 +187,12 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 
 	useEffect(() => {
 		refreshOnScreenObjects();
-	}, [width, height, derandomize, verticalScale, hardRock, easy, catcherPath]);
+	}, [width, height, derandomize, verticalScale, catcherPath]);
 
 	useEffect(() => {
 		refreshOnScreenObjects();
 		update(true);
-	}, [width, height]);
+	}, [width, height, hardRock, easy]);
 
 	const animationRef = useRef();
 	useEffect(() => {
