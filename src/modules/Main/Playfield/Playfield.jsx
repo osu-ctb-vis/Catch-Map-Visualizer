@@ -82,6 +82,13 @@ export function Playfield({ beatmap }) {
 			setCalculatingPath(false);
 			return;
 		}
+		const bananaPathKey = JSON.stringify([beatmap.difficulty.circleSize, hardRock, easy, derandomize]);
+		const cachedPath = beatmap.cachedBananaPaths?.[bananaPathKey];
+		if (cachedPath) {
+			setBestPath(cachedPath);
+			setCalculatingPath(false);
+			return;
+		}
 		const worker = new Worker(new URL('./../../../parser/AutoPathCalculatorWorker.js', import.meta.url), { type: 'module' });
 		worker.postMessage({
 			params: [beatmap.ctbObjects, beatmap.difficulty.circleSize, hardRock, easy, derandomize],
@@ -101,9 +108,10 @@ export function Playfield({ beatmap }) {
 			for (const index of missedBananas) beatmap.ctbObjects[index].bananaMissed = true;
 			setBestPath(path);
 			setCalculatingPath(false);
+			beatmap.cachedBananaPaths = beatmap.cachedBananaPaths || {};
+			beatmap.cachedBananaPaths[bananaPathKey] = path;
 		}
 		return () => worker.terminate();
-		// TODO: Cache calculated paths
 	}, [beatmap, hardRock, easy, derandomize, userInfo?.eligible]);
 
 
