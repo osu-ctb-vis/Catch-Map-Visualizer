@@ -63,7 +63,7 @@ export function Background() {
 				className={clsx("background", {"hidden": !img})}
 				style={{
 					backgroundImage: imgDefer.current ? `url(${imgDefer.current})` : 'none',
-					'--bg-dim': backgroundDim,
+					'--bg-dim': 1 - backgroundDim,
 				}}
 			/>
 		</>
