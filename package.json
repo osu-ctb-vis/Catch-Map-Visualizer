@@ -10,7 +10,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "server": "node server/server.js",
-    "i": "vite build && node server/server.js",
+    "server-dev": "node server/server.js --disable-postgres",
+    "start-dev": "vite build && node server/server.js --disable-postgres",
     "vercel-install": "./vercel-submodule-workaround.sh && npm i"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react-swc": "^3.5.0",
+    "connect-pg-simple": "^9.0.1",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.56.0",
