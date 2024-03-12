@@ -76,18 +76,20 @@ export const parseHitObjects = (beatmap, hardRock, easy, gameSpeed) => {
 				timingPointIndex++;
 			}
 			const timingPoint = timingPoints[timingPointIndex];
-			while (difficultyPointIndex < difficultyPoints.length - 1 && difficultyPoints[difficultyPointIndex + 1].startTime < hitObject.startTime) {
+			while (difficultyPointIndex < difficultyPoints.length - 1 && difficultyPoints[difficultyPointIndex + 1].startTime <= hitObject.startTime) {
 				difficultyPointIndex++;
 				if (difficultyPoints[difficultyPointIndex].sliderVelocity) {
 					sliderMultiplier = difficultyPoints[difficultyPointIndex].sliderVelocity;
 				}
 			}
 			const base_scoring_distance = 100;
-			const TickDistanceMultiplier = beatmap.fileFormat < 8 ? 1 : sliderMultiplier; //
+			const TickDistanceMultiplier = beatmap.fileFormat < 8 ? 1 : sliderMultiplier;
 			const velocityFactor = base_scoring_distance * beatmap.difficulty.sliderMultiplier / timingPoint.beatLength;
 			const tickDistanceFactor = base_scoring_distance * beatmap.difficulty.sliderMultiplier / beatmap.difficulty.sliderTickRate;
 
 			//console.log("tickDistanceFactor, TickDistanceMultiplier", tickDistanceFactor, TickDistanceMultiplier);
+
+			//console.log("time, TickDistanceMultiplier", hitObject.startTime, TickDistanceMultiplier, difficultyPointIndex, difficultyPoints[difficultyPointIndex]);
 			
 			const tickDistance = tickDistanceFactor * TickDistanceMultiplier;
 			//const velocity = velocityFactor * sliderMultiplier;
@@ -189,8 +191,14 @@ const applyPositionOffsets = (nestedFruits) => {
 
 	let lastPosition = null, lastStartTime = 0;
 
+	let nestedIndex = -1;
+	let index = -1;
+
 	for (let fruit of nestedFruits) {
+		nestedIndex++;
+		//console.log(fruit);
 		if (fruit.type === "fruit") { // HR Offset
+			index++;
 			const hitObject = fruit.fruits[0];
 
 			const offsetPosition = hitObject.OriginalX;
@@ -225,7 +233,10 @@ const applyPositionOffsets = (nestedFruits) => {
 			lastStartTime = startTime;
 		} else if (fruit.type === "bananaShower") {
 			for (let banana of fruit.fruits) {
-				banana.x = rng.nextDouble() * 512;
+				index++;
+				const tmp = rng.nextDouble();
+				//console.log("banana", tmp, nestedIndex, index);
+				banana.x = tmp * 512;
 				rng.next(); rng.next(); rng.next();
 				banana.xOffsetHR = rngHR.nextDouble() * 512 - banana.x;
 				rngHR.next(); rngHR.next(); rngHR.next();
@@ -237,10 +248,14 @@ const applyPositionOffsets = (nestedFruits) => {
 			lastStartTime = fruit.fruits[0].time;
 
 			for (let subFruit of fruit.fruits) {
+				index++;
 				if (subFruit.type === "droplet") {
-					subFruit.xOffset = clamp(rng.nextRange(-20, 20), -subFruit.x, 512 - subFruit.x);
+					const tmp = rng.nextRange(-20, 20);
+					//console.log(tmp, nestedIndex, index);
+					subFruit.xOffset = clamp(tmp, -subFruit.x, 512 - subFruit.x);
 					subFruit.xOffsetHR = clamp(rngHR.nextRange(-20, 20), -subFruit.x, 512 - subFruit.x);
 				} else if (subFruit.type === "drop") {
+					//console.log("pass (drop)", nestedIndex, index);
 					rng.next(); rngHR.next();
 				}
 			}
@@ -413,6 +428,7 @@ function* sliderEventGenerator(startTime, spanDuration, velocity, tickDistance, 
 }
 
 function* generateTicks(spanIndex, spanStartTime, spanDuration, reversed, length, tickDistance, minDistanceFromEnd) {
+	//console.log("generateTicks", spanIndex, spanStartTime, spanDuration, reversed, length, tickDistance, minDistanceFromEnd);
 	for (let d = tickDistance; d <= length; d += tickDistance) {
 		if (d >= length - minDistanceFromEnd) break;
 

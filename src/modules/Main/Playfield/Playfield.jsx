@@ -127,11 +127,11 @@ export function Playfield({ beatmap }) {
 				...((height === 0) ? {} : { maxWidth: maxWidth + "px" })
 			}}
 		>
-			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
-			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
-			<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
 			<Grids />
 			<ActualPlayfieldBorder />
+			<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
+			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
+			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
 		</div>
 	)
 }
