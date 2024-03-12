@@ -14,7 +14,7 @@ export function Background() {
 	
 	const prevImgFileName = useRef(null);
 
-	//const backgroundDim = useContext(SettingsContext).backgroundDim;
+	const backgroundDim = useContext(SettingsContext).backgroundDim;
 
 	const onBeatmapChange = async () => {
 		if (!beatmap) {
@@ -62,7 +62,8 @@ export function Background() {
 			<div
 				className={clsx("background", {"hidden": !img})}
 				style={{
-					backgroundImage: imgDefer.current ? `url(${imgDefer.current})` : 'none'
+					backgroundImage: imgDefer.current ? `url(${imgDefer.current})` : 'none',
+					'--bg-dim': backgroundDim,
 				}}
 			/>
 		</>

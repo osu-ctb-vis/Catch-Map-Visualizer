@@ -11,6 +11,8 @@ import { ActualPlayfieldBorder } from './ActualPlayfieldBorder';
 import { ObjectsCanvas } from './ObjectsCanvas';
 import { AutoCatcher } from './AutoCatcher';
 
+const inDevelopmentBuild = import.meta.env.DEV;
+
 export function Playfield({ beatmap }) {
 	const ref = useRef(null);
 
@@ -76,7 +78,7 @@ export function Playfield({ beatmap }) {
 			setCalculatingPath(false);
 			return;
 		}
-		if (!userInfo?.eligible) {
+		if (!userInfo?.eligible && !inDevelopmentBuild) {
 			setCalculatingPath(false);
 			return;
 		}

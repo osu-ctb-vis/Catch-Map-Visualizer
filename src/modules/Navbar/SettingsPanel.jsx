@@ -39,6 +39,16 @@ export function SettingsPanel () {
 						value={showGrid}
 						onChange={(value) => setShowGrid(value)}
 					/>
+					<Slider
+						label="Background Dim"
+						value={backgroundDim}
+						min={0}
+						max={1}
+						step={0.01}
+						defaultValue={0.8}
+						percentage
+						onChange={(value) => setBackgroundDim(value)}
+					/>
 					<Checkbox
 						label="Derandomize"
 						description="Don't apply random offset to the notes"
@@ -98,7 +108,8 @@ function Checkbox({label, description, value, onChange}) {
 	)
 }
 
-function Slider({ label, value, min, max, step, onChange, defaultValue }) {
+function Slider({ label, value, min, max, step, onChange, defaultValue, percentage }) {
+	const toFixedPrecision = Math.max(0, -Math.floor(Math.log10(step) + (percentage ? 2 : 0)));
 	return (
 		<div className="slider">
 			<div className="slider-content">
@@ -111,7 +122,7 @@ function Slider({ label, value, min, max, step, onChange, defaultValue }) {
 						/>
 					)
 				}
-				<div className="slider-value">{value.toFixed(1)}</div>
+				<div className="slider-value">{ percentage ? `${(value * 100).toFixed(toFixedPrecision)}%` : value.toFixed(toFixedPrecision)}</div>
 			</div>
 			<div className="slider-bar">
 				<input

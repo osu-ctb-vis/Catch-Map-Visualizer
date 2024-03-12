@@ -13,7 +13,7 @@ export const SettingsProvider = ({children}) => {
 	
 	const [showFPS, showFPSRef, setShowFPS] = useSetting("showFPS", false, true);
 
-	const [backgroundDim, backgroundDimRef, setBackgroundDim] = useSetting("backgroundDim", 0.8);
+	const [backgroundDim, backgroundDimRef, setBackgroundDim] = useSetting("backgroundDim", 0.8, true);
 
 	return (
 		<SettingsContext.Provider value={{
