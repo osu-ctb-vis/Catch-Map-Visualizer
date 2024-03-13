@@ -1,4 +1,7 @@
 import { CalculateCatchWidthByCircleSize, ALLOWED_CATCH_RANGE } from '../utils/CalculateCSScale.js';
+import { calculatePreempt } from "../utils/ApproachRate";
+
+const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 const WALK_SPEED = 0.5;
 const DASH_SPEED = 1.0;
@@ -6,6 +9,7 @@ const DASH_SPEED = 1.0;
 export const calculateAutoPath = async (
 	fruits,
 	circleSize,
+	approachRate,
 	hardRock,
 	easy,
 	derandomize,
@@ -30,11 +34,16 @@ export const calculateAutoPath = async (
 		toTime: 0,
 		holdToTime: 0,
 		fromX: 256,
-		toX: fruits[0].x,
+		toX: 256,
 	}];
 
 	if (hardRock) circleSize = Math.min(10, circleSize * 1.3);
 	if (easy) circleSize = circleSize * 0.5;
+
+	if (hardRock) approachRate = Math.min(10, approachRate * 1.4);
+	if (easy) approachRate = approachRate * 0.5;
+	
+	const preempt = calculatePreempt(approachRate) / gameSpeed;
 
 	let halfCatcherWidth = CalculateCatchWidthByCircleSize(circleSize) / 2;
 	halfCatcherWidth /= ALLOWED_CATCH_RANGE;
@@ -55,10 +64,11 @@ export const calculateAutoPath = async (
 		if (cur) bananas.push_back(cur);
 		wasmInstance.initBananas(bananas);
 	}
+
 	
 	for (let i = 0; i < fruits.length; i++) {
 		if (fruits[i].type === "fruit" || fruits[i].type === "drop" || fruits[i].type === "droplet") {
-			const speeds = [{hyper: false, speed: walkSpeed}, {hyper: true, speed: dashSpeed}];
+			const speeds = [{hyper: false, speed: walkSpeed}, {hyper: false, speed: dashSpeed}];
 			if (fruits[i].hyperDashTarget) {
 				const hyperMultiplier = fruits[i].hyperMultiplier;
 				speeds.push({hyper: false, speed: walkSpeed * hyperMultiplier});
@@ -70,20 +80,23 @@ export const calculateAutoPath = async (
 			const x = fruits[i].x;
 			const time = fruits[i].time;
 			const distance = x - prevX;
-			const direction = Math.sign(distance);
 			const duration = time - prevTime;
-			const speed = Math.abs(distance / duration);
+			const requiredSpeed = Math.abs(distance / duration);
 
-			speeds.push({hyper: false, speed: Math.abs(speed)});
 			speeds.sort((a, b) => a.speed - b.speed);
+			
+			speeds.push({hyper: requiredSpeed > dashSpeed, speed: Math.abs(requiredSpeed)});
 
 			let possible = false;
-			for (const {hyper, speed: targetSpeed} of speeds) {
-				if (speed <= targetSpeed) {
-					const actualDuration = Math.abs(distance / targetSpeed);
+			for (const {hyper, speed} of speeds) {
+				if (requiredSpeed <= speed) {
+					const actualDuration = Math.abs(distance / speed);
+					const idealStartTime = clamp(time - preempt, prevTime, time - actualDuration);
+					const wait = idealStartTime - prevTime;
+					path[path.length - 1].holdToTime += wait;
 					path.push({
-						fromTime: prevTime,
-						toTime: prevTime + actualDuration,
+						fromTime: prevTime + wait,
+						toTime: prevTime + actualDuration + wait,
 						holdToTime: time,
 						fromX: prevX,
 						toX: x,

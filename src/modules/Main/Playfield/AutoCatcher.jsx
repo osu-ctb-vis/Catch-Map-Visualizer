@@ -83,7 +83,7 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 		while (newIndex + 1 < catcherPath.length && catcherPath[newIndex + 1].fromTime <= currentTime) {
 			newIndex++;
 		}
-		while (newIndex - 1 > 0 && catcherPath[newIndex].fromTime > currentTime) {
+		while (newIndex - 1 >= 0 && catcherPath[newIndex].fromTime > currentTime) {
 			newIndex--;
 		}
 		const width = widthRef.current;
