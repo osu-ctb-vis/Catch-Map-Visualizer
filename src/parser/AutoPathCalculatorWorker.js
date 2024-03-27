@@ -19,7 +19,7 @@ self.addEventListener('message', async (event) => {
 
 		
 		const result = await calculateAutoPath(...event.data.params, wasmInstance);
-		console.log(result);
+		//console.log(result);
 
 		console.log('Worker sending message');
 		self.postMessage({ result });

@@ -70,24 +70,32 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 		lastTime.current = -1000000;
 	}, [beatmap, catcherPath]);
 
+	//console.log(catcherPath);
+
+	const catcherPathRef = useRef(catcherPath);
+	catcherPathRef.current = catcherPath;
+
 
 
 	const update = () => {
-		if (!catcherPath?.length) return;
+		const path = catcherPathRef.current;
+		if (!path?.length) return;
 		const currentTime = playerRef.current.currentTime * 1000;
 		if (currentTime === lastTime.current) return;
 		let newIndex = index.current;
 		if (Math.abs(currentTime - lastTime.current) > 20000) {
-			newIndex = binarySearch(catcherPath, currentTime);	
+			newIndex = binarySearch(path, currentTime);	
 		}
-		while (newIndex + 1 < catcherPath.length && catcherPath[newIndex + 1].fromTime <= currentTime) {
+		while (newIndex + 1 < path.length && path[newIndex + 1].fromTime <= currentTime) {
 			newIndex++;
 		}
-		while (newIndex - 1 >= 0 && catcherPath[newIndex].fromTime > currentTime) {
+		while (newIndex - 1 >= 0 && path[newIndex].fromTime > currentTime) {
 			newIndex--;
 		}
+		//console.log(newIndex, currentTime, newIndex + 1 < path.length && path[newIndex + 1].fromTime <= currentTime, path[newIndex + 1].fromTime);
+		//console.log(newIndex, currentTime, newIndex - 1 >= 0 && path[newIndex].fromTime > currentTime, path[newIndex].fromTime);
 		const width = widthRef.current;
-		const seg = catcherPath[newIndex];
+		const seg = path[newIndex];
 		//console.log(seg, currentTime);
 		const percent = Math.min((currentTime - seg.fromTime) / (seg.toTime - seg.fromTime), 1);
 		//console.log(percent);

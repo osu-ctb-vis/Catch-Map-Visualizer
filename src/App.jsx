@@ -19,18 +19,18 @@ function App() {
         <AccountProvider>
             <MapPackProvider>
                 <BeatmapsProvider>
-                    <PlayStateProvider>
-                        <SKinProvider>
-                            <SettingsProvider>
-                                <GlobalFileDropArea />
-                                <NavBar />
-                                <Main />
-                                <ControlBar />
-                                <FPSMonitor />
-                                <WIPModel />
-                            </SettingsProvider>
-                        </SKinProvider>
-                    </PlayStateProvider>
+                    <SettingsProvider>
+                        <PlayStateProvider>
+                            <SKinProvider>
+                                    <GlobalFileDropArea />
+                                    <NavBar />
+                                    <Main />
+                                    <ControlBar />
+                                    <FPSMonitor />
+                                    <WIPModel />
+                            </SKinProvider>
+                        </PlayStateProvider>
+                    </SettingsProvider>
                 </BeatmapsProvider>
             </MapPackProvider>
         </AccountProvider>

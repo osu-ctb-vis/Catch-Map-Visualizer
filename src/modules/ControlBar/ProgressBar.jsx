@@ -33,7 +33,7 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 	const getDurationByEvent = useCallback((e) => {
 		const rect = sliderRef.current.getBoundingClientRect();
 		const x = e.clientX - rect.left;
-		const persent = x / rect.width;
+		const persent = Math.min(1, Math.max(0, x / rect.width));
 		return persent * duration;
 	}, [duration]);
 

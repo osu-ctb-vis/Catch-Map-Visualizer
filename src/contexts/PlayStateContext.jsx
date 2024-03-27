@@ -1,8 +1,11 @@
 import { createContext, useState, useRef, useContext, useEffect } from "react";
 import { MapPackContext } from "./MapPackContext";
 import { BeatmapsContext } from "./BeatmapsContext";
+import { SettingsContext } from "./SettingsContext";
 
 export const PlayStateContext = createContext(null);
+
+const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 export const PlayStateProvider = ({children}) => {
 	const [playing, _setPlaying] = useState(false);
@@ -43,6 +46,14 @@ export const PlayStateProvider = ({children}) => {
 		onBeatmapChange();
 	}, [beatmap]);
 
+	const { gameSpeed } = useContext(SettingsContext);
+
+	// playbackRate differs from gameSpeed as gameSpeed affects the catch moving speed
+	const actualSpeed = clamp(gameSpeed * playbackRate, 0.065, 16);
+	
+	useEffect(() => {
+		playerRef.current.playbackRate = actualSpeed;
+	}, [actualSpeed]);
 	
 
 	return (
@@ -63,7 +74,6 @@ export const PlayStateProvider = ({children}) => {
 				_setTime(value);
 			},
 			setPlaybackRate: (value) => {
-				playerRef.current.playbackRate = value;
 				_setPlaybackRate(value);
 			},
 			setVolume: (value) => {

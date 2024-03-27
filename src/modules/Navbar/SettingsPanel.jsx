@@ -104,25 +104,6 @@ export function SettingsPanel () {
 						suffix="x"
 						onChange={(value) => setGameSpeed(value)}
 					/>
-
-					<Checkbox
-						label="Hard Rock"
-						description="Increase the difficulty of the map"
-						value={hardRock}
-						onChange={(value) => {
-							setHardRock(value);
-							if (value) setEasy(false);
-						}}
-					/>
-					<Checkbox
-						label="Easy"
-						description="Decrease the difficulty of the map"
-						value={easy}
-						onChange={(value) => {
-							setEasy(value);
-							if (value) setHardRock(false);
-						}}
-					/>
 					<Slider
 						label="Vertical Scale"
 						value={verticalScale}
