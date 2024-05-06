@@ -12,7 +12,6 @@ export const PlayStateProvider = ({children}) => {
 	const [duration, _setDuration] = useState(0);
 	const [time, _setTime] = useState(0);
 	const [playbackRate, _setPlaybackRate] = useState(1);
-	const [volume, _setVolume] = useState(1);
 
 	const playerRef = useRef(null);
 
@@ -46,7 +45,7 @@ export const PlayStateProvider = ({children}) => {
 		onBeatmapChange();
 	}, [beatmap]);
 
-	const { gameSpeed } = useContext(SettingsContext);
+	const { gameSpeed, volume, setVolume: _setVolume} = useContext(SettingsContext);
 
 	// playbackRate differs from gameSpeed as gameSpeed affects the catch moving speed
 	const actualSpeed = clamp(gameSpeed * playbackRate, 0.065, 16);

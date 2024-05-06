@@ -19,6 +19,8 @@ export const SettingsProvider = ({children}) => {
 
 	const [backgroundDim, backgroundDimRef, setBackgroundDim] = useSetting("backgroundDim", 0.8, true);
 
+	const [volume, volumeRef, setVolume] = useSetting("volume", 1, true);
+
 	return (
 		<SettingsContext.Provider value={{
 			verticalScale, setVerticalScale, verticalScaleRef,
@@ -30,6 +32,7 @@ export const SettingsProvider = ({children}) => {
 			gameSpeed, setGameSpeed, gameSpeedRef,
 			showFPS, setShowFPS, showFPSRef,
 			backgroundDim, setBackgroundDim, backgroundDimRef,
+			volume, setVolume, volumeRef,
 		}}>
 			{children}
 		</SettingsContext.Provider>
