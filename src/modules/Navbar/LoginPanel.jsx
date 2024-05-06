@@ -1,7 +1,7 @@
 import { useContext, useRef, useState, useEffect } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { AccountContext } from '../../contexts/AccountContext'
-import { MdCheckCircle, MdError, MdLogin, MdLogout, MdPerson } from "react-icons/md";
+import { MdCheckCircle, MdError, MdLogin, MdLogout, MdPerson, MdPersonOutline } from "react-icons/md";
 import ClickAwayListener from 'react-click-away-listener';
 import clsx from 'clsx';
 import './LoginPanel.scss'
@@ -73,7 +73,7 @@ export function LoginPanel() {
 						}
 					}
 			}}>
-				{ loggedIn ? <MdPerson /> : <MdLogin /> }
+				{ loggedIn ? <MdPerson /> : <MdPersonOutline /> }
 				{
 					loggedIn &&
 					<div className="login-panel-menu" onClick={(e) => e.stopPropagation()}>
