@@ -77,7 +77,7 @@ export function SettingsPanel () {
 								if (value) setHardRock(false);
 							}}
 						/>
-						<Mod
+						{/* <Mod
 							label="Double Time"
 							acronym="DT"
 							description="Increase the speed of the map"
@@ -92,9 +92,9 @@ export function SettingsPanel () {
 							value={gameSpeed === 0.75}
 							semiSelected={gameSpeed < 1}
 							onChange={(value) => setGameSpeed(value ? 0.75 : 1)}
-						/>
+						/> */}
 					</div>
-					<Slider
+					{/* <Slider
 						label="Game Speed"
 						value={gameSpeed}
 						min={0.1}
@@ -103,7 +103,7 @@ export function SettingsPanel () {
 						defaultValue={1}
 						suffix="x"
 						onChange={(value) => setGameSpeed(value)}
-					/>
+					/> */}
 					<Slider
 						label="Vertical Scale"
 						value={verticalScale}
