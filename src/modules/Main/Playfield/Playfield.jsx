@@ -5,6 +5,7 @@ import { AccountContext } from "../../../contexts/AccountContext";
 import { parseHitObjects } from "../../../parser/HitobjectsParser";
 import { calculateAutoPath } from "../../../parser/AutoPathCalculator";
 import { BananaPathCalculatingOverlay } from "./BananaPathCalculatingOverlay";
+import { StatsOverlay } from "./StatsOverlay";
 import "./Playfield.scss";
 import { Grids } from './Grids';
 import { ActualPlayfieldBorder } from './ActualPlayfieldBorder';
@@ -149,6 +150,7 @@ export function Playfield({ beatmap }) {
 			<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
 			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
 			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
+			<StatsOverlay beatmap={beatmap} ctbObjects={ctbObjects} progress={pathCalcProgress} calculating={calculatingPath} />
 		</div>
 	)
 }

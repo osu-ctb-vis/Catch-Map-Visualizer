@@ -25,5 +25,7 @@ export function CalculateCatchWidth(difficulty, hardRock = false, easy = false) 
 }
 
 export function CalculateCatchWidthByCircleSize(circleSize) {
-	return CalculateCatchWidthByScale(CalculateScaleFromCircleSize(circleSize));
+	return 120 - (circleSize - 2) * 12;
+	//return CalculateCatchWidthByScale(CalculateScaleFromCircleSize(circleSize));
 }
+

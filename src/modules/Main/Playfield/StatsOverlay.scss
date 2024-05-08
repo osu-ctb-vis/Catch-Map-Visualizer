@@ -1,0 +1,36 @@
+.stats-overlay {
+    position: relative;
+    left: 10px;
+    top: 10px;
+    background: #0005;
+    backdrop-filter: blur(4px);
+    padding: 10px;
+    border-radius: 4px;
+    display: block;
+    width: max-content;
+	pointer-events: none;
+	transition: opacity 0.25s;
+	z-index: 2;
+	.stats-overlay-title {
+		font-size: 1.2em;
+		font-weight: bold;
+	}
+	.stats-overlay-section {
+		font-weight: bold;
+		margin-bottom: 2px;
+		margin-top: 6px;
+	}
+    .stats-overlay-item {
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        .stats-overlay-item-name {
+            &::after {
+                content: ":";
+            }
+        }
+    }
+}
+.hide-stats-overlay .stats-overlay {
+	opacity: 0;
+}

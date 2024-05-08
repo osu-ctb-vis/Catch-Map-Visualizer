@@ -116,8 +116,9 @@ export function SettingsPanel () {
 					/>
 					<Slider
 						label="Max Spin Leniency"
+						description="Higher value = less pixel movements"
 						value={maxSpinLeniency}
-						min={0}
+						min={-0.4}
 						max={0.5}
 						step={0.01}
 						defaultValue={0.2}
@@ -149,7 +150,7 @@ function Checkbox({label, description, value, onChange}) {
 	)
 }
 
-function Slider({ label, value, min, max, step, onChange, defaultValue, percentage, suffix }) {
+function Slider({ label, value, min, max, step, onChange, defaultValue, percentage, suffix, description }) {
 	const toFixedPrecision = Math.max(0, -Math.floor(Math.log10(step) + (percentage ? 2 : 0)));
 	return (
 		<div className="slider">
@@ -176,6 +177,9 @@ function Slider({ label, value, min, max, step, onChange, defaultValue, percenta
 				/>
 
 			</div>
+			{
+				description && <div className="slider-description">{description}</div>
+			}
 			
 		</div>
 	)

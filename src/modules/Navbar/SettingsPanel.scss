@@ -167,6 +167,11 @@
 					}
 				}
 			}
+			.slider-description {
+				font-size: 0.8em;
+				opacity: 0.7;
+				margin-top: 4px;
+			}
 			&:hover {
 				background-color: var(--navbar-color-light-hover);
 				input {
