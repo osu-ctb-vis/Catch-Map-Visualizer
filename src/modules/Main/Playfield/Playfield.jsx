@@ -44,9 +44,17 @@ export function Playfield({ beatmap }) {
 		hardRock,
 		easy,
 		gameSpeed,
+		maxSpinLeniency,
 	} = useContext(SettingsContext);
 
-	const ctbObjectsKey = JSON.stringify([beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, gameSpeed]);
+	const ctbObjectsKey = JSON.stringify([
+		beatmap.difficulty.circleSize,
+		beatmap.difficulty.approachRate,
+		hardRock,
+		easy,
+		gameSpeed,
+		maxSpinLeniency,
+	]);
 	if (!beatmap.ctbObjects) beatmap.ctbObjects = {};
 	if (!beatmap.ctbObjects[ctbObjectsKey]) beatmap.ctbObjects[ctbObjectsKey] = parseHitObjects(beatmap, hardRock, easy, gameSpeed);
 	const ctbObjects = beatmap.ctbObjects[ctbObjectsKey];
@@ -69,7 +77,14 @@ export function Playfield({ beatmap }) {
 
 	const calcPath = async () => {
 		const normalPath = (await calculateAutoPath(
-			ctbObjects, beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, derandomize, gameSpeed
+			ctbObjects,
+			beatmap.difficulty.circleSize,
+			beatmap.difficulty.approachRate,
+			hardRock,
+			easy,
+			derandomize,
+			gameSpeed,
+			maxSpinLeniency
 		)).path;
 		setPath(normalPath);
 	}
@@ -88,7 +103,7 @@ export function Playfield({ beatmap }) {
 			setCalculatingPath(false);
 			return;
 		}
-		const bananaPathKey = JSON.stringify([beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, derandomize, gameSpeed]);
+		const bananaPathKey = JSON.stringify([beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, derandomize, gameSpeed, maxSpinLeniency]);
 		const cachedPath = beatmap.cachedBananaPaths?.[bananaPathKey];
 		if (cachedPath) {
 			setBestPath(cachedPath);
@@ -97,7 +112,7 @@ export function Playfield({ beatmap }) {
 		}
 		const worker = new Worker(new URL('./../../../parser/AutoPathCalculatorWorker.js', import.meta.url), { type: 'module' });
 		worker.postMessage({
-			params: [ctbObjects, beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, derandomize, gameSpeed],
+			params: [ctbObjects, beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, derandomize, gameSpeed, maxSpinLeniency],
 		});
 		worker.onmessage = (event) => {
 			if (event.data.error) {
@@ -118,7 +133,7 @@ export function Playfield({ beatmap }) {
 			beatmap.cachedBananaPaths[bananaPathKey] = path;
 		}
 		return () => worker.terminate();
-	}, [beatmap, hardRock, easy, derandomize, gameSpeed, userInfo?.eligible]);
+	}, [beatmap, hardRock, easy, derandomize, gameSpeed, maxSpinLeniency, userInfo?.eligible]);
 
 
 	return (

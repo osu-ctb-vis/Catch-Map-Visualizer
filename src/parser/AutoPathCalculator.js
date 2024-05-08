@@ -14,7 +14,8 @@ export const calculateAutoPath = async (
 	easy,
 	derandomize,
 	gameSpeed,
-	wasmInstance = null,
+	maxSpinLeniency,
+	wasmInstance = null
 ) => {
 	const walkSpeed = WALK_SPEED / gameSpeed;
 	const dashSpeed = DASH_SPEED / gameSpeed;
@@ -134,7 +135,7 @@ export const calculateAutoPath = async (
 			}
 			i--;
 			const bestPath = wasmInstance ?
-				await calculateBananaPathWasm(bananas, halfCatcherWidth, gameSpeed, wasmInstance) :
+				await calculateBananaPathWasm(bananas, halfCatcherWidth, gameSpeed, maxSpinLeniency, wasmInstance) :
 				calculateFallbackBananaPath(bananas);
 			//console.log(bestPath[0], path[path.length - 1]);
 			path.push(...bestPath);
@@ -143,11 +144,20 @@ export const calculateAutoPath = async (
 
 	const missedBananas = [];
 
+	let totalBanana = 0, totalBananaCatched = 0, totalBananaMissed = 0;
+
 	// recover originalXs
 	for (let i = 0; i < fruits.length; i++) {
 		fruits[i].x = originalXs[i];
+		if (fruits[i].type === "banana") {
+			totalBanana++;
+			if (fruits[i].bananaMissed) totalBananaMissed++;
+			else totalBananaCatched++;
+		}
 		if (fruits[i].bananaMissed) missedBananas.push(i);
 	}
+
+	console.log(`${totalBananaCatched} / ${totalBanana} bananas catched (${(totalBananaCatched / totalBanana * 100).toFixed(2)}%)`);
 
 //	console.log(path);
 	return {
@@ -169,14 +179,14 @@ export const initWasm = async () => {
 	return wasmInstance;
 }
 
-const calculateBananaPathWasm = async (bananas, halfCatcherWidth, gameSpeed, wasmInstance) => {
+const calculateBananaPathWasm = async (bananas, halfCatcherWidth, gameSpeed, maxSpinLeniency, wasmInstance) => {
 	console.log("Calculating banana path with WASM");
 	const timeBefore = performance.now();
 
 	const walkSpeed = WALK_SPEED / gameSpeed;
 	const dashSpeed = DASH_SPEED / gameSpeed;
 	
-	halfCatcherWidth *= 0.8; // leniency
+	halfCatcherWidth *= (1 - maxSpinLeniency); // leniency
 	const headSnap = bananas[0].type === "snap";
 	const tailSnap = bananas[bananas.length - 1].type === "snap";
 	

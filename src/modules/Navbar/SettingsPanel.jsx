@@ -10,6 +10,7 @@ import './SettingsPanel.scss'
 export function SettingsPanel () {
 	const {
 		verticalScale, setVerticalScale,
+		maxSpinLeniency, setMaxSpinLeniency,
 		showGrid, setShowGrid,
 		derandomize, setDerandomize,
 		hardRock, setHardRock,
@@ -112,6 +113,15 @@ export function SettingsPanel () {
 						step={0.1}
 						defaultValue={1}
 						onChange={(value) => setVerticalScale(value)}
+					/>
+					<Slider
+						label="Max Spin Leniency"
+						value={maxSpinLeniency}
+						min={0}
+						max={0.5}
+						step={0.01}
+						defaultValue={0.2}
+						onChange={(value) => setMaxSpinLeniency(value)}
 					/>
 					<Checkbox
 						label="Show FPS"
