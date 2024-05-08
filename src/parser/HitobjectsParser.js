@@ -1,10 +1,10 @@
 import { LegacyRandom } from '../utils/LegacyRandom.js';
 import { CalculateScaleFromCircleSize, calculateScale, CalculateCatchWidthByScale, CalculateCatchWidth, ALLOWED_CATCH_RANGE } from '../utils/CalculateCSScale.js';
 
-const lineLevels = {
-	4: [1, 4, 3, 4, 2, 4, 3, 4],
-	3: [1, 4, 3, 4, 2, 4, 3, 4, 1, 4, 3, 4, 2, 4, 3, 4]
-};
+// const lineLevels = {
+// 	4: [1, 4, 3, 4, 2, 4, 3, 4],
+// 	3: [1, 4, 3, 4, 2, 4, 3, 4, 1, 4, 3, 4, 2, 4, 3, 4]
+// };
 
 const parseTimingLines = (beatmap) => {
 	// TODO: use mathematical way to avoid traversing all the timing lines
