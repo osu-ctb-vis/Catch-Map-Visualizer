@@ -37,7 +37,7 @@ const getHitObjectType = (hitObject) => {
 	const hitType = hitObject.hitType;
 	if (hitType & 1) return "HittableObject"; 
 	if (hitType & 1 << 1) return "_SlidableObject";
-	if (hitType & 1 << 2) return "SpinnableObject";
+	if (hitType & 1 << 3) return "SpinnableObject";
 }
 
 export const parseHitObjects = (beatmap, hardRock, easy, gameSpeed) => {
@@ -58,6 +58,7 @@ export const parseHitObjects = (beatmap, hardRock, easy, gameSpeed) => {
 	if (difficultyPoints[0]?.sliderVelocity) {
 		sliderMultiplier = difficultyPoints[0].sliderVelocity;
 	}
+	console.log(hitObjects);
 	
 	hitObjects.forEach((hitObject) => {
 		const type = getHitObjectType(hitObject);
