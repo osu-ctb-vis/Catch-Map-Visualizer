@@ -118,7 +118,7 @@ export function SettingsPanel () {
 						label="Max Spin Leniency"
 						description="Higher value = less pixel movements"
 						value={maxSpinLeniency}
-						min={-0.4}
+						min={0}
 						max={0.5}
 						step={0.01}
 						defaultValue={0.2}
