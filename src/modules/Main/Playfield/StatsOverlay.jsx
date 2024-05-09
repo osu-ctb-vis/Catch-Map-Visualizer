@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useLayoutEffect, useMemo } from "react";
 import { SettingsContext } from "../../../contexts/SettingsContext";
+import { CalculateCatchWidthByCircleSize } from "../../../utils/CalculateCSScale";
 import clsx from "clsx";
 import "./StatsOverlay.scss";
 
@@ -44,6 +45,7 @@ export function StatsOverlay({ beatmap, ctbObjects, progress, calculating }) {
 				<Item title="Approach Rate" value={beatmap.difficulty.approachRate} />
 				<Item title="Drain Rate" value={beatmap.difficulty.drainRate} />
 				<Item title="Overall Difficulty" value={beatmap.difficulty.overallDifficulty} />
+				<Item title="Catcher width" value={`${CalculateCatchWidthByCircleSize(beatmap.difficulty.circleSize)}px`} />
 				<Section title="Objects"/>
 				<Item title="Total" value={ctbObjects.length} />
 				<Item title="Fruits" value={ctbObjects.filter(o => o.type === "fruit").length} />
