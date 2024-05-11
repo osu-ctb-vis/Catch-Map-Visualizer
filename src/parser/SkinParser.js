@@ -1,4 +1,7 @@
 import { parseZipFromBuffer } from '../utils/parseZipFromBuffer';
+import defaultSkin from "../assets/default-skin.zip?base64";
+import simpleSkin from "../assets/simple-skin.zip?base64";
+import { parseZip } from './ZipParser';
 
 const skinFilenames = [
 	"fruit-apple-overlay",
@@ -30,14 +33,29 @@ export async function parseSkinFromZipFile(zipFile) {
 	console.log('parsing skin from zip file', zipFile);
 	const skin = {};
 	for (const filename of skinFilenames) {
-		const normal = zipFile[filename + ".png"];
-		const double = zipFile[filename + "@2x.png"];
-		if (double) {
-			skin[filename] = await imgFileToBase64(double);
-		} else if (normal) {
-			skin[filename] = await imgFileToBase64(normal);
+		const normalSVG = zipFile[filename + ".svg"];
+		const doubleSVG = zipFile[filename + "@2x.svg"];
+		const normalPNG = zipFile[filename + ".png"];
+		const doublePNG = zipFile[filename + "@2x.png"];
+		const tryFiles = [normalSVG, doubleSVG, normalPNG, doublePNG];
+		for (const file of tryFiles) {
+			if (file) {
+				const base64 = await imgFileToBase64(file);
+				if (base64) {
+					skin[filename] = base64;
+					break;
+				}
+			}
 		}
 	}
 
 	return skin;
+}
+
+export async function parsePresetSkin(name) {
+	console.log('loading preset skin', name);
+	const base64 = name === "default" ? defaultSkin : simpleSkin;
+	const buffer = atob(base64);
+	const zipFile = await parseZipFromBuffer(buffer);
+	return await parseSkinFromZipFile(zipFile);
 }

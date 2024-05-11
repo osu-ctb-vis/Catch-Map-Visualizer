@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useLayoutEffect, useState } from "react";
+import { parsePresetSkin } from "../parser/SkinParser";
 
 export const SkinContext = createContext(null);
 
@@ -11,6 +12,15 @@ export const SKinProvider = ({children}) => {
 		setSkin(skin);
 		console.log(skin);
 	}
+
+	useLayoutEffect(() => {
+		// Load default skin
+		(async () => {
+			console.log("loading default skin");
+			loadSkin(await parsePresetSkin("default"));
+		})();
+	}, []);
+
 
 	return (
 		<SkinContext.Provider value={{

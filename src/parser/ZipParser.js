@@ -33,7 +33,7 @@ export async function parseZip(file) {
 		type = "mapPack";
 	} else if (
 		fileList.some((file) => file.name.trim() === "skin.ini") || 
-		fileList.filter((file) => file.name.endsWith('.png')).length / fileList.length > 0.5
+		fileList.filter((file) => file.name.endsWith('.png') || file.name.endsWith('.svg')).length / fileList.length > 0.5
 	) {
 		type = "skin";
 	}

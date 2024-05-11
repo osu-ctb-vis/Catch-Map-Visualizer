@@ -3,6 +3,7 @@ import { SettingsContext } from "../../../contexts/SettingsContext";
 import { calculatePreempt } from "../../../utils/ApproachRate";
 import { PlayStateContext } from "../../../contexts/PlayStateContext";
 import { CalculateScaleFromCircleSize } from "../../../utils/CalculateCSScale";
+import * as PIXI from "pixi.js";
 import useRefState from "../../../hooks/useRefState";
 import "./ObjectsCanvas.scss";
 
@@ -206,13 +207,17 @@ export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 		return () => cancelAnimationFrame(animationRef.current);
 	}, [width, height, verticalScale, preempt, beatmap, derandomize, hardRock, easy]);
 
+	//const manager = useMemo(() => new PixiManager(ref.current), [ref.current]);
 
 
 	return (
 		<div
 			className="objects-canvas"
-			style={{"--fruit-size": `${fruitSize}px`}}
 			ref={ref}
+
+			style={{
+				"--fruit-size": fruitSize + "px"
+			}}
 		>
 		</div>
 	)
@@ -243,4 +248,43 @@ const binarySearch = (arr, t) => { // Find the first index of the object which t
 	}
 	if (arr[l].time < t) return l + 1;
 	return l;
+}
+
+
+
+class PixiManager {
+	constructor(parent) {
+		if (!parent) return;
+		this.init(parent);
+
+	}
+	async init(parent) {
+		// print pixi version
+		console.log(PIXI.VERSION);
+		this.app = new PIXI.Application();
+		console.log(this.app)
+		await this.app.init({
+			resizeTo: parent,
+			antialias: true,
+			backgroundAlpha: 0
+		});
+		parent.appendChild(this.app.canvas);
+		// draw a circle
+		const circle = new PIXI.Graphics();
+		circle.beginFill(0xff0000);
+		circle.drawCircle(0, 0, 80);
+		circle.endFill();
+		circle.x = 100;
+		circle.y = 100;
+		this.app.stage.addChild(circle);
+	}
+}
+
+
+
+class Fruit {
+	constructor(x, y, time) {
+		this.x = x;
+		this.time = time;
+	}
 }
