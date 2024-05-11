@@ -4,14 +4,14 @@ import "./ActualPlayfieldBorder.scss";
 
 
 export function ActualPlayfieldBorder() {
-	const verticalScale = useContext(SettingsContext).verticalScale;
+	//const verticalScale = useContext(SettingsContext).verticalScale;
 
-	const aspectRatio = `4 / ${3 / verticalScale}`;
+	//const aspectRatio = `4 / ${3 / verticalScale}`;
 	return (
 		<div
 			className="actual-Playfield-border"
 			style={{
-				aspectRatio
+				//aspectRatio
 			}}
 		>
 			<div/><div/><div/><div/>

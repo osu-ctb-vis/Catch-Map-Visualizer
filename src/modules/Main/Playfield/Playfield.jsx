@@ -33,11 +33,11 @@ export function Playfield({ beatmap }) {
 		return () => resizeObserver.disconnect();
 	}, []);
 
-	const { verticalScale, lockAspectRatio } = useContext(SettingsContext);
+	const { verticalScale } = useContext(SettingsContext);
 
-	const maxWidth = height * 4 / (3 / verticalScale); // for unlocked aspect ratio
-
-	const aspectRatio = `4 / ${3 / verticalScale}`; // for locked aspect ratio
+	const aspectRatio = `4 / ${3 / verticalScale}`;
+	
+	const maxWidth = height * 4 / (3 * verticalScale);
 
 
 	const {

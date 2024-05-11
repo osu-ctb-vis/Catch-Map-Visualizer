@@ -6,7 +6,6 @@ export const SettingsContext = createContext(null);
 export const SettingsProvider = ({children}) => {
 	const [verticalScale, verticalScaleRef, setVerticalScale] = useSetting("verticalScale", 1);
 	const [maxSpinLeniency, maxSpinLeniencyRef, setMaxSpinLeniency] = useSetting("maxSpinLeniency", 0.8, true);
-	const [lockAspectRatio, lockAspectRatioRef, setLockAspectRatio] = useSetting("lockAspectRatio", true, true);
 
 	const [showGrid,showGridRef , setShowGrid] = useSetting("showGrid", true, true);
 	const [derandomize, derandomizeRef, setDerandomize] = useSetting("derandomize", false);
@@ -26,7 +25,6 @@ export const SettingsProvider = ({children}) => {
 		<SettingsContext.Provider value={{
 			verticalScale, setVerticalScale, verticalScaleRef,
 			maxSpinLeniency, setMaxSpinLeniency, maxSpinLeniencyRef,
-			lockAspectRatio, setLockAspectRatio, lockAspectRatioRef,
 			showGrid, setShowGrid, showGridRef,
 			derandomize, setDerandomize, derandomizeRef,
 			hardRock, setHardRock, hardRockRef,
