@@ -45,7 +45,7 @@
 				top: 0;
 				height: 200%;
 				background: var(--navbar-color-light-hover);
-				width: 200px;
+				width: 300px;
 				max-width: calc(100vw - 12px);
 				display: flex;
 				padding: 5px 15px;
@@ -118,6 +118,10 @@
 	}
 
 	.playback-rate-btn {
+		.playback-rate-container {
+			display: flex;
+			justify-content: space-between;
+		}		
 		font-size: 18px;
 		font-weight: 600;
 		.small {
@@ -125,9 +129,51 @@
 			opacity: 0.8;
 			font-weight: 400;
 		}
+		.slider-button-container {
+			display: flex;
+			justify-content: space-between;
+		}
 		.control-btn-menu.playback-rate-menu {
 			top: 0%;
 			height: 100%;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+		.control-btn-menu.playback-rate-menu .playback-rate-buttons {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-evenly;
+			padding: 5px 0px;
+			cursor: pointer;
+			transition: background-color 0.2s;
+			margin-left: auto;
+		}
+		.control-btn-menu.playback-rate-menu .playback-rate-button {
+			width: 50px;
+			text-align: center;
+			padding: 2px 2px;
+			margin-left: 15px;
+			border-radius: 100px;
+			border: 2px solid var(--accent-color);
+			position: relative;
+			bottom: 5px; 
+			font-size: 0.5em;
+			font-weight: 500;
+			transition: background-color 0.2s, color 0.2s, filter 0.2s, font-weight 0.2s;
+		}
+		.control-btn-menu.playback-rate-menu .playback-rate-button:hover {
+			background-color: #fff1;
+			filter: drop-shadow(0 0 4px var(--accent-color));
+		}
+		.control-btn-menu.playback-rate-menu .playback-rate-button.semi-selected {
+			background-color: color-mix(in srgb, var(--accent-color) 20%, transparent 80%);
+			filter: drop-shadow(0 0 4px var(--accent-color));
+		}
+		.control-btn-menu.playback-rate-menu .playback-rate-button.selected {
+			background-color: var(--accent-color);
+			font-weight: 800;
+			filter: drop-shadow(0 0 4px var(--accent-color));
 		}
 	}
 

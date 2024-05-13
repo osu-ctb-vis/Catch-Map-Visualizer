@@ -85,16 +85,28 @@ function PlaybackRateButton(props) {
 					}
 				</div>
 				
-				<ControlBtnMenuSlider
-					min="0.1"
-					max="2"
-					step="0.01"
-					value={playbackRate}
-					onInput={(e) => {
-						setPlaybackRate(parseFloat(e.target.value));
-					}}
-				/>
-				<div className="control-btn-menu-annotation">
+				<div className="slider-button-container">
+					<ControlBtnMenuSlider
+						min="0.1"
+						max="2"
+						step="0.05"
+						value={playbackRate}
+						onInput={(e) => {
+							setPlaybackRate(parseFloat(e.target.value));
+						}}
+					/>
+
+					<div className="playback-rate-buttons">
+						<div className={clsx("playback-rate-button", {"semi-selected": playbackRate < 0.75, "selected": playbackRate === 0.75})} onClick={() => setPlaybackRate(0.75)}>
+							<div className="button-label">HT</div>
+						</div>
+						<div className={clsx("playback-rate-button", {"semi-selected": playbackRate > 1.5, "selected": playbackRate === 1.5})} onClick={() => setPlaybackRate(1.5)}>
+							<div className="button-label">DT</div>
+						</div>
+					</div>
+				</div>
+
+				{/* <div className="control-btn-menu-annotation">
 					{
 						gameSpeed < 1 &&
 						<span>
@@ -110,7 +122,7 @@ function PlaybackRateButton(props) {
 					<span>
 						{formatSpeed(actualSpeed)}x
 					</span>
-				</div>
+				</div> */}
 			</div>
 		</button>
 	)
