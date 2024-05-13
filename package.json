@@ -19,6 +19,7 @@
     "clsx": "^2.1.0",
     "jszip": "^3.10.1",
     "osu-parsers": "^4.1.6",
+    "pixi-filters": "^6.0.3",
     "pixi.js": "^8.1.1",
     "react": "^18.2.0",
     "react-click-away-listener": "^2.2.3",

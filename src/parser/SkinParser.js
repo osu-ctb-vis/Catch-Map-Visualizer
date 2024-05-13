@@ -12,6 +12,7 @@ const skinFilenames = [
 	"fruit-catcher-idle",
 	"fruit-catcher-kiai",
 	"fruit-drop",
+	"fruit-drop-overlay",
 	"fruit-grapes-overlay",
 	"fruit-grapes",
 	"fruit-orange-overlay",
@@ -20,10 +21,11 @@ const skinFilenames = [
 	"fruit-pear"
 ]
 
-const imgFileToBase64 = async (imgFile) => {
+const imgFileToBlobUrl = async (imgFile, mimeType = "image/png") => {
 	const imgBuffer = await imgFile.async("blob").catch(() => null);
 	if (imgBuffer) {
-		return URL.createObjectURL(imgBuffer);
+		const blob = imgBuffer.slice(0, imgBuffer.size, mimeType);
+		return URL.createObjectURL(blob);
 	}
 	return null;
 }
@@ -33,16 +35,21 @@ export async function parseSkinFromZipFile(zipFile) {
 	console.log('parsing skin from zip file', zipFile);
 	const skin = {};
 	for (const filename of skinFilenames) {
-		const normalSVG = zipFile[filename + ".svg"];
-		const doubleSVG = zipFile[filename + "@2x.svg"];
-		const normalPNG = zipFile[filename + ".png"];
-		const doublePNG = zipFile[filename + "@2x.png"];
+		const normalSVG = filename + ".svg";
+		const doubleSVG = filename + "@2x.svg";
+		const normalPNG = filename + ".png";
+		const doublePNG = filename + "@2x.png";
+		const mimetypes = {
+			'svg': 'image/svg+xml',
+			'png': 'image/png'
+		}
 		const tryFiles = [normalSVG, doubleSVG, normalPNG, doublePNG];
-		for (const file of tryFiles) {
+		for (const variant of tryFiles) {
+			const file = zipFile[variant];
 			if (file) {
-				const base64 = await imgFileToBase64(file);
-				if (base64) {
-					skin[filename] = base64;
+				const blobUrl = await imgFileToBlobUrl(file, mimetypes[variant.split('.').pop()]);
+				if (blobUrl) {
+					skin[filename] = blobUrl;
 					break;
 				}
 			}
