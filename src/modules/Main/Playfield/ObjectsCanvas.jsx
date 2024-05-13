@@ -179,8 +179,11 @@ class PixiManager {
 	}
 	setObjects(objects) {
 		this.objects = objects;
-		if (this.rendering) this.initFruits();
-		//this.applyToAllFruits(fruit => fruit.updateVisualStyle());
+		//if (this.rendering) this.initFruits();
+		for (let i = 0; i < this.objects.length; i++) {
+			if (this.fruits[i]) this.fruits[i].setObject(this.objects[i]);
+		}
+		this.applyToAllFruits(fruit => fruit.updateVisualStyle());
 	}
 	setRendering(rendering) {
 		this.rendering = rendering;
@@ -195,7 +198,6 @@ class PixiManager {
 			const fruit = new Fruit(this, obj);
 			this.fruits.push(fruit);
 		}
-		this.render(true);
 	}
 
 	applyToAllFruits(func) {
