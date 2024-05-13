@@ -218,7 +218,6 @@ class PixiManager {
 				this.fruits[i].setVisiblity(true);
 				this.fruits[i].updatePosition();
 			}
-			console.log(this.onScreenFruits, Object.keys);
 			const keys = Object.keys(this.onScreenFruits);
 			for (const key of keys) {
 				if (key < this.L || key >= this.R) {
@@ -334,28 +333,30 @@ class Fruit {
 		(this.bananaScale ?? 1);
 	}
 	updateVisualStyle() {
+		const spriteFilters = [], overlayFilters = [];
 		// Hyperfruit: red outline
 		if (this.obj.hyperDashTarget) {
-			this.sprite.filters = [
+			spriteFilters.push(...[
 				new OutlineFilter(1.75 / 512 * this.manager.width, 0xff0000),
 				new GlowFilter({
 					innerStrength: 0,
 					outerStrength: (1 / 512 * this.manager.width),
 					color: 0xff0000
 				})
-			];
+			]);
 		}
 		// Missed banana: opacity & desaturate
 		if (this.obj.bananaMissed) {
 			this.sprite.alpha = 0.5;
-			this.sprite.filters = [
-				desaturateFilter
-			];
+			spriteFilters.push(desaturateFilter);
 			this.overlay.alpha = 0.5;
-			this.overlay.filters = [
-				desaturateFilter
-			];
+			overlayFilters.push(desaturateFilter);
+		} else {
+			this.sprite.alpha = 1;
+			this.overlay.alpha = 1;
 		}
+		this.sprite.filters = spriteFilters;
+		this.overlay.filters = overlayFilters;
 	}
 	setVisiblity(visible) {
 		this.sprite.visible = this.overlay.visible = visible;
