@@ -129,6 +129,7 @@ class PixiManager {
 			this.height = this?.app?.canvas?.offsetHeight ?? this.parent.offsetHeight;
 			this.applyToAllFruits(fruit => fruit.updatePosition());
 			this.applyToAllFruits(fruit => fruit.updateSize());
+			this.render(true);
 		});
 		canvasResizeObserver.observe(this.app.canvas);
 
@@ -178,8 +179,8 @@ class PixiManager {
 	}
 	setObjects(objects) {
 		this.objects = objects;
-		//if (this.rendering) this.initFruits();
-		this.applyToAllFruits(fruit => fruit.updateVisualStyle());
+		if (this.rendering) this.initFruits();
+		//this.applyToAllFruits(fruit => fruit.updateVisualStyle());
 	}
 	setRendering(rendering) {
 		this.rendering = rendering;
@@ -194,6 +195,7 @@ class PixiManager {
 			const fruit = new Fruit(this, obj);
 			this.fruits.push(fruit);
 		}
+		this.render(true);
 	}
 
 	applyToAllFruits(func) {
@@ -202,14 +204,14 @@ class PixiManager {
 		}
 	}
 
-	render() {
+	render(force = false) {
 		if (!this.fruits.length) this.initFruits();
 		
 		const currentTime = this.getTime();
-		if (currentTime == this.lastTime) { this.lastTime = currentTime; return; }
+		if (currentTime == this.lastTime && !force) { this.lastTime = currentTime; return; }
 		const preempt = this.getPreempt();
 		const startTime = currentTime - 200, endTime = currentTime + preempt + 200;
-		if (Math.abs(currentTime - this.lastTime) > 20000) {
+		if (Math.abs(currentTime - this.lastTime) > 20000 || force) {
 			//console.log("Jumped");
 			this.L = binarySearch(this.objects, startTime);
 			for (this.R = this.L; this.R < this.objects.length && this.objects[this.R].time <= endTime; this.R++) {
