@@ -215,6 +215,9 @@ function SkinSelector() {
 			<div className="skin-selector-title">
 				Skin
 			</div>
+			<div className="skin-selector-description">
+				Drag and drop .osk files to import skins
+			</div>
 			<div className="skin-selector-content">
 				<Skin id="default-classic" name="Default - Classic" onSelect={() => loadPresetSkin("default-classic")} selected={skinID === "default-classic"} />
 				<Skin id="default-simple" name="Default - Simple" onSelect={() => loadPresetSkin("default-simple")} selected={skinID === "default-simple"} />
