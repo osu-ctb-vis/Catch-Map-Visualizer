@@ -31,7 +31,7 @@ const imgFileToBlobUrl = async (imgFile, mimeType = "image/png") => {
 }
 
 
-export async function parseSkinFromZipFile(zipFile) {
+export async function parseSkinFromZipFile(zipFile, name = null) {
 	console.log('parsing skin from zip file', zipFile);
 	const skin = {};
 	for (const filename of skinFilenames) {
@@ -56,15 +56,17 @@ export async function parseSkinFromZipFile(zipFile) {
 		}
 	}
 
-	// read combo colours from skin.ini
+	// Read info from skin.ini
 	const skinIni = (await (async () => {
 		try {
 			return await zipFile["skin.ini"].async("text");
 		} catch (e) {
 			return "";
 		}
-	})()).split("\n").map(line => line.trim()).filter(line => line.startsWith("Combo"));
+	})()).split("\n").map(line => line.trim());
 
+
+	// Combo colours
 	let comboColours = [];
 
 	for (let i = 1; i <= 8; i++) {
@@ -84,6 +86,16 @@ export async function parseSkinFromZipFile(zipFile) {
 	comboColours = comboColours.map(([r, g, b]) => r * 256 * 256 + g * 256 + b);
 	skin.comboColours = comboColours;
 
+	// Skin name
+	const nameLine = skinIni.find(line => line.startsWith("Name:"));
+	if (nameLine) {
+		name = nameLine.split(":")[1].trim();
+	}
+	if (!name) {
+		name = "Custom skin " + Math.random().toString(36).substring(7);
+	}
+	skin.name = name.trim();
+
 	return skin;
 }
 
@@ -92,5 +104,5 @@ export async function parsePresetSkin(name) {
 	const base64 = (name === "classic" ? classicSkin : simpleSkin);
 	const buffer = atob(base64);
 	const zipFile = await parseZipFromBuffer(buffer);
-	return await parseSkinFromZipFile(zipFile);
+	return await parseSkinFromZipFile(zipFile, name);
 }

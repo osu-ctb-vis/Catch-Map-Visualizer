@@ -247,7 +247,76 @@
 			pointer-events: all;
 		}
 	}
-	
-	
+}
 
+
+.skin-selector {
+	.skin-selector-title {
+		font-size: 1.05em;
+		font-weight: 500;
+		padding: 10px 20px;
+	}
+	.skin-item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		font-size: 0.9em;
+		height: 36px;
+		padding: 5px 20px;
+		padding-right: 10px;
+		transition: background-color 0.2s;
+		cursor: pointer;
+		.skin-item-name {
+			flex: 1;
+			max-width: 300px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		&:before {
+			content: '';
+			display: block;
+			width: 10px;
+			height: 10px;
+			margin-right: 12px;
+			border-radius: 100px;
+			border: 1.5px solid var(--accent-color);
+			filter: brightness(1.05);
+			transition: background-color 0.2s, filter 0.2s;
+		}
+		&.selected {
+			&:before {
+				background-color: var(--accent-color);
+				filter: drop-shadow(0 0 4px var(--accent-color));
+			}
+		}
+		.delete-button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 24px;
+			height: 24px;
+			border-radius: 100px;
+			background-color: transparent;
+			transition: background-color 0.2s;
+			svg {
+				width: 16px;
+				height: 16px;
+				fill: currentColor;
+				opacity: 0;
+				transition: opacity 0.2s;
+			}
+			&:hover {
+				svg {
+					opacity: 1 !important;
+				}
+			}
+		}
+		&:hover {
+			background-color: var(--navbar-color-light-hover);
+			.delete-button svg {
+				opacity: 0.5;
+			}
+		}
+	}
 }

@@ -1,7 +1,8 @@
-import { createContext, useCallback, useLayoutEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { parsePresetSkin } from "../parser/SkinParser";
 import { Assets } from "pixi.js";
 import transparentSVG from "../assets/transparent.svg?base64";
+import { saveLocalSkin, getAllLocalSkins, getLocalSkin, deleteLocalSkin } from '../utils/LocalSkinStorage';
 
 export const SkinContext = createContext(null);
 
@@ -13,12 +14,16 @@ const loadTransparentTexture = async () => {
 }
 
 export const SKinProvider = ({children}) => {
-	const [skinName, setSkinName] = useState(null);
-	const [skinID, setSkinID] = useState(null); // Skin ID is either ^default-[a-z]$ or a hash
+	const [skinName, setSkinName] = useState(null); // TOOD: Delete this, use skin.name instead
+	const [skinID, setSkinID] = useState(null); // Skin ID is either ^default-[a-z]$ or ^custom- + a slugified name
 	const [skin, setSkin] = useState(null);
 	const [skinAssets, setSkinAssets] = useState(null);
 
+	const [localSkins, setLocalSkins] = useState([]);
+
+
 	const loadSkin = async (skin, skinID, skinName) => {
+		console.log("all local skins", await getAllLocalSkins());
 		console.log("loaded skin", skinName, skin);
 
 		setSkin(skin);
@@ -32,7 +37,8 @@ export const SKinProvider = ({children}) => {
 		// Load skin as PIXI textures
 		const keys = Object.keys(skin);
 		const textures = {};
-		await Promise.all([...keys.map(key => new Promise(async (resolve, reject) => {
+		await Promise.all([...keys.filter(key => typeof(skin[key]) == "string" && skin[key].startsWith("blob:")).map(key => new Promise(async (resolve, reject) => {
+			// TODO: Dont use blob urls, use base64 strings everywhere
 			const blobUrl = skin[key];
 			const blob = await fetch(blobUrl).then(res => res.blob());
 			const base64 = await (new Promise((resolve, reject) => {
@@ -56,6 +62,28 @@ export const SKinProvider = ({children}) => {
 		})]);
 		setSkinAssets(textures);
 		console.log("loaded skin assets", textures);
+		
+		// save perference
+		localStorage.setItem("skinID", skinID);
+	}
+
+	const loadExternalSkin = async (skin) => {
+		const skinID = "custom-" + skin.name.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').toLowerCase();
+		await loadSkin(skin, skinID, skin.name);
+		const localSkins = await getAllLocalSkins();
+		if (localSkins.find(skin => skin.id == skinID)) {
+			return;
+		}
+		await saveLocalSkin(skin, skinID);
+		setLocalSkins([...localSkins, {id: skinID, skin}]);
+	}
+
+	const loadLocalSkin = async (id) => {
+		const skin = await getLocalSkin(id);
+		if (skin) {
+			console.log("loading local skin", id, skin, typeof skin, Object.keys(skin));
+			await loadSkin(skin, id, skin.name);
+		}
 	}
 
 	const loadPresetSkin = useCallback(async (id) => {
@@ -68,12 +96,32 @@ export const SKinProvider = ({children}) => {
 		}
 	}, []);
 
+	const deleteSkin = async (id) => {
+		loadPresetSkin("default-classic");
+		await deleteLocalSkin(id);
+		const localSkins = await getAllLocalSkins();
+		setLocalSkins(localSkins);
+	}
+
 	useLayoutEffect(() => {
 		// Load default skin
 		(async () => {
 			console.log("loading default skin");
-			await loadPresetSkin("default-classic");
+			const preferedSkinID = localStorage.getItem("skinID") || "default-classic";
+			if (preferedSkinID.startsWith("default-")) {
+				loadPresetSkin(preferedSkinID);
+			} else {
+				loadLocalSkin(preferedSkinID);
+			}
+			//await loadPresetSkin("default-classic");
 			//await loadPresetSkin("default-simple");
+		})();
+	}, []);
+
+	useEffect(() => {
+		(async () => {
+			const localSkins = await getAllLocalSkins();
+			setLocalSkins(localSkins);
 		})();
 	}, []);
 
@@ -82,12 +130,17 @@ export const SKinProvider = ({children}) => {
 		<SkinContext.Provider value={{
 			skin,
 			loadSkin,
+			loadPresetSkin,
+			loadExternalSkin,
+			loadLocalSkin,
 			skinAssets,
 			skinName,
-			loadPresetSkin,
+			skinID,
+			localSkins,
+			deleteSkin
 		}}>
 			{ skin && <SkinCSSLayer skin={skin} /> }
-			{children}
+			{ children }
 		</SkinContext.Provider>
 	)
 }

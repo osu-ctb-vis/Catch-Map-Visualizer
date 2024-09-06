@@ -354,6 +354,7 @@ class Fruit {
 		const spriteFilters = [], overlayFilters = [];
 		// Hyperfruit: red outline
 		if (this.obj.hyperDashTarget) {
+			// TODO: Some skins (default-simple) only have overlay, so we need to add the filters to overlay as well
 			spriteFilters.push(...[
 				new OutlineFilter(1.75 / 512 * this.manager.width, 0xff0000),
 				new GlowFilter({
