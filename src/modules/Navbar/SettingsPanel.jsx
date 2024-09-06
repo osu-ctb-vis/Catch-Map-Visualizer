@@ -1,6 +1,7 @@
 import { useContext, useRef, useState } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { SkinContext } from '../../contexts/SkinContext'
 import { MdRefresh, MdSettings } from "react-icons/md";
 import ClickAwayListener from 'react-click-away-listener';
 import clsx from 'clsx';
@@ -18,7 +19,12 @@ export function SettingsPanel () {
 		gameSpeed, setGameSpeed,
 		showFPS, setShowFPS,
 		backgroundDim, setBackgroundDim,
+		useLegacyDOMRenderer, setUseLegacyDOMRenderer,
 	} = useContext(SettingsContext);
+
+	const {
+		skinName, skinID, loadPresetSkin
+	} = useContext(SkinContext);
 
 	const [open, setOpen] = useState(false);
 
@@ -132,6 +138,13 @@ export function SettingsPanel () {
 							setShowFPS(value);
 						}}
 					/>
+					<Checkbox
+						label="Use Legacy DOM Renderer"
+						description="Low performance, not recommended"
+						value={useLegacyDOMRenderer}
+						onChange={(value) => setUseLegacyDOMRenderer(value)}
+					/>
+					<SkinSelector />
 				</div>
 			</button>
 		</ClickAwayListener>
@@ -190,6 +203,17 @@ function Mod({ label, acronym, description, semiSelected, value, onChange }) {
 		<div className={clsx("mod", {selected: value, 'semi-selected': semiSelected})} onClick={() => onChange(!value)}>
 			<div className="mod-acronym">{acronym}</div>
 			<div className="mod-label">{label}</div>
+		</div>
+	)
+}
+
+function SkinSelector() {
+	return (
+		<div className="skin-selector">
+			<div className="skin-selector-content">
+				<div className="skin-selector-label">Skin</div>
+				<div className="skin-selector-value">Default</div>
+			</div>
 		</div>
 	)
 }

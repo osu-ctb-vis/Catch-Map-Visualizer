@@ -10,6 +10,7 @@ import "./Playfield.scss";
 import { Grids } from './Grids';
 import { ActualPlayfieldBorder } from './ActualPlayfieldBorder';
 import { ObjectsCanvas } from './ObjectsCanvas';
+import { LegacyObjectsCanvas } from './LegacyObjectsCanvas';
 import { AutoCatcher } from './AutoCatcher';
 
 const inDevelopmentBuild = import.meta.env.DEV;
@@ -46,6 +47,7 @@ export function Playfield({ beatmap }) {
 		easy,
 		gameSpeed,
 		maxSpinLeniency,
+		useLegacyDOMRenderer,
 	} = useContext(SettingsContext);
 
 	const ctbObjectsKey = JSON.stringify([
@@ -147,7 +149,11 @@ export function Playfield({ beatmap }) {
 		>
 			<Grids />
 			<ActualPlayfieldBorder />
-			<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
+			{
+				useLegacyDOMRenderer ? 
+				<LegacyObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} /> :
+				<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
+			}
 			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
 			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />
 			<StatsOverlay beatmap={beatmap} ctbObjects={ctbObjects} progress={pathCalcProgress} calculating={calculatingPath} />

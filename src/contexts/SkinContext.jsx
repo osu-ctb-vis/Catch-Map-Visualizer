@@ -1,4 +1,4 @@
-import { createContext, useLayoutEffect, useState } from "react";
+import { createContext, useCallback, useLayoutEffect, useState } from "react";
 import { parsePresetSkin } from "../parser/SkinParser";
 import { Assets } from "pixi.js";
 import transparentSVG from "../assets/transparent.svg?base64";
@@ -13,14 +13,19 @@ const loadTransparentTexture = async () => {
 }
 
 export const SKinProvider = ({children}) => {
+	const [skinName, setSkinName] = useState(null);
+	const [skinID, setSkinID] = useState(null); // Skin ID is either ^default-[a-z]$ or a hash
 	const [skin, setSkin] = useState(null);
 	const [skinAssets, setSkinAssets] = useState(null);
 
-	const loadSkin = async (skin) => {
-		console.log("loaded skin", skin);
+	const loadSkin = async (skin, skinID, skinName) => {
+		console.log("loaded skin", skinName, skin);
 
 		setSkin(skin);
 		console.log(skin);
+
+		setSkinID(skinID);
+		setSkinName(skinName);
 
 		// TODO: Unload previous skin assets
 
@@ -53,11 +58,22 @@ export const SKinProvider = ({children}) => {
 		console.log("loaded skin assets", textures);
 	}
 
+	const loadPresetSkin = useCallback(async (id) => {
+		if (id == "default-classic") {
+			loadSkin(await parsePresetSkin("classic"), "default-classic", "Classic");
+		} else if (id == "default-simple") {
+			loadSkin(await parsePresetSkin("simple"), "default-simple", "Simple");
+		} else {
+			console.error("unknown skin id for default skin", id);
+		}
+	}, []);
+
 	useLayoutEffect(() => {
 		// Load default skin
 		(async () => {
 			console.log("loading default skin");
-			loadSkin(await parsePresetSkin("default"));
+			await loadPresetSkin("default-classic");
+			//await loadPresetSkin("default-simple");
 		})();
 	}, []);
 
@@ -66,7 +82,9 @@ export const SKinProvider = ({children}) => {
 		<SkinContext.Provider value={{
 			skin,
 			loadSkin,
-			skinAssets
+			skinAssets,
+			skinName,
+			loadPresetSkin,
 		}}>
 			{ skin && <SkinCSSLayer skin={skin} /> }
 			{children}

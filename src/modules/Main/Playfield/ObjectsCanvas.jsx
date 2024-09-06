@@ -16,7 +16,8 @@ export function ObjectsCanvas({
 }) {
 	const ref = useRef(null);
 
-	const {skinAssets} = useContext(SkinContext);
+	const { skin, skinAssets } = useContext(SkinContext);
+	const skinComboColours = skin?.comboColours ?? [0xffffff];
 
 
 	const { verticalScale,
@@ -41,6 +42,10 @@ export function ObjectsCanvas({
 	useEffect(() => {
 		managerRef.current.setSkinAssets(skinAssets);
 	}, [skinAssets]);
+
+	useEffect(() => {
+		managerRef.current.setComboColours(skinComboColours);
+	}, [skinComboColours]);
 
 	useEffect(() => {
 		managerRef.current.setObjects(ctbObjects);
@@ -171,6 +176,10 @@ class PixiManager {
 		this.skinAssets = skin;
 		this.applyToAllFruits(fruit => fruit.updateTexture());
 	}
+	setComboColours(comboColours) {
+		this.comboColours = comboColours;
+		this.applyToAllFruits(fruit => fruit.updateComboColour());
+	}
 	setPlayer(playerRef) {
 		this.playerRef = playerRef.current;
 	}
@@ -290,6 +299,7 @@ class Fruit {
 		this.setVisiblity(false);
 		
 		this.updateSize();
+		this.updateComboColour();
 		this.updateVisualStyle();
 		
 		manager.app.stage.addChild(this.sprite);
@@ -333,8 +343,12 @@ class Fruit {
 	updateSize() {
 		this.sprite.width = this.sprite.height = this.overlay.width = this.overlay.height
 		= this.manager.getFruitSize() *
-		(this.obj.type === 'droplet' ? 0.5 : 1) *
-		(this.bananaScale ?? 1);
+		 (this.obj.type === 'droplet' ? 0.5 : 1) *
+		 (this.bananaScale ?? 1);
+	}
+	updateComboColour() {
+		if (this.obj.type === "banana") return;
+		this.sprite.tint = this.manager.comboColours[this.obj.combo % this.manager.comboColours.length];
 	}
 	updateVisualStyle() {
 		const spriteFilters = [], overlayFilters = [];

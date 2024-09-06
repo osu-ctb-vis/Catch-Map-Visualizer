@@ -21,6 +21,8 @@ export const SettingsProvider = ({children}) => {
 
 	const [volume, volumeRef, setVolume] = useSetting("volume", 1, true);
 
+	const [useLegacyDOMRenderer, useLegacyDOMRendererRef, setUseLegacyDOMRenderer] = useSetting("useLegacyDOMrenderer", false, true);
+
 	return (
 		<SettingsContext.Provider value={{
 			verticalScale, setVerticalScale, verticalScaleRef,
@@ -33,6 +35,7 @@ export const SettingsProvider = ({children}) => {
 			showFPS, setShowFPS, showFPSRef,
 			backgroundDim, setBackgroundDim, backgroundDimRef,
 			volume, setVolume, volumeRef,
+			useLegacyDOMRenderer, setUseLegacyDOMRenderer, useLegacyDOMRendererRef,
 		}}>
 			{children}
 		</SettingsContext.Provider>

@@ -1,5 +1,5 @@
 import { parseZipFromBuffer } from '../utils/parseZipFromBuffer';
-import defaultSkin from "../assets/default-skin.zip?base64";
+import classicSkin from "../assets/classic-skin.zip?base64";
 import simpleSkin from "../assets/simple-skin.zip?base64";
 import { parseZip } from './ZipParser';
 
@@ -56,12 +56,40 @@ export async function parseSkinFromZipFile(zipFile) {
 		}
 	}
 
+	// read combo colours from skin.ini
+	const skinIni = (await (async () => {
+		try {
+			return await zipFile["skin.ini"].async("text");
+		} catch (e) {
+			return "";
+		}
+	})()).split("\n").map(line => line.trim()).filter(line => line.startsWith("Combo"));
+
+	let comboColours = [];
+
+	for (let i = 1; i <= 8; i++) {
+		const line = skinIni.find(line => line.startsWith(`Combo${i}:`));
+		if (!line) break;
+		const [r, g, b] = line.split(":")[1].split(",").map(x => parseInt(x));
+		comboColours.push([r, g, b]);
+	}
+	console.log('combo colours', comboColours);
+	if (!comboColours.length) {
+		comboColours.push([255, 192, 0]);
+		comboColours.push([0, 202, 0]);
+		comboColours.push([18, 124, 255]);
+		comboColours.push([242, 24, 57]);
+	}
+	console.log('combo colours', comboColours);
+	comboColours = comboColours.map(([r, g, b]) => r * 256 * 256 + g * 256 + b);
+	skin.comboColours = comboColours;
+
 	return skin;
 }
 
 export async function parsePresetSkin(name) {
 	console.log('loading preset skin', name);
-	const base64 = name === "default" ? defaultSkin : simpleSkin;
+	const base64 = (name === "classic" ? classicSkin : simpleSkin);
 	const buffer = atob(base64);
 	const zipFile = await parseZipFromBuffer(buffer);
 	return await parseSkinFromZipFile(zipFile);

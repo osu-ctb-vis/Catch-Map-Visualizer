@@ -170,8 +170,16 @@ export const parseHitObjects = (beatmap, hardRock, easy, gameSpeed) => {
 	applyVisualPresentation(nestedFruits);
 	applyPositionOffsets(nestedFruits);
 	applyHyperFruits(nestedFruits, beatmap, hardRock, easy, gameSpeed);
+	// denest nestedFruits
 	const fruits = nestedFruits.flatMap((nested) => nested.fruits);
 	fruits.sort((a, b) => a.time - b.time); // sort again because some maps have simultaneous hitobjects
+	// apply combo ids
+	let combo = -1;
+	for (let i = 0; i < fruits.length; i++) {
+		if (fruits[i].isNewCombo) combo++;
+		fruits[i].combo = combo;
+	}
+	console.log(fruits);
 	return fruits;
 }
 
@@ -329,6 +337,7 @@ const applyHyperFruits = (nestedFruits, beatmap, hardRock, easy, gameSpeed) => {
 		lastDirection = thisDirection;
 	}
 }
+
 
 
 

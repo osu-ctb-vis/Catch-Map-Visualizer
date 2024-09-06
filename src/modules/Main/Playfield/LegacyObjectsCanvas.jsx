@@ -4,9 +4,9 @@ import { calculatePreempt } from "../../../utils/ApproachRate";
 import { PlayStateContext } from "../../../contexts/PlayStateContext";
 import { CalculateScaleFromCircleSize } from "../../../utils/CalculateCSScale";
 import useRefState from "../../../hooks/useRefState";
-import "./ObjectsCanvas.scss";
+//import "./LegacyObjectsCanvas.scss";
 
-export function ObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
+export function LegacyObjectsCanvas({ beatmap, ctbObjects, catcherPath }) {
 	const ref = useRef(null);
 
 	const [width, widthRef, setWidth] = useRefState(0);
