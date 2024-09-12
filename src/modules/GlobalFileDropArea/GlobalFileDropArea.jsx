@@ -1,10 +1,10 @@
 import { useState, useContext, useRef, useEffect } from 'react'
 import clsx from 'clsx';
-import useZipLoader from '../../hooks/useZipLoader'
+import useAutoZipLoader from '../../hooks/useZipLoader'
 import './GlobalFileDropArea.scss'
 
 export function GlobalFileDropArea() {
-	const loadZip = useZipLoader();
+	const loadZip = useAutoZipLoader();
 	const [dragOver, setDragOver] = useState(false);
 	const [isOtherElementDragging, setIsOtherElementDragging] = useState(false);
 

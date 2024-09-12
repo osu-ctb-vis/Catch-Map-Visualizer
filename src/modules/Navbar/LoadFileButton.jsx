@@ -3,7 +3,7 @@ import { MapPackContext } from '../../contexts/MapPackContext'
 import { MdCancel, MdCheck, MdFolderOpen, MdOutlineDownloading, MdPublic } from 'react-icons/md';
 import { WidthTransitionText } from '../Components/WidthTransitionText/WidthTransitionText'
 import ClickAwayListener from 'react-click-away-listener';
-import useZipLoader from '../../hooks/useZipLoader'
+import useAutoZipLoader, { useMapPackZipLoader } from '../../hooks/useZipLoader'
 import clsx from 'clsx';
 import { downloadBeatmap } from '../../utils/DownloadBeatmap'
 import { humanFileSize } from '../../utils/HumanFileSize'
@@ -12,16 +12,24 @@ import './LoadFileButton.scss'
 const getBeatmapIDFromStr = (str) => {
 	str = str.trim();
 	if (str.match(/^\d+$/)) {
-		return str;
+		return {
+			id: str,
+			diff: null
+		};
 	}
 	// https://osu.ppy.sh/beatmapsets/292301#osu/719594
 	if (str.match(/osu\.ppy\.sh\/beatmapsets\/(\d+)#(osu|taiko|fruits|mania)\/(\d+)/)) {
-		return str.match(/osu\.ppy\.sh\/beatmapsets\/(\d+)#(osu|taiko|fruits|mania)\/(\d+)/)[1];
+		const [id, mode, diff] = str.match(/osu\.ppy\.sh\/beatmapsets\/(\d+)#(osu|taiko|fruits|mania)\/(\d+)/).slice(1);
+		return { id, diff };
 	}
 	if (str.match(/osu\.ppy\.sh\/beatmapsets\/(\d+)/)) {
-		return str.match(/osu\.ppy\.sh\/beatmapsets\/(\d+)/)[1];
+		return {
+			id: str.match(/osu\.ppy\.sh\/beatmapsets\/(\d+)/)[1],
+			diff: null
+		};
+
 	}
-	return null;
+	return {};
 }
 
 
@@ -36,7 +44,8 @@ export function LoadFileButton () {
 	const abortRef = useRef(null);
 
 
-	const loadZip = useZipLoader();
+	const loadZip = useAutoZipLoader();
+	const loadMapPackZip = useMapPackZipLoader();
 
 	const { mapPack } = useContext(MapPackContext);
 
@@ -48,26 +57,27 @@ export function LoadFileButton () {
 
 	const loaded = !!mapPack?.beatmaps?.length;
 
+	// TODO: url &beatmap=ID (and maybe iframe fullscreen overlay)
+
 	const download = async () => {
 		setTimeout(() => {
 			setInputValue("");
 		}, 200);
-		const id = getBeatmapIDFromStr(inputValue);
-		// TODO: Also remember difficulty, and load it after downloading
+		const {id, diff} = getBeatmapIDFromStr(inputValue);
 		if (!id) {
 			// TODO: Popup error message
 			console.error("Invalid URL");
 			setOpen(false);
 			return;
 		}
-		console.log(id);
+		console.log(`Downloading beatmap ${id} with diff ${diff}`);
 		let download;
 		[download, abortRef.current] = downloadBeatmap(id, (received, total) => {
 			setDownloaded(received);
 			setTotal(total);
 			console.log(received, total);
 		}, (data) => {
-			loadZip(new File([data], `${id}.osz`));
+			loadMapPackZip(new File([data], `${id}.osz`), diff);
 			setOpen(false);
 			setDownloading(false);
 			setTimeout(() => {

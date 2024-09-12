@@ -5,7 +5,7 @@ import { parseZip } from '../parser/ZipParser';
 import { parseMapPackFromZipFile } from '../parser/MapPackParser';
 import { parseSkinFromZipFile } from '../parser/SkinParser';
 
-export default function useZipLoader() {
+export default function useAutoZipLoader() {
 	const loadMapPack = useContext(MapPackContext).loadMapPack;
 	const loadExternalSkin = useContext(SkinContext).loadExternalSkin;
 
@@ -22,4 +22,16 @@ export default function useZipLoader() {
 	});
 
 	return loadZip;
+}
+
+export function useMapPackZipLoader() {
+	const loadMapPack = useContext(MapPackContext).loadMapPack;
+
+	const loadMapPackZip = useCallback(async (file, preferredDifficulty = null) => {
+		const { zipFile } = await parseZip(file);
+		const mapPack = await parseMapPackFromZipFile(zipFile, file.name, preferredDifficulty);
+		loadMapPack(mapPack);
+	});
+
+	return loadMapPackZip;
 }

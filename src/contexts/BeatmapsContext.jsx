@@ -13,7 +13,8 @@ export const BeatmapsProvider = ({children}) => {
 		// TODO: Change the way to choose the default beatmap
 		const defaultBeatmap = [
 			...mapPack.beatmaps.filter((d) => d.originalMode == 0),
-			...mapPack.beatmaps.filter((d) => d.originalMode == 2)
+			...mapPack.beatmaps.filter((d) => d.originalMode == 2),
+			...mapPack.beatmaps.filter((d) => d.preferredDifficulty)
 		].pop(); // Choose the hardest ctb difficulty, or the hardest difficulty if there are no ctb beatmap 
 		if (!defaultBeatmap) setBeatmaps([]);
 		else setBeatmaps([defaultBeatmap]);
