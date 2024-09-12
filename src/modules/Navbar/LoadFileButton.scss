@@ -8,19 +8,19 @@
 	border: none;
 	outline: none;
 	cursor: pointer;
-	transition: background-color 0.2s;
+	transition: background-color 0.2s, padding-right 0.2s;
 	font-size: 1.2em;
 	flex-direction: row;
 	min-width: 60px;
 	font-family: inherit;
-	gap: 10px;
 	padding: 0 16px;
+	position: relative;
 
 	&:hover {
 		background-color: var(--navbar-color-light-hover);
 	}
 
-	&.loaded {
+	&.shrunk {
 		background-color: var(--navbar-color);
 		&:hover {
 			background-color: var(--navbar-color-light);
@@ -31,5 +31,198 @@
 		font-size: 24px;
 	}
 	
+	.load-file-menu {
+		position: absolute;
+		right: 0;
+		top: 60px;
+		width: 100%;
+		max-width: calc(100vw - 100px);
+		max-height: calc(100vh - 150px);
+		max-height: calc(100svh - 150px);
+		overflow-y: hidden;
+		background-color: var(--navbar-color-light);
+		transition: clip-path 0.2s ease-in-out, top 0.2s;
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+		pointer-events: none;
+		//padding: 20px;
+		cursor: default;
 
+		.load-from-url-button, .load-from-url-button-downloading-overlay {
+			height: 48px;
+			display: flex;
+			align-items: center;
+			padding-left: 16px;
+			transition: background-color 0.2s, height 0.2s;
+			cursor: pointer;
+			user-select: none;
+			position: relative;
+
+			&.icon-only {
+				padding-left: 0;
+				justify-content: center;
+			}
+			
+			&:hover {
+				background-color: var(--navbar-color-light-hover);
+			}
+
+			.load-from-url-button-downloading-overlay {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: var(--navbar-color-light-hover);
+				pointer-events: none;
+				opacity: 0;
+				transition: opacity 0.2s;
+				cursor: default;
+			}
+		}
+
+		
+		.load-from-url-panel {
+			height: 0;
+			transition: height .2s ease;
+			overflow: hidden;
+			display: flex;
+			flex-direction: row;
+			position: relative;
+			input {
+				width: 100%;
+				height: 48px;
+				padding-left: 16px;
+				border: none;
+				outline: none;
+				background-color: var(--navbar-color-light);
+				color: var(--navbar-text-color);
+				font-family: inherit;
+				font-size: 1em;
+				position: relative;
+				border-left: 0px solid var(--accent-color);
+				transition: background-color 0.2s, border-left-width 0.2s;
+				&::placeholder {
+					color: #fff8;
+				}
+				&:focus {
+					border-left: 2px solid var(--accent-color);
+					background-color: var(--navbar-color-light-hover);
+				}
+				
+			}
+			.load-from-url-confirm {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 48px;
+				outline: none;
+				border: none;
+				background-color: transparent;
+				color: var(--navbar-text-color);
+				font-family: inherit;
+				font-size: 1em;
+				cursor: pointer;
+				transition: background-color 0.2s;
+				aspect-ratio: 1;
+				&:hover {
+					background-color: var(--navbar-color-light-hover);
+				}
+			}
+
+			.load-from-url-progress-overlay, .load-from-url-progress-text-overlay {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: var(--navbar-color-light);
+				opacity: 0;
+				transition: opacity 0.2s;
+				display: flex;
+				align-items: center;
+				padding-left: 16px;
+				pointer-events: none;
+				user-select: none;
+				.load-from-url-progress-text {
+					flex: 1;
+				}
+				.load-from-url-abort {
+					cursor: pointer;
+					background-color: var(--navbar-color-light);
+					border: none;
+					height: 100%;
+					aspect-ratio: 1;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					transition: background-color 0.2s;
+					&:hover {
+						background-color: var(--navbar-color-light-hover);
+					}
+				}
+			}
+		}
+
+		
+		.load-from-url-progress-bar {
+			position: absolute;
+			top: calc(60px - 4px);
+			left: 0;
+			height: 4px;
+			opacity: 1;
+			background-color: var(--accent-color);
+			transition: width 0.15s ease, opacity 0.2s ease, top 0.2s ease, height 0.2s ease;
+			pointer-events: none;
+			mix-blend-mode: lighten;
+			&.indeterminate {
+				width: 100% !important;
+				opacity: 0.4;
+			}
+		}
+
+		
+		&.active {
+			top: 0;
+			clip-path: polygon(0 0, 100% 0, 100% 60px, 0 60px);
+			.load-from-url-button {
+				height: 60px;
+				background-color: var(--navbar-color-light-hover);
+				cursor: default;
+			}
+			.load-from-url-panel {
+				height: 48px;
+			}
+		}
+			
+		&.downloading {
+			.load-from-url-button-downloading-overlay {
+				opacity: 1;
+				pointer-events: all;
+			}
+			.load-from-url-progress-overlay {
+				opacity: 1;
+				pointer-events: all;
+			}
+		}
+	}
+	
+	
+	&:hover, &.active:not(.downloading) {
+		.load-file-menu {
+			clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+			pointer-events: all;
+		}
+		.load-from-url-progress-bar {
+			top: 60px;
+			height: 48px;
+			opacity: .3;
+			&.indeterminate {
+				opacity: 0.02;
+			}
+		}
+	}
+
+	&.active {
+		padding-right: 80px;
+	}
 }

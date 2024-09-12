@@ -5,19 +5,22 @@ export async function parseZip(file) {
 
 	// Possible TODO: If the file is identical to the previous one, don't parse it
 
-	const buffer = await new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const buffer = e.target.result;
-			resolve(buffer);
-		}
-		reader.onerror = (e) => {
-			reject(e);
-		}
-		reader.readAsArrayBuffer(file);
-	}).catch((e) => {
-		console.log('error reading file', e);
-	});
+	const buffer = 
+		(file instanceof File) ?
+		await new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const buffer = e.target.result;
+				resolve(buffer);
+			}
+			reader.onerror = (e) => {
+				reject(e);
+			}
+			reader.readAsArrayBuffer(file);
+		}).catch((e) => {
+			console.log('error reading file', e);
+		}) :
+		file;
 	if (!buffer) return;
 	const zipFile = await parseZipFromBuffer(buffer).catch((e) => {
 		console.log('error parsing buffer', e);

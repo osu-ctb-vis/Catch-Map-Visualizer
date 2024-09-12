@@ -1,0 +1,14 @@
+.width-transition-text {
+	display: grid;
+	grid-template-columns: 1fr;
+	transition: grid-template-columns 0.2s, padding 0.2s;
+	.inner {
+		overflow: hidden;
+		white-space: nowrap;
+	}
+	&.hidden {
+		grid-template-columns: 0fr;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+}
