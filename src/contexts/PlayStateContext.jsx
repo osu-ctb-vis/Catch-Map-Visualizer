@@ -1,4 +1,4 @@
-import { createContext, useState, useRef, useContext, useEffect } from "react";
+import { createContext, useState, useRef, useContext, useEffect, useCallback } from "react";
 import { MapPackContext } from "./MapPackContext";
 import { BeatmapsContext } from "./BeatmapsContext";
 import { SettingsContext } from "./SettingsContext";
@@ -6,6 +6,8 @@ import { SettingsContext } from "./SettingsContext";
 export const PlayStateContext = createContext(null);
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+
+const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
 export const PlayStateProvider = ({children}) => {
 	const [playing, _setPlaying] = useState(false);
@@ -53,13 +55,33 @@ export const PlayStateProvider = ({children}) => {
 	useEffect(() => {
 		playerRef.current.playbackRate = actualSpeed;
 	}, [actualSpeed]);
-	
+
+	const performanceNowRef = useRef(-1);
+	const lastPlayerTimeRef = useRef(-1000);
+
+	const getPreciseTime = useCallback(() => {
+		if (!playerRef.current?.currentTime) return 0;
+		// Firefox's audio.currentTime is not precise
+		if (!isFirefox) return playerRef.current.currentTime * 1000;
+		const playerTime = playerRef.current.currentTime * 1000;
+		if (playerRef.current.paused) {
+			return playerTime;
+		}
+		if (Math.abs(playerTime - lastPlayerTimeRef.current) > 1) {
+			lastPlayerTimeRef.current = playerTime;
+			performanceNowRef.current = performance.now();
+			//console.log(playerTime);
+			return playerTime;
+		}
+		//console.log(playerTime + performance.now() - performanceNowRef.current);
+		return playerTime + performance.now() - performanceNowRef.current;
+	}, [playing]);	
 
 	return (
 		<PlayStateContext.Provider value={{
 			playing,
 			duration,
-			time,
+			time, // not precise, for display only
 			playbackRate,
 			volume,
 			playerRef,
@@ -79,6 +101,7 @@ export const PlayStateProvider = ({children}) => {
 				playerRef.current.volume = value;
 				_setVolume(value);
 			},
+			getPreciseTime
 		}}>
 			{children}
 			<audio

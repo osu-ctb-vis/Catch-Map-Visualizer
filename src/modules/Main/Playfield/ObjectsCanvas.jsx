@@ -26,7 +26,7 @@ export function ObjectsCanvas({
 		easy, easyRef,
 	} = useContext(SettingsContext);
 	
-	const {playing, playerRef} = useContext(PlayStateContext);
+	const {playing, playerRef, getPreciseTime} = useContext(PlayStateContext);
 
 	const managerRef = useRef();
 
@@ -36,6 +36,7 @@ export function ObjectsCanvas({
 		manager.setApproachRate(beatmap.difficulty.approachRate);
 		manager.setCircleSize(beatmap.difficulty.circleSize);
 		manager.setPlayer(playerRef);
+		manager.setTimeGetter(getPreciseTime);
 		return () => managerRef.current.destory();
 	}, []);
 
@@ -183,8 +184,8 @@ class PixiManager {
 	setPlayer(playerRef) {
 		this.playerRef = playerRef.current;
 	}
-	getTime() {
-		return this.playerRef.currentTime * 1000;
+	setTimeGetter(getTime) {
+		this.getTime = getTime;
 	}
 	setObjects(objects) {
 		this.objects = objects;

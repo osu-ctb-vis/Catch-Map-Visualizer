@@ -24,7 +24,6 @@ export async function parseMapPackFromZipFile(zipFile, fileName, preferredDiffic
 		if (!preferredDifficulty) {
 			return beatmap;
 		}
-		console.log(beatmap.metadata.beatmapId, preferredDifficulty, parseInt(preferredDifficulty));
 		if (beatmap.metadata.beatmapId == parseInt(preferredDifficulty)) {
 			beatmap.preferredDifficulty = true;
 		}

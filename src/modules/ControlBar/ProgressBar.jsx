@@ -20,7 +20,8 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 	const {
 		playing,
 		duration,
-		playerRef
+		playerRef,
+		getPreciseTime,
 	} = useContext(PlayStateContext);
 
 	const sliderRef = useRef(null);
@@ -28,13 +29,13 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 
 	const [dragging, setDragging] = useState(false);
 
-	const persent = playerRef.current?.currentTime / duration * 100;
+	const present = getPreciseTime() / (duration * 1000) * 100;
 
 	const getDurationByEvent = useCallback((e) => {
 		const rect = sliderRef.current.getBoundingClientRect();
 		const x = e.clientX - rect.left;
-		const persent = Math.min(1, Math.max(0, x / rect.width));
-		return persent * duration;
+		const present = Math.min(1, Math.max(0, x / rect.width));
+		return present * duration;
 	}, [duration]);
 
 	const seek = (time) => {
@@ -146,7 +147,7 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 			<div
 				className="progress-bar-slider-handle"
 				ref={handleRef}
-				style={{left: `${persent}%`}}
+				style={{left: `${present}%`}}
 			/>
 		</div>
 	)

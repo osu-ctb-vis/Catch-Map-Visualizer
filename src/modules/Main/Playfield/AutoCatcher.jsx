@@ -60,7 +60,7 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 	}, [beatmap.difficulty.circleSize, width, hardRock, easy]);
 
 	
-	const {playing, playerRef} = useContext(PlayStateContext);
+	const {playing, playerRef, getPreciseTime} = useContext(PlayStateContext);
 
 	// TODO: use svg or canvas for better performance
 	const lastTime = useRef(-1000000); // Last time of the song
@@ -80,7 +80,7 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 	const update = () => {
 		const path = catcherPathRef.current;
 		if (!path?.length) return;
-		const currentTime = playerRef.current.currentTime * 1000;
+		const currentTime = getPreciseTime();
 		if (currentTime === lastTime.current) return;
 		let newIndex = index.current;
 		if (Math.abs(currentTime - lastTime.current) > 20000) {
