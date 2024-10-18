@@ -2,6 +2,7 @@ import { createContext, useState, useRef, useContext, useEffect, useCallback } f
 import { MapPackContext } from "./MapPackContext";
 import { BeatmapsContext } from "./BeatmapsContext";
 import { SettingsContext } from "./SettingsContext";
+import { AudioPlayback } from "./AudioBackend/AudioPlayback";
 
 export const PlayStateContext = createContext(null);
 
@@ -34,8 +35,12 @@ export const PlayStateProvider = ({children}) => {
 		const audioFile = zipFile?.[audioFileName];
 		if (!audioFile) throw new Error("No audio file found in beatmap");
 		const audioBuffer = await audioFile.async("arraybuffer");
+
+		// two loading ways, first one for html audio, second one for webaudio
 		playerRef.current.src = URL.createObjectURL(new Blob([audioBuffer]));
-		playerRef.current.load();
+		playerRef.current.buffer = audioBuffer;
+
+		await playerRef.current.load();
 		playerRef.current.play();
 	}
 
@@ -104,7 +109,7 @@ export const PlayStateProvider = ({children}) => {
 			getPreciseTime
 		}}>
 			{children}
-			<audio
+			<AudioPlayback
 				ref={playerRef}
 				style={{display: 'none'}}
 				onTimeUpdate={(e) => {
@@ -114,7 +119,7 @@ export const PlayStateProvider = ({children}) => {
 				onPause={() => _setPlaying(false)}
 				onEnded={() => _setPlaying(false)}
 				onLoadedMetadata={(e) => _setDuration(e.target.duration)}
-			></audio>
+			></AudioPlayback>
 		</PlayStateContext.Provider>
 	)
 }

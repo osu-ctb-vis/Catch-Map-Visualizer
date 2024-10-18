@@ -29,13 +29,13 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 
 	const [dragging, setDragging] = useState(false);
 
-	const present = getPreciseTime() / (duration * 1000) * 100;
+	const percent = getPreciseTime() / (duration * 1000) * 100;
 
 	const getDurationByEvent = useCallback((e) => {
 		const rect = sliderRef.current.getBoundingClientRect();
 		const x = e.clientX - rect.left;
-		const present = Math.min(1, Math.max(0, x / rect.width));
-		return present * duration;
+		const percent = Math.min(1, Math.max(0, x / rect.width));
+		return percent * duration;
 	}, [duration]);
 
 	const seek = (time) => {
@@ -147,7 +147,7 @@ function ProgressBarSlider({startTween, stopTween, extendTween}) {
 			<div
 				className="progress-bar-slider-handle"
 				ref={handleRef}
-				style={{left: `${present}%`}}
+				style={{left: `${percent}%`}}
 			/>
 		</div>
 	)
