@@ -1,0 +1,40 @@
+.welcome {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	user-select: none;
+	.welcome-image {
+		height: 300px;
+		max-height: 40vh;
+		object-fit: cover;
+		aspect-ratio: 1;
+		opacity: 0.55;
+		transition: transform 0.5s, opacity 0.5s;
+		&:hover {
+			transform: scale(1.02);
+			opacity: 0.6;
+		}
+	}
+	.welcome-text {
+		font-size: 2.25rem;
+		text-align: center;
+		margin-top: 1.5rem;
+		font-weight: 400;
+	}
+	.welcome-instructions {
+		font-size: 1.25rem;
+		text-align: center;
+		margin-top: 0.5rem;
+		opacity: 0.8;
+	}
+	.welcome-link {
+		transform: translateY(2rem);
+		font-size: 1.1rem;
+		text-decoration: none;
+		color: var(--accent-color);
+		filter: contrast(0.6);
+	}
+}
