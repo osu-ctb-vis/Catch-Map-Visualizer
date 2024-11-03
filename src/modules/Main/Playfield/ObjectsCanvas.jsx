@@ -272,6 +272,11 @@ class PixiManager {
 		
 		const currentTime = this.getTime();
 		if (currentTime == this.lastTime && !force) { this.lastTime = currentTime; return; }
+		
+		// update banana path polylines
+		this.applyToAllPolyLines(polyline => polyline.updatePosition());
+
+		// update fruits
 		const preempt = this.getPreempt();
 		const startTime = currentTime - 200, endTime = currentTime + preempt + 200;
 		if (Math.abs(currentTime - this.lastTime) > 20000 || force) {
@@ -315,9 +320,6 @@ class PixiManager {
 				delete this.onScreenFruits[key];
 			}
 		}
-
-		// update banana path polylines
-		this.applyToAllPolyLines(polyline => polyline.updatePosition());
 	}
 
 	destory() {
