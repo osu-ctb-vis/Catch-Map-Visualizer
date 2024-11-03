@@ -73,6 +73,7 @@ export function Playfield({ beatmap }) {
 
 	const [catcherPath, setPath] = useState(null);
 	const [bestCatcherPath, setBestPath] = useState(null);
+	const [bananaSegmentPaths, setBananaSegmentPaths] = useState(null);
 	const [calculatingPath, setCalculatingPath] = useState(hasBanana && userInfo?.eligible);
 
 	const [pathCalcProgress, setPathCalcProgress] = useState(0);
@@ -108,6 +109,7 @@ export function Playfield({ beatmap }) {
 		}
 		const bananaPathKey = JSON.stringify([beatmap.difficulty.circleSize, beatmap.difficulty.approachRate, hardRock, easy, derandomize, gameSpeed, maxSpinLeniency]);
 		const cachedPath = beatmap.cachedBananaPaths?.[bananaPathKey];
+		const cachedbananaSegmentPaths = beatmap.cachedBananaSegmentPaths?.[bananaPathKey];
 		if (cachedPath) {
 			setBestPath(cachedPath);
 			setCalculatingPath(false);
@@ -127,13 +129,17 @@ export function Playfield({ beatmap }) {
 				setPathCalcProgress(event.data.progress.current / event.data.progress.total);
 				return;
 			}
-			const { path, missedBananas } = event.data.result;
+			const { path, missedBananas, bananaSegmentPaths } = event.data.result;
 			for (const obj of ctbObjects) delete obj.bananaMissed;
 			for (const index of missedBananas) ctbObjects[index].bananaMissed = true;
 			setBestPath(path);
+			setBananaSegmentPaths(bananaSegmentPaths);
 			setCalculatingPath(false);
+			
 			beatmap.cachedBananaPaths = beatmap.cachedBananaPaths || {};
 			beatmap.cachedBananaPaths[bananaPathKey] = path;
+			beatmap.cachedBananaSegmentPaths = beatmap.cachedBananaSegmentPaths || {};
+			beatmap.cachedBananaSegmentPaths[bananaPathKey] = bananaSegmentPaths;
 		}
 		return () => worker.terminate();
 	}, [beatmap, hardRock, easy, derandomize, gameSpeed, maxSpinLeniency, userInfo?.eligible]);
@@ -152,7 +158,7 @@ export function Playfield({ beatmap }) {
 			{
 				useLegacyDOMRenderer ? 
 				<LegacyObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} /> :
-				<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} />
+				<ObjectsCanvas beatmap={beatmap} ctbObjects={ctbObjects} catcherPath={bestCatcherPath || catcherPath} bananaSegmentPaths={bananaSegmentPaths} />
 			}
 			<AutoCatcher beatmap={beatmap} catcherPath={bestCatcherPath || catcherPath} />
 			<BananaPathCalculatingOverlay progress={pathCalcProgress} calculating={calculatingPath} />

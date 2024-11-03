@@ -38,6 +38,9 @@ export const calculateAutoPath = async (
 		toX: 256,
 	}];
 
+	const bananaSegmentPaths = [];
+	// record the path of each banana segment, for visualization
+
 	if (hardRock) circleSize = Math.min(10, circleSize * 1.3);
 	if (easy) circleSize = circleSize * 0.5;
 
@@ -139,6 +142,8 @@ export const calculateAutoPath = async (
 				calculateFallbackBananaPath(bananas);
 			//console.log(bestPath[0], path[path.length - 1]);
 			path.push(...bestPath);
+
+			if (wasmInstance) bananaSegmentPaths.push(bestPath);
 		}
 	}
 
@@ -163,6 +168,7 @@ export const calculateAutoPath = async (
 	return {
 		path,
 		missedBananas,
+		bananaSegmentPaths,
 	};
 }
 

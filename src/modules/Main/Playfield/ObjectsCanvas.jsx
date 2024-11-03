@@ -3,7 +3,7 @@ import { SettingsContext } from "../../../contexts/SettingsContext";
 import { SkinContext } from "../../../contexts/SkinContext";
 import { calculatePreempt } from "../../../utils/ApproachRate";
 import { PlayStateContext } from "../../../contexts/PlayStateContext";
-import { CalculateScaleFromCircleSize } from "../../../utils/CalculateCSScale";
+import { CalculateScaleFromCircleSize, CalculateCatchWidthByCircleSize } from "../../../utils/CalculateCSScale";
 import * as PIXI from "pixi.js";
 import { OutlineFilter, GlowFilter } from "pixi-filters";
 import useRefState from "../../../hooks/useRefState";
@@ -12,7 +12,8 @@ import "./ObjectsCanvas.scss";
 export function ObjectsCanvas({
 	beatmap,
 	ctbObjects,
-	catcherPath
+	catcherPath,
+	bananaSegmentPaths,
 }) {
 	const ref = useRef(null);
 
@@ -53,13 +54,19 @@ export function ObjectsCanvas({
 	}, [ctbObjects, catcherPath]);
 
 	useEffect(() => {
+		managerRef.current.setBananaSegmentPaths(bananaSegmentPaths);
+	}, [bananaSegmentPaths]);
+
+	useEffect(() => {
 		managerRef.current.setHardRock(hardRock);
 		managerRef.current.setEasy(easy);
 		managerRef.current.applyToAllFruits(fruit => fruit.updateSize());
+		managerRef.current.redrawBananaPathPolylines();
 	}, [hardRock, easy]);
 
 	useEffect(() => {
 		managerRef.current.setVerticalScale(verticalScale);
+		managerRef.current.redrawBananaPathPolylines();
 	}, [verticalScale]);
 
 	useEffect(() => {
@@ -107,6 +114,7 @@ class PixiManager {
 		this.R = 0;
 		this.lastTime = -1000000; // Last time of the song
 
+		this.bananaPathPolylines = [];
 
 		this.init(parent);
 	}
@@ -135,6 +143,8 @@ class PixiManager {
 			this.height = this?.app?.canvas?.offsetHeight ?? this.parent.offsetHeight;
 			this.applyToAllFruits(fruit => fruit.updatePosition());
 			this.applyToAllFruits(fruit => fruit.updateSize());
+			this.redrawBananaPathPolylines();
+			
 			this.render(true);
 		});
 		canvasResizeObserver.observe(this.app.canvas);
@@ -173,6 +183,9 @@ class PixiManager {
 		//return this.getARPreempt() * this.height / (this.width * (3 / this.verticalScale) / 4);
 		return this.getARPreempt() * this.height / (this.width * 3 / 4);
 	}
+	getCatchWidth() {
+		return CalculateCatchWidthByCircleSize(this.getModdedCircleSize());
+	}
 	setSkinAssets(skin) {
 		this.skinAssets = skin;
 		this.applyToAllFruits(fruit => fruit.updateTexture());
@@ -195,6 +208,10 @@ class PixiManager {
 		}
 		this.applyToAllFruits(fruit => fruit.updateVisualStyle());
 	}
+	setBananaSegmentPaths(bananaSegmentPaths) {
+		this.bananaSegmentPaths = bananaSegmentPaths;
+		if (this.rendering) this.initBananaPathPolylines();
+	}
 	setRendering(rendering) {
 		this.rendering = rendering;
 	}
@@ -216,8 +233,32 @@ class PixiManager {
 		}
 	}
 
+	initBananaPathPolylines() {
+		for (const polyline of this.bananaPathPolylines) {
+			polyline.destory();
+		}
+		this.bananaPathPolylines = [];
+		for (const path of this.bananaSegmentPaths) {
+			const bananaPathPolyline = new BananaPathPolyline(this, path);
+			this.bananaPathPolylines.push(bananaPathPolyline);
+		}
+		this.applyToAllPolyLines(polyline => polyline.updatePosition());
+	}
+
+	applyToAllPolyLines(func) {
+		for (const polyline of this.bananaPathPolylines) {
+			func(polyline);
+		}
+	}
+
+	redrawBananaPathPolylines() {
+		if (!this.bananaSegmentPaths) return;
+		this.initBananaPathPolylines();
+	}
+
 	render(force = false) {
 		if (!this.fruits.length) this.initFruits();
+		if (!this.bananaPathPolylines.length && this.bananaSegmentPaths?.length) this.initBananaPathPolylines();
 		
 		const currentTime = this.getTime();
 		if (currentTime == this.lastTime && !force) { this.lastTime = currentTime; return; }
@@ -251,7 +292,6 @@ class PixiManager {
 		while (this.L - 1 >= 0 && this.objects[this.L - 1].time >= startTime) {
 			this.L--;
 		}
-		const oldR = this.R;
 		for (this.R = this.L; this.R < this.objects.length && this.objects[this.R].time <= endTime; this.R++) {
 			const i = this.R;
 			this.onScreenFruits[i] = this.fruits[i];
@@ -265,6 +305,9 @@ class PixiManager {
 				delete this.onScreenFruits[key];
 			}
 		}
+
+		// update banana path polylines
+		this.applyToAllPolyLines(polyline => polyline.updatePosition());
 	}
 
 	destory() {
@@ -276,9 +319,9 @@ class PixiManager {
 	}
 }
 
+
 const desaturateFilter = new PIXI.ColorMatrixFilter();
 desaturateFilter.saturate(-0.5);
-
 
 class Fruit {
 	constructor(
@@ -305,7 +348,6 @@ class Fruit {
 		
 		manager.app.stage.addChild(this.sprite);
 		manager.app.stage.addChild(this.overlay);
-
 	}
 
 	setObject(obj) {
@@ -392,8 +434,6 @@ class Fruit {
 
 }
 
-
-
 const skinMap = {
 	"pineapple": "fruit-apple",
 	"grape": "fruit-grapes",
@@ -402,3 +442,99 @@ const skinMap = {
 	"droplet": "fruit-drop",
 	"banana": "fruit-bananas"
 };
+
+class BananaPathPolyline {
+	constructor(
+		manager,
+		path
+	){
+		this.manager = manager;
+		this.path = path;
+		console.log(path);
+		this.time = path[0].fromTime;
+		this.fromTime = path[0].fromTime;
+		this.toTime = path[path.length - 1].toTime;
+
+		const baseTime = this.fromTime;
+		const baseX = path[0].fromX;
+
+
+		this.shade = new PIXI.Graphics();
+		this.shade.alpha = 0.25;
+		this.shade.zIndex = -1;
+		this.outline = new PIXI.Graphics();
+		this.outline.alpha = 0.8;
+		this.outline.zIndex = 1;
+
+		
+		const halfCatcherWidth = this.manager.getCatchWidth() / 2;
+		const transformX = x => (x - baseX) / 512 * this.manager.width;
+		const transformY = y => - (y - baseTime) / this.manager.getPreempt() * this.manager.height;
+		const drawCatcherTrace = (fromX, fromTime, toX, toTime) => {
+			// background shade
+			this.shade.moveTo(transformX(fromX - halfCatcherWidth), transformY(fromTime));
+			this.shade.lineTo(transformX(fromX + halfCatcherWidth), transformY(fromTime));
+			this.shade.lineTo(transformX(toX + halfCatcherWidth), transformY(toTime));
+			this.shade.lineTo(transformX(toX - halfCatcherWidth), transformY(toTime));
+			this.shade.closePath();
+			this.shade.fill(0xffff00);
+		}
+		const drawCatcherOutline = (fromX, fromTime, toX, toTime) => {
+			this.outline.lineTo(transformX(fromX), transformY(fromTime));
+			this.outline.lineTo(transformX(toX), transformY(toTime));
+		}
+
+		let i = 0;
+
+		this.outline.moveTo(0, 0);
+		
+		for (const seg of this.path) {
+			i += 1;
+			drawCatcherTrace(seg.fromX, seg.fromTime, seg.toX, seg.toTime);
+			drawCatcherOutline(seg.fromX, seg.fromTime, seg.toX, seg.toTime);
+			if (seg.holdToTime - seg.toTime > 0) {
+				drawCatcherTrace(seg.toX, seg.toTime, seg.toX, seg.holdToTime);
+				drawCatcherOutline(seg.toX, seg.toTime, seg.toX, seg.holdToTime);
+			}
+		}
+		this.outline.stroke({ color: 0xffffff, width: 2 });
+
+		
+		manager.app.stage.addChild(this.shade);
+		manager.app.stage.addChild(this.outline);
+
+
+		//this.setVisiblity(false);
+		
+		//this.updateSize();
+		//this.updateComboColour();
+		//this.updateVisualStyle();
+		
+		manager.app.stage.addChild(this.shade);
+	}
+
+	setPath(path) {
+		this.path = path;
+	}
+
+
+	updatePosition() {
+		let x = this.path[0].fromX / 512 * this.manager.width;
+		const y = (1 - (this.time - this.manager.getTime()) / this.manager.getPreempt()) * this.manager.height;
+		if (!this.shade) return;
+		this.shade.x = this.outline.x = x;
+		this.shade.y = this.outline.y = y;
+	}
+
+	setVisiblity(visible) {
+		this.shade.visible = visible;
+	}
+
+	destory() {
+		this.manager.app.stage.removeChild(this.shade);
+		this.manager.app.stage.removeChild(this.outline);
+		this.shade.destroy();
+		this.outline.destroy();
+	}
+
+}
