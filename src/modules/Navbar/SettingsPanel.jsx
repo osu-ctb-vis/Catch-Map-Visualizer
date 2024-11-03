@@ -17,6 +17,7 @@ export function SettingsPanel () {
 		hardRock, setHardRock,
 		easy, setEasy,
 		gameSpeed, setGameSpeed,
+		showBananaPathShade, setShowBananaPathShade,
 		showFPS, setShowFPS,
 		backgroundDim, setBackgroundDim,
 		useLegacyDOMRenderer, setUseLegacyDOMRenderer,
@@ -36,7 +37,7 @@ export function SettingsPanel () {
 				}}
 			>
 				<MdSettings />
-				<div className="settings-panel-menu" onClick={(e) => e.stopPropagation()}>
+				<div className="settings-panel-menu" onClick={(e) => e.stopPropagation()} onWheel={(e) => e.stopPropagation()}>
 					<Checkbox
 						label="Show Grid"
 						description="Show grid lines on the playfield"
@@ -125,6 +126,14 @@ export function SettingsPanel () {
 						step={0.01}
 						defaultValue={0.2}
 						onChange={(value) => setMaxSpinLeniency(value)}
+					/>
+					<Checkbox
+						label="Show Banana Path Shade"
+						description="Visualize the catcher path for bananas"
+						value={showBananaPathShade}
+						onChange={(value) => {
+							setShowBananaPathShade(value);
+						}}
 					/>
 					<Checkbox
 						label="Show FPS"

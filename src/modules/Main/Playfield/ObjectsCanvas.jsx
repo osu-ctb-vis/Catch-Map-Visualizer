@@ -22,9 +22,9 @@ export function ObjectsCanvas({
 
 
 	const { verticalScale,
-		derandomize, derandomizeRef,
-		hardRock, hardRockRef,
-		easy, easyRef,
+		derandomize,
+		hardRock, easy,
+		showBananaPathShade
 	} = useContext(SettingsContext);
 	
 	const {playing, playerRef, getPreciseTime} = useContext(PlayStateContext);
@@ -56,6 +56,10 @@ export function ObjectsCanvas({
 	useEffect(() => {
 		managerRef.current.setBananaSegmentPaths(bananaSegmentPaths);
 	}, [bananaSegmentPaths]);
+
+	useEffect(() => {
+		managerRef.current.setShowBananaPathShade(showBananaPathShade);
+	}, [showBananaPathShade]);
 
 	useEffect(() => {
 		managerRef.current.setHardRock(hardRock);
@@ -186,6 +190,9 @@ class PixiManager {
 	getCatchWidth() {
 		return CalculateCatchWidthByCircleSize(this.getModdedCircleSize());
 	}
+	getShowBananaPathShade() {
+		return this.showBananaPathShade;
+	}
 	setSkinAssets(skin) {
 		this.skinAssets = skin;
 		this.applyToAllFruits(fruit => fruit.updateTexture());
@@ -211,6 +218,10 @@ class PixiManager {
 	setBananaSegmentPaths(bananaSegmentPaths) {
 		this.bananaSegmentPaths = bananaSegmentPaths;
 		if (this.rendering) this.initBananaPathPolylines();
+	}
+	setShowBananaPathShade(showBananaPathShade) {
+		this.showBananaPathShade = showBananaPathShade;
+		this.applyToAllPolyLines(polyline => polyline.setVisiblity(showBananaPathShade));
 	}
 	setRendering(rendering) {
 		this.rendering = rendering;
@@ -242,7 +253,6 @@ class PixiManager {
 			const bananaPathPolyline = new BananaPathPolyline(this, path);
 			this.bananaPathPolylines.push(bananaPathPolyline);
 		}
-		this.applyToAllPolyLines(polyline => polyline.updatePosition());
 	}
 
 	applyToAllPolyLines(func) {
@@ -480,6 +490,7 @@ class BananaPathPolyline {
 			this.shade.fill(0xffff00);
 		}
 		const drawCatcherOutline = (fromX, fromTime, toX, toTime) => {
+			// outline
 			this.outline.lineTo(transformX(fromX), transformY(fromTime));
 			this.outline.lineTo(transformX(toX), transformY(toTime));
 		}
@@ -504,11 +515,9 @@ class BananaPathPolyline {
 		manager.app.stage.addChild(this.outline);
 
 
-		//this.setVisiblity(false);
+		this.setVisiblity(manager.getShowBananaPathShade());
 		
-		//this.updateSize();
-		//this.updateComboColour();
-		//this.updateVisualStyle();
+		this.updatePosition();
 		
 		manager.app.stage.addChild(this.shade);
 	}
@@ -527,7 +536,7 @@ class BananaPathPolyline {
 	}
 
 	setVisiblity(visible) {
-		this.shade.visible = visible;
+		this.shade.visible = this.outline.visible = visible;
 	}
 
 	destory() {

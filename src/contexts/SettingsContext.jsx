@@ -14,6 +14,8 @@ export const SettingsProvider = ({children}) => {
 	const [easy, easyRef, setEasy] = useSetting("easy", false);
 
 	const [gameSpeed, gameSpeedRef, setGameSpeed] = useSetting("gameSpeed", 1, false);
+
+	const [showBananaPathShade, showBananaPathShadeRef, setShowBananaPathShade] = useSetting("showBananaPathShade", true, true);
 	
 	const [showFPS, showFPSRef, setShowFPS] = useSetting("showFPS", false, true);
 
@@ -32,6 +34,7 @@ export const SettingsProvider = ({children}) => {
 			hardRock, setHardRock, hardRockRef,
 			easy, setEasy, easyRef,
 			gameSpeed, setGameSpeed, gameSpeedRef,
+			showBananaPathShade, setShowBananaPathShade, showBananaPathShadeRef,
 			showFPS, setShowFPS, showFPSRef,
 			backgroundDim, setBackgroundDim, backgroundDimRef,
 			volume, setVolume, volumeRef,
