@@ -47,7 +47,7 @@ export function DifficultiesSelector () {
 					{!noDifficulyAvailable && currentDifficulties.length > 0 && currentDifficulties.join(", ")}
 				</div>
 				<MdArrowDropDown className="dropdown-icon"/>
-				<div className="difficulties-list" onClick={(e) => e.stopPropagation()} ref={listRef}>
+				<div className="difficulties-list" onClick={(e) => e.stopPropagation()} onWheel={(e) => e.stopPropagation()} ref={listRef}>
 					{
 						groups.map((group, i) => (
 							<Section
