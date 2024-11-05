@@ -326,7 +326,7 @@ class PixiManager {
 		for (const fruit of this.fruits) {
 			fruit.destory();
 		}
-		this.parent.removeChild(this.app.canvas);
+		if (this?.app?.canvas) this.parent.removeChild(this.app.canvas);
 		this.app.destroy();
 	}
 }
