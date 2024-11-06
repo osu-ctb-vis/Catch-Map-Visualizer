@@ -7,7 +7,7 @@ export const SettingsProvider = ({children}) => {
 	const [verticalScale, verticalScaleRef, setVerticalScale] = useSetting("verticalScale", 1);
 	const [maxSpinLeniency, maxSpinLeniencyRef, setMaxSpinLeniency] = useSetting("maxSpinLeniency", 0.8, true);
 
-	const [showGrid,showGridRef , setShowGrid] = useSetting("showGrid", true, true);
+	const [showGrid, showGridRef , setShowGrid] = useSetting("showGrid", true, true);
 	const [derandomize, derandomizeRef, setDerandomize] = useSetting("derandomize", false);
 
 	const [hardRock, hardRockRef, setHardRock] = useSetting("hardRock", false);
@@ -16,12 +16,14 @@ export const SettingsProvider = ({children}) => {
 	const [gameSpeed, gameSpeedRef, setGameSpeed] = useSetting("gameSpeed", 1, false);
 
 	const [showBananaPathShade, showBananaPathShadeRef, setShowBananaPathShade] = useSetting("showBananaPathShade", true, true);
-	
+
 	const [showFPS, showFPSRef, setShowFPS] = useSetting("showFPS", false, true);
 
 	const [backgroundDim, backgroundDimRef, setBackgroundDim] = useSetting("backgroundDim", 0.8, true);
 
 	const [volume, volumeRef, setVolume] = useSetting("volume", 1, true);
+
+	const [skinnedCatcher, skinnedCatcherRef , setSkinnedCatcher] = useSetting("skinnedCatcher", false, true);
 
 	const [useLegacyDOMRenderer, useLegacyDOMRendererRef, setUseLegacyDOMRenderer] = useSetting("useLegacyDOMrenderer", false, true);
 
@@ -38,6 +40,7 @@ export const SettingsProvider = ({children}) => {
 			showFPS, setShowFPS, showFPSRef,
 			backgroundDim, setBackgroundDim, backgroundDimRef,
 			volume, setVolume, volumeRef,
+			skinnedCatcher, setSkinnedCatcher, skinnedCatcherRef,
 			useLegacyDOMRenderer, setUseLegacyDOMRenderer, useLegacyDOMRendererRef,
 		}}>
 			{children}

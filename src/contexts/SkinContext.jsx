@@ -145,7 +145,7 @@ export const SKinProvider = ({children}) => {
 	)
 }
 
-function SkinCSSLayer(skin) {
+function SkinCSSLayer(skin) { // This is deprecated, for the old dom renderer
 	skin = skin.skin;
 	let styleString = "";
 	const addSkinElement = (selector, image) => {

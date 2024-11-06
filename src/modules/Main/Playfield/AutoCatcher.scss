@@ -6,4 +6,14 @@
 	height: 6px;
 	border-radius: 0 0 10px 10px;
 	background-color: #fff;
+
+	&.skinned {
+		background-image: var(--catcher-skin);
+		background-color: transparent;
+		background-size: contain;
+		background-position: top center;
+		height: var(--skin-height);
+		bottom: calc(var(--skin-height) * -1 + (30 / 640 * var(--skin-height))); // there is a 30px gap at the top of the skin, somehow
+		border-radius: 0;
+	}
 }

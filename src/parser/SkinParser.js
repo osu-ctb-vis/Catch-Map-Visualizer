@@ -18,7 +18,9 @@ const skinFilenames = [
 	"fruit-orange-overlay",
 	"fruit-orange",
 	"fruit-pear-overlay",
-	"fruit-pear"
+	"fruit-pear",
+	"fruit-catcher-idle",
+	"fruit-catcher-kiai"
 ]
 
 const imgFileToBlobUrl = async (imgFile, mimeType = "image/png") => {
@@ -85,6 +87,12 @@ export async function parseSkinFromZipFile(zipFile, name = null) {
 	console.log('combo colours', comboColours);
 	comboColours = comboColours.map(([r, g, b]) => r * 256 * 256 + g * 256 + b);
 	skin.comboColours = comboColours;
+
+	// Catcher fallback settings
+	// Catcher skin fallback
+	let catcherSkinFallbackValue = skinIni.find(line => line.startsWith("CatcherSkinFallback"))?.split(":")?.[1]?.trim() ?? "true";
+	catcherSkinFallbackValue = catcherSkinFallbackValue === "true" ? true : false;
+	skin.catcherSkinFallback = catcherSkinFallbackValue;
 
 	// Skin name
 	const nameLine = skinIni.find(line => line.startsWith("Name:"));

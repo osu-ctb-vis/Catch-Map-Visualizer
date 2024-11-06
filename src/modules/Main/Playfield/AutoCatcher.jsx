@@ -1,21 +1,26 @@
 import { useEffect, useRef, useLayoutEffect, useState, useContext, useMemo, useCallback } from "react";
 import { SettingsContext } from "../../../contexts/SettingsContext";
+import { SkinContext } from "../../../contexts/SkinContext";
 import "./AutoCatcher.scss";
 import { calculatePreempt } from "../../../utils/ApproachRate";
 import { parseHitObjects } from "../../../parser/HitobjectsParser";
 import { PlayStateContext } from "../../../contexts/PlayStateContext";
 import { CalculateScaleFromCircleSize, CalculateCatchWidthByCircleSize } from "../../../utils/CalculateCSScale";
 import useRefState from "../../../hooks/useRefState";
+import clsx from "clsx";
+import fallbackCatcherSkin from "../../../assets/fallback-skin/fruit-catcher-idle@2x.png";
 
 export function AutoCatcher({ beatmap, catcherPath }) {
 	const ref = useRef(null);
 
-	const [width, widthRef, setWidth] = useRefState(0);
+	const [width, widthRef, setWidth] = useRefState(0); // the catcher width (osu px, total 512px width)
+	const [parentWidth, parentWidthRef, setParentWidth] = useRefState(0);
 
 	const {
 		derandomize,
 		hardRock,
 		easy,
+		skinnedCatcher
 	} = useContext(SettingsContext);
 
 	/*const [fruitSize, setFruitSize] = useState(0);
@@ -37,7 +42,7 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 		
 
 	const onResize = () => {
-		setWidth(ref.current.parentElement.offsetWidth);
+		setParentWidth(ref.current.parentElement.offsetWidth);
 		//recalculateFruitSize();
 	}
 
@@ -55,8 +60,7 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 	useLayoutEffect(() => {
 		const catcherWidth = CalculateCatchWidthByCircleSize(beatmap.difficulty.circleSize); // TODO: HR, EZ
 		console.log("Catcher width", catcherWidth);
-		ref.current.style.width = `${catcherWidth / 512 * width}px`;
-		ref.current.style.left = `-${catcherWidth / 512 * width / 2}px`;
+		setWidth(catcherWidth);
 	}, [beatmap.difficulty.circleSize, width, hardRock, easy]);
 
 	
@@ -94,7 +98,7 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 		}
 		//console.log(newIndex, currentTime, newIndex + 1 < path.length && path[newIndex + 1].fromTime <= currentTime, path[newIndex + 1].fromTime);
 		//console.log(newIndex, currentTime, newIndex - 1 >= 0 && path[newIndex].fromTime > currentTime, path[newIndex].fromTime);
-		const width = widthRef.current;
+		const width = parentWidthRef.current;
 		const seg = path[newIndex];
 		//console.log(seg, currentTime);
 		const percent = Math.min((currentTime - seg.fromTime) / (seg.toTime - seg.fromTime), 1);
@@ -119,13 +123,28 @@ export function AutoCatcher({ beatmap, catcherPath }) {
 		}
 		animationRef.current = requestAnimationFrame(aniUpdate);
 		return () => cancelAnimationFrame(animationRef.current);
-	}, [width, beatmap, derandomize, hardRock, easy, catcherPath]);
+	}, [parentWidth, width, beatmap, derandomize, hardRock, easy, catcherPath]);
 
 
+	const {
+		skin
+	} = useContext(SkinContext);
+
+	const catcherSkinFallback = skin?.catcherSkinFallback ?? true;
+	const catcherSkin = skinnedCatcher ? 
+		(skin?.["fruit-catcher-idle"] ??
+			(catcherSkinFallback ? fallbackCatcherSkin : null))
+		: null;
 
 	return (
 		<div
-			className="auto-catcher"
+			className={clsx("auto-catcher", {skinned: catcherSkin})}
+			style={{
+				'width': `${width / 512 * parentWidth}px`,
+				'left': `-${width / 512 * parentWidth / 2}px`,
+				'--skin-height': `${width / 512 * parentWidth / 612 * 640}px`, // skin is 612*640
+				'--catcher-skin': `url(${catcherSkin})`
+			}}
 			ref={ref}
 		>
 		</div>

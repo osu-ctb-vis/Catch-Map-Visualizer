@@ -21,6 +21,7 @@ export function SettingsPanel () {
 		showFPS, setShowFPS,
 		backgroundDim, setBackgroundDim,
 		useLegacyDOMRenderer, setUseLegacyDOMRenderer,
+		skinnedCatcher, setSkinnedCatcher
 	} = useContext(SettingsContext);
 
 	const [open, setOpen] = useState(false);
@@ -150,6 +151,12 @@ export function SettingsPanel () {
 						onChange={(value) => setUseLegacyDOMRenderer(value)}
 					/>
 					<SkinSelector />
+					<Checkbox
+						label="Skinned Catcher"
+						description="Apply skin to the catcher"
+						value={skinnedCatcher}
+						onChange={(value) => setSkinnedCatcher(value)}
+					/>
 				</div>
 			</button>
 		</ClickAwayListener>
