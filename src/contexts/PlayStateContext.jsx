@@ -80,7 +80,11 @@ export const PlayStateProvider = ({children}) => {
 		}
 		//console.log(playerTime + performance.now() - performanceNowRef.current);
 		return playerTime + performance.now() - performanceNowRef.current;
-	}, [playing]);	
+	}, [playing]);
+
+	useEffect(() => {
+		playerRef.current.volume = volume;
+	}, []);
 
 	return (
 		<PlayStateContext.Provider value={{
