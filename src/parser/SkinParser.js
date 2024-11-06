@@ -88,8 +88,7 @@ export async function parseSkinFromZipFile(zipFile, name = null) {
 	comboColours = comboColours.map(([r, g, b]) => r * 256 * 256 + g * 256 + b);
 	skin.comboColours = comboColours;
 
-	// Catcher fallback settings
-	// Catcher skin fallback
+	// Catcher skin fallback settings
 	let catcherSkinFallbackValue = skinIni.find(line => line.startsWith("CatcherSkinFallback"))?.split(":")?.[1]?.trim() ?? "true";
 	catcherSkinFallbackValue = catcherSkinFallbackValue === "true" ? true : false;
 	skin.catcherSkinFallback = catcherSkinFallbackValue;
