@@ -30,6 +30,17 @@
 		margin-top: 0.5rem;
 		opacity: 0.8;
 	}
+	.welcome-load-example {
+		display: inline;
+		color: var(--accent-color);
+		filter: contrast(0.6);
+		cursor: pointer;
+		transition: opacity 0.3s;
+		&.disabled {
+			opacity: 0.6;
+			pointer-events: none;
+		}
+	}
 	.welcome-link {
 		transform: translateY(2rem);
 		font-size: 1.1rem;
