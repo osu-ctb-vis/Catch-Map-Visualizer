@@ -1,5 +1,6 @@
-import { useContext, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { MapPackContext } from '../../contexts/MapPackContext'
+import { SettingsContext } from '../../contexts/SettingsContext';
 import { MdCancel, MdCheck, MdFolderOpen, MdOutlineDownloading, MdPublic } from 'react-icons/md';
 import { WidthTransitionText } from '../Components/WidthTransitionText/WidthTransitionText'
 import ClickAwayListener from 'react-click-away-listener';
@@ -33,13 +34,14 @@ const getBeatmapIDFromStr = (str) => {
 }
 
 
-export function LoadFileButton () {
+export function LoadFileButton() {
 	const [open, setOpen] = useState(false);
-	
-	const [inputValue, setInputValue] = useState("");
-	
+
+	const [inputValue, setInputValue] = useState(new URL(window.location).searchParams.get('s') ?? "");
+
 	const [downloading, setDownloading] = useState(false);
 	const [downloaded, setDownloaded] = useState(0);
+	const [initiated, setInitiated] = useState(false);
 	const [total, setTotal] = useState(0);
 	const abortRef = useRef(null);
 
@@ -48,6 +50,7 @@ export function LoadFileButton () {
 	const loadMapPackZip = useMapPackZipLoader();
 
 	const { mapPack } = useContext(MapPackContext);
+	const { beatmapMirror } = useContext(SettingsContext);
 
 
 	const fileInputRef = useRef(null);
@@ -57,7 +60,13 @@ export function LoadFileButton () {
 
 	const loaded = !!mapPack?.beatmaps?.length;
 
-	// TODO: url &beatmap=ID (and maybe iframe fullscreen overlay)
+	useEffect(() => {
+		if (window.location.search != '' && initiated == false) {
+			setInitiated(true);
+			download();
+		}
+	}, []);
+
 
 	const download = async () => {
 		setTimeout(() => {
@@ -66,13 +75,13 @@ export function LoadFileButton () {
 		const {id, diff} = getBeatmapIDFromStr(inputValue);
 		if (!id) {
 			// TODO: Popup error message
-			console.error("Invalid URL");
+			console.error("Invalid URL", id, diff, inputValue, window.location);
 			setOpen(false);
 			return;
 		}
-		console.log(`Downloading beatmap ${id} with diff ${diff}`);
+		console.log(`Downloading beatmap ${id} with diff ${diff} from ${beatmapMirror}`);
 		let download;
-		[download, abortRef.current] = downloadBeatmap(id, (received, total) => {
+		[download, abortRef.current] = downloadBeatmap(id, beatmapMirror, (received, total) => {
 			setDownloaded(received);
 			setTotal(total);
 			console.log(received, total);
@@ -80,6 +89,11 @@ export function LoadFileButton () {
 			loadMapPackZip(new File([data], `${id}.osz`), diff);
 			setOpen(false);
 			setDownloading(false);
+
+			const updatedURL = new URL(window.location);
+			updatedURL.searchParams.set('s', `${id}`);
+			window.history.pushState({ href: updatedURL.href }, '', updatedURL.href)
+
 			setTimeout(() => {
 				setDownloaded(0);
 				setTotal(0);

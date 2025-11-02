@@ -21,9 +21,11 @@ export const SettingsProvider = ({children}) => {
 
 	const [backgroundDim, backgroundDimRef, setBackgroundDim] = useSetting("backgroundDim", 0.8, true);
 
-	const [volume, volumeRef, setVolume] = useSetting("volume", 1, true);
+	const [volume, volumeRef, setVolume] = useSetting("volume", 0.1, true);
 
 	const [skinnedCatcher, skinnedCatcherRef , setSkinnedCatcher] = useSetting("skinnedCatcher", false, true);
+
+	const [beatmapMirror, beatmapMirrorRef , setBeatmapMirror] = useSetting("beatmapMirror", 'sayobot', true);
 
 	const [useLegacyDOMRenderer, useLegacyDOMRendererRef, setUseLegacyDOMRenderer] = useSetting("useLegacyDOMrenderer", false, true);
 
@@ -41,6 +43,7 @@ export const SettingsProvider = ({children}) => {
 			backgroundDim, setBackgroundDim, backgroundDimRef,
 			volume, setVolume, volumeRef,
 			skinnedCatcher, setSkinnedCatcher, skinnedCatcherRef,
+			beatmapMirror, beatmapMirrorRef , setBeatmapMirror,
 			useLegacyDOMRenderer, setUseLegacyDOMRenderer, useLegacyDOMRendererRef,
 		}}>
 			{children}

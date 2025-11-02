@@ -1,9 +1,15 @@
-export function downloadBeatmap(beatmapID, onProgress = () => {}, onFinished = () => {}, onError = () => {}) {
+export function downloadBeatmap(beatmapID, mirrorHost, onProgress = () => { }, onFinished = () => { }, onError = () => { }) {
 	const controller = new AbortController();
 	const signal = controller.signal;
 
-	const URL = getSayoMirrorURL(beatmapID);
-	console.log(URL);
+	const URL = mirrorHost == 'sayobot'
+		? `https://txy1.sayobot.cn/beatmaps/download/mini/${beatmapID}?server=auto`
+		: mirrorHost == 'mino'
+			? `https://catboy.best/d/${beatmapID}`
+			: mirrorHost == 'osudirect'
+				? `https://osu.direct/api/d/${beatmapID}`
+				: 'mino';
+	console.log(URL, mirrorHost);
 
 	const abort = () => {
 		controller.abort();
@@ -49,18 +55,10 @@ export function downloadBeatmap(beatmapID, onProgress = () => {}, onFinished = (
 			chunksAll.set(chunk, position);
 			position += chunk.length;
 		}
-	
+
 		onFinished(chunksAll);
-	
+
 		return chunksAll;
 	}
-	return [ download, abort ];
+	return [download, abort];
 }
-
-const getSayoMirrorURL = (beatmapID) => {
-	return `https://txy1.sayobot.cn/beatmaps/download/mini/${beatmapID}?server=auto`
-}
-
-
-
-
